@@ -82,7 +82,16 @@ public class JavaBeanUtils {
      * 生成setter方法名
      */
     public static String getSetterName(PsiField field) {
-        return "set" + capitalize(field.getName());
+        String fieldName = field.getName();
+        PsiType fieldType = field.getType();
+
+        // 对于boolean类型且字段名以"is"开头的情况，setter应该去掉"is"前缀
+        if (PsiType.BOOLEAN.equals(fieldType) && fieldName.startsWith("is") && fieldName.length() > 2) {
+            String nameWithoutIs = fieldName.substring(2);
+            return "set" + capitalize(nameWithoutIs);
+        } else {
+            return "set" + capitalize(fieldName);
+        }
     }
 
     /**
