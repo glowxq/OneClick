@@ -76,11 +76,10 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
         int getterCount = 0;
         int setterCount = 0;
 
-        // 1. 生成getter和setter方法
+        // 1. 按字段顺序生成所有getter方法
         for (PsiField field : fields) {
             String fieldName = field.getName();
 
-            // 生成getter方法（如果不存在）
             if (!JavaBeanUtils.hasGetter(psiClass, field)) {
                 String getterCode = JavaBeanUtils.generateGetterCode(field);
                 PsiMethod getterMethod = factory.createMethodFromText(getterCode, psiClass);
@@ -90,8 +89,12 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
             } else {
                 System.out.println("Getter already exists for field: " + fieldName);
             }
+        }
 
-            // 生成setter方法（如果不存在）
+        // 2. 按字段顺序生成所有setter方法
+        for (PsiField field : fields) {
+            String fieldName = field.getName();
+
             if (!JavaBeanUtils.hasSetter(psiClass, field)) {
                 String setterCode = JavaBeanUtils.generateSetterCode(field);
                 PsiMethod setterMethod = factory.createMethodFromText(setterCode, psiClass);
@@ -103,14 +106,14 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
             }
         }
 
-        // 2. 删除已存在的toString方法
+        // 3. 删除已存在的toString方法
         List<PsiMethod> existingToStringMethods = JavaBeanUtils.getToStringMethods(psiClass);
         int toStringCount = existingToStringMethods.size();
         for (PsiMethod method : existingToStringMethods) {
             method.delete();
         }
 
-        // 3. 生成新的JSON格式toString方法
+        // 4. 生成新的JSON格式toString方法
         if (!fields.isEmpty()) {
             String toStringCode = JavaBeanUtils.generateToStringCode(psiClass);
             PsiMethod toStringMethod = factory.createMethodFromText(toStringCode, psiClass);
