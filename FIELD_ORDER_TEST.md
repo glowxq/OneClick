@@ -30,11 +30,19 @@ public static List<PsiField> getInstanceFields(PsiClass psiClass) {
 
 #### 2. **优化了方法生成顺序**
 现在按照以下顺序生成方法：
-1. **先生成所有getter方法**（按字段声明顺序）
-2. **再生成所有setter方法**（按字段声明顺序）
-3. **最后生成toString方法**
+1. **按字段声明顺序，每个字段的getter和setter紧挨着生成**
+2. **最后生成toString方法**
 
-这样生成的代码结构更清晰，方法排列更有序。
+这样生成的代码更符合常见的JavaBean编码习惯，每个字段的getter和setter方法紧挨着，便于阅读和维护。
+
+### 🎯 关键改进
+
+| 改进点 | 之前 | 现在 |
+|--------|------|------|
+| **字段顺序** | 随机或按内部顺序 | ✅ 按源代码声明顺序 |
+| **方法配对** | getter/setter分离 | ✅ getter和setter紧挨着 |
+| **增量生成** | 可能顺序混乱 | ✅ 新方法按正确顺序插入 |
+| **代码可读性** | 较差 | ✅ 结构清晰，易于维护 |
 
 ## 🧪 测试步骤
 
@@ -66,27 +74,38 @@ public class FieldOrderTestBean {
 3. **使用快捷键**：`Cmd+Option+G` (macOS)
 4. **预期结果**：
 
-#### 生成的Getter方法顺序：
+#### 生成的方法顺序（getter和setter紧挨着）：
 ```java
+// 第1个字段：firstName
 public String getFirstName() { return firstName; }
-public String getLastName() { return lastName; }
-public int getAge() { return age; }
-public Date getBirthDate() { return birthDate; }
-public boolean isActive() { return active; }
-public boolean isVip() { return isVip; }
-public Double getSalary() { return salary; }
-public List<String> getHobbies() { return hobbies; }
-```
-
-#### 生成的Setter方法顺序：
-```java
 public void setFirstName(String firstName) { this.firstName = firstName; }
+
+// 第2个字段：lastName
+public String getLastName() { return lastName; }
 public void setLastName(String lastName) { this.lastName = lastName; }
+
+// 第3个字段：age
+public int getAge() { return age; }
 public void setAge(int age) { this.age = age; }
+
+// 第4个字段：birthDate
+public Date getBirthDate() { return birthDate; }
 public void setBirthDate(Date birthDate) { this.birthDate = birthDate; }
+
+// 第5个字段：active
+public boolean isActive() { return active; }
 public void setActive(boolean active) { this.active = active; }
+
+// 第6个字段：isVip
+public boolean isVip() { return isVip; }
 public void setVip(boolean isVip) { this.isVip = isVip; }  // 注意setter名称
+
+// 第7个字段：salary
+public Double getSalary() { return salary; }
 public void setSalary(Double salary) { this.salary = salary; }
+
+// 第8个字段：hobbies
+public List<String> getHobbies() { return hobbies; }
 public void setHobbies(List<String> hobbies) { this.hobbies = hobbies; }
 ```
 
@@ -122,11 +141,11 @@ public String toString() {
 - 过滤掉static和final字段
 
 ### 方法生成策略
-1. **两次遍历字段列表**：
-   - 第一次：只生成getter方法
-   - 第二次：只生成setter方法
-2. **保持字段顺序**：每次遍历都按照字段声明顺序
-3. **代码组织**：getter → setter → toString
+1. **单次遍历字段列表**：
+   - 为每个字段依次生成getter和setter方法
+   - getter和setter紧挨着生成
+2. **保持字段顺序**：严格按照字段在源代码中的声明顺序
+3. **代码组织**：字段1的getter+setter → 字段2的getter+setter → ... → toString
 
 ## 📋 测试清单
 
@@ -138,9 +157,9 @@ public String toString() {
 - [ ] Setter方法按字段顺序生成
 - [ ] toString方法中字段按顺序排列
 
-### ✅ 方法分组测试
-- [ ] 所有getter方法在一起
-- [ ] 所有setter方法在一起
+### ✅ 方法配对测试
+- [ ] 每个字段的getter和setter紧挨着
+- [ ] getter在前，setter在后
 - [ ] toString方法在最后
 
 ### ✅ 增量生成测试
@@ -158,7 +177,7 @@ public String toString() {
 使用新版本插件后，生成的代码应该具有以下特点：
 
 1. **有序性**：方法按照字段声明顺序排列
-2. **分组性**：getter、setter、toString分组排列
+2. **配对性**：每个字段的getter和setter紧挨着
 3. **一致性**：每次生成的顺序都相同
 4. **可读性**：代码结构清晰，易于阅读和维护
 

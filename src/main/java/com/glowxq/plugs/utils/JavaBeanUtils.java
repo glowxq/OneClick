@@ -198,7 +198,62 @@ public class JavaBeanUtils {
      * 检查方法是否为toString方法
      */
     public static boolean isToStringMethod(PsiMethod method) {
-        return "toString".equals(method.getName()) && 
+        return "toString".equals(method.getName()) &&
                method.getParameterList().getParametersCount() == 0;
+    }
+
+
+
+    /**
+     * 获取类中所有的JavaBean方法（getter/setter/toString）
+     */
+    public static List<PsiMethod> getAllJavaBeanMethods(PsiClass psiClass, List<PsiField> fields) {
+        List<PsiMethod> javaBeanMethods = new ArrayList<>();
+
+        for (PsiMethod method : psiClass.getMethods()) {
+            String methodName = method.getName();
+
+            // 检查是否为toString方法
+            if (isToStringMethod(method)) {
+                javaBeanMethods.add(method);
+                continue;
+            }
+
+            // 检查是否为getter或setter方法
+            for (PsiField field : fields) {
+                String getterName = getGetterName(field);
+                String setterName = getSetterName(field);
+
+                if (methodName.equals(getterName) || methodName.equals(setterName)) {
+                    javaBeanMethods.add(method);
+                    break;
+                }
+            }
+        }
+
+        return javaBeanMethods;
+    }
+
+    /**
+     * 生成分割注释
+     */
+    public static String generateSeparatorComment() {
+        return "// ================================ JavaBean Methods ================================";
+    }
+
+    /**
+     * 移除现有的分割注释
+     */
+    public static void removeSeparatorComment(PsiClass psiClass) {
+        PsiElement[] children = psiClass.getChildren();
+        for (PsiElement child : children) {
+            if (child instanceof PsiComment) {
+                String commentText = child.getText();
+                if (commentText.contains("JavaBean Methods") ||
+                    commentText.contains("================================")) {
+                    child.delete();
+                }
+            }
+        }
     }
 }

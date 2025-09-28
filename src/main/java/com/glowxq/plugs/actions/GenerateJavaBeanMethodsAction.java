@@ -73,62 +73,73 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
         PsiElementFactory factory = JavaPsiFacade.getElementFactory(project);
         List<PsiField> fields = JavaBeanUtils.getInstanceFields(psiClass);
 
-        int getterCount = 0;
-        int setterCount = 0;
+        // 1. 收集并移除所有现有的getter/setter/toString方法
+        List<PsiMethod> existingJavaBeanMethods = JavaBeanUtils.getAllJavaBeanMethods(psiClass, fields);
+        int existingGetterCount = 0;
+        int existingSetterCount = 0;
+        int existingToStringCount = 0;
 
-        // 1. 按字段顺序生成所有getter方法
-        for (PsiField field : fields) {
-            String fieldName = field.getName();
-
-            if (!JavaBeanUtils.hasGetter(psiClass, field)) {
-                String getterCode = JavaBeanUtils.generateGetterCode(field);
-                PsiMethod getterMethod = factory.createMethodFromText(getterCode, psiClass);
-                psiClass.add(getterMethod);
-                getterCount++;
-                System.out.println("Generated getter for field: " + fieldName);
-            } else {
-                System.out.println("Getter already exists for field: " + fieldName);
+        for (PsiMethod method : existingJavaBeanMethods) {
+            if (JavaBeanUtils.isGetterMethod(method)) {
+                existingGetterCount++;
+            } else if (JavaBeanUtils.isSetterMethod(method)) {
+                existingSetterCount++;
+            } else if (JavaBeanUtils.isToStringMethod(method)) {
+                existingToStringCount++;
             }
-        }
-
-        // 2. 按字段顺序生成所有setter方法
-        for (PsiField field : fields) {
-            String fieldName = field.getName();
-
-            if (!JavaBeanUtils.hasSetter(psiClass, field)) {
-                String setterCode = JavaBeanUtils.generateSetterCode(field);
-                PsiMethod setterMethod = factory.createMethodFromText(setterCode, psiClass);
-                psiClass.add(setterMethod);
-                setterCount++;
-                System.out.println("Generated setter for field: " + fieldName);
-            } else {
-                System.out.println("Setter already exists for field: " + fieldName);
-            }
-        }
-
-        // 3. 删除已存在的toString方法
-        List<PsiMethod> existingToStringMethods = JavaBeanUtils.getToStringMethods(psiClass);
-        int toStringCount = existingToStringMethods.size();
-        for (PsiMethod method : existingToStringMethods) {
             method.delete();
         }
 
-        // 4. 生成新的JSON格式toString方法
+        // 2. 移除现有的分割注释（如果存在）
+        JavaBeanUtils.removeSeparatorComment(psiClass);
+
+        // 3. 添加分割注释
+        String separatorComment = JavaBeanUtils.generateSeparatorComment();
+        PsiComment comment = factory.createCommentFromText(separatorComment, psiClass);
+        psiClass.add(comment);
+
+        int newGetterCount = 0;
+        int newSetterCount = 0;
+
+        // 4. 按字段顺序重新生成所有getter和setter方法（放在类的最底部）
+        for (PsiField field : fields) {
+            String fieldName = field.getName();
+
+            // 生成getter方法
+            String getterCode = JavaBeanUtils.generateGetterCode(field);
+            PsiMethod getterMethod = factory.createMethodFromText(getterCode, psiClass);
+            psiClass.add(getterMethod);
+            newGetterCount++;
+            System.out.println("Generated getter for field: " + fieldName);
+
+            // 生成setter方法
+            String setterCode = JavaBeanUtils.generateSetterCode(field);
+            PsiMethod setterMethod = factory.createMethodFromText(setterCode, psiClass);
+            psiClass.add(setterMethod);
+            newSetterCount++;
+            System.out.println("Generated setter for field: " + fieldName);
+        }
+
+        // 5. 生成新的JSON格式toString方法（放在最后）
+        int newToStringCount = 0;
         if (!fields.isEmpty()) {
             String toStringCode = JavaBeanUtils.generateToStringCode(psiClass);
             PsiMethod toStringMethod = factory.createMethodFromText(toStringCode, psiClass);
             psiClass.add(toStringMethod);
-            toStringCount = 1; // 重新生成了一个toString方法
+            newToStringCount = 1;
         }
 
         // 显示详细的生成结果
         String message = String.format(
-            "JavaBean方法生成完成！\n" +
-            "- 生成了 %d 个getter方法\n" +
-            "- 生成了 %d 个setter方法\n" +
-            "- %s toString方法",
-            getterCount, setterCount,
-            toStringCount > 0 ? "重新生成了" : "未生成"
+            "JavaBean方法重新整理完成！\n" +
+            "- 移除了 %d 个旧的getter方法，重新生成了 %d 个\n" +
+            "- 移除了 %d 个旧的setter方法，重新生成了 %d 个\n" +
+            "- %s toString方法\n" +
+            "- 所有JavaBean方法已移动到类的底部\n" +
+            "- 添加了分割注释便于区分业务逻辑",
+            existingGetterCount, newGetterCount,
+            existingSetterCount, newSetterCount,
+            newToStringCount > 0 ? "重新生成了" : "未生成"
         );
         System.out.println(message);
         return message;
