@@ -28,7 +28,9 @@
 ### 方法一：从源码构建
 1. 克隆此仓库
 2. 在项目根目录运行：`./gradlew buildPlugin`
-3. 在IDEA中安装生成的插件文件
+3. 在IDEA中安装生成的插件文件：`build/distributions/OneClick-1.0-SNAPSHOT.zip`
+
+**详细安装指南**: 请参考 [INSTALLATION_GUIDE.md](INSTALLATION_GUIDE.md)
 
 ### 方法二：开发模式运行
 1. 在项目根目录运行：`./gradlew runIde`

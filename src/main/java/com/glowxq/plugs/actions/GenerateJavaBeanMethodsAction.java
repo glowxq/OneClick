@@ -21,35 +21,47 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
 
     @Override
     public void actionPerformed(AnActionEvent e) {
-        Project project = e.getProject();
-        Editor editor = e.getData(CommonDataKeys.EDITOR);
-        PsiFile psiFile = e.getData(CommonDataKeys.PSI_FILE);
+        try {
+            Project project = e.getProject();
+            Editor editor = e.getData(CommonDataKeys.EDITOR);
+            PsiFile psiFile = e.getData(CommonDataKeys.PSI_FILE);
 
-        if (project == null || editor == null || psiFile == null) {
-            return;
+            if (project == null || editor == null || psiFile == null) {
+                Messages.showErrorDialog("无法获取项目信息", "错误");
+                return;
+            }
+
+            // 检查是否为Java文件（使用文件名检查，更加健壮）
+            if (!psiFile.getName().endsWith(".java")) {
+                Messages.showErrorDialog(project, "请在Java文件中使用此功能", "错误");
+                return;
+            }
+
+            // 额外检查：确保是PsiJavaFile类型
+            if (!(psiFile instanceof PsiJavaFile)) {
+                Messages.showErrorDialog(project, "当前文件不是有效的Java文件", "错误");
+                return;
+            }
+
+            // 获取当前光标位置的类
+            PsiElement element = psiFile.findElementAt(editor.getCaretModel().getOffset());
+            PsiClass psiClass = PsiTreeUtil.getParentOfType(element, PsiClass.class);
+
+            if (psiClass == null) {
+                Messages.showErrorDialog(project, "请将光标放在类定义内", "错误");
+                return;
+            }
+
+            // 执行生成操作
+            WriteCommandAction.runWriteCommandAction(project, () -> {
+                generateJavaBeanMethods(project, psiClass);
+            });
+
+            Messages.showInfoMessage(project, "JavaBean方法生成完成！", "成功");
+        } catch (Exception ex) {
+            Messages.showErrorDialog("生成JavaBean方法时发生错误: " + ex.getMessage(), "错误");
+            ex.printStackTrace();
         }
-
-        // 检查是否为Java文件
-        if (!(psiFile instanceof PsiJavaFile)) {
-            Messages.showErrorDialog(project, "请在Java文件中使用此功能", "错误");
-            return;
-        }
-
-        // 获取当前光标位置的类
-        PsiElement element = psiFile.findElementAt(editor.getCaretModel().getOffset());
-        PsiClass psiClass = PsiTreeUtil.getParentOfType(element, PsiClass.class);
-
-        if (psiClass == null) {
-            Messages.showErrorDialog(project, "请将光标放在类定义内", "错误");
-            return;
-        }
-
-        // 执行生成操作
-        WriteCommandAction.runWriteCommandAction(project, () -> {
-            generateJavaBeanMethods(project, psiClass);
-        });
-
-        Messages.showInfoMessage(project, "JavaBean方法生成完成！", "成功");
     }
 
     /**
@@ -92,15 +104,8 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
 
     @Override
     public void update(AnActionEvent e) {
-        Project project = e.getProject();
-        Editor editor = e.getData(CommonDataKeys.EDITOR);
-        PsiFile psiFile = e.getData(CommonDataKeys.PSI_FILE);
-
-        // 只在Java文件中启用此Action，但始终显示菜单项
-        boolean enabled = project != null && editor != null &&
-                         psiFile instanceof PsiJavaFile;
-
-        e.getPresentation().setEnabled(enabled);
-        // 移除setVisible调用，让菜单项始终可见
+        // 简化逻辑：始终启用，让actionPerformed方法处理具体检查
+        e.getPresentation().setEnabled(true);
+        e.getPresentation().setVisible(true);
     }
 }

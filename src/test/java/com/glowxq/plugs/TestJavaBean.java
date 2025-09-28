@@ -18,6 +18,79 @@ public class TestJavaBean {
     private List<String> hobbies;
     private boolean isVip;
 
+
+
+
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Double getSalary() {
+        return salary;
+    }
+
+    public void setSalary(Double salary) {
+        this.salary = salary;
+    }
+
+    public List<String> getHobbies() {
+        return hobbies;
+    }
+
+    public void setHobbies(List<String> hobbies) {
+        this.hobbies = hobbies;
+    }
+
+    public boolean isVip() {
+        return isVip;
+    }
+
+    public void setIsVip(boolean isVip) {
+        this.isVip = isVip;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "\"name\":\"" + name + "\"" + "," +
+                "\"age\":" + age + "," +
+                "\"active\":" + active + "," +
+                "\"createTime\":" + createTime + "," +
+                "\"salary\":" + salary + "," +
+                "\"hobbies\":" + hobbies + "," +
+                "\"isVip\":" + isVip +
+                "}";
+    }
+
     // 这里可以测试插件功能：
     // 1. 将光标放在类定义内的任意位置
     // 2. 使用 Ctrl+Alt+G 生成getter/setter/toString方法

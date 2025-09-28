@@ -33,6 +33,14 @@
             <add-to-group group-id="EditorPopupMenu" anchor="last"/>
         </group>
 
+        <!-- 测试Action -->
+        <action id="com.glowxq.plugs.TestAction"
+                class="com.glowxq.plugs.actions.TestAction"
+                text="Test Plugin"
+                description="Test if plugin is working">
+            <add-to-group group-id="JavaBeanToolsGroup" anchor="first"/>
+        </action>
+
         <!-- 生成JavaBean方法的Action -->
         <action id="com.glowxq.plugs.GenerateJavaBeanMethodsAction"
                 class="com.glowxq.plugs.actions.GenerateJavaBeanMethodsAction"
