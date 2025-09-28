@@ -13,8 +13,9 @@
     - 一键折叠所有getter/setter/toString方法
     
     快捷键：
-    - Ctrl+Alt+G: 生成getter/setter/toString方法
-    - Ctrl+Alt+F: 折叠getter/setter/toString方法
+    - Windows/Linux: Ctrl+Alt+G / Ctrl+Alt+F
+    - macOS: Cmd+Option+G / Cmd+Option+F
+    - 右键菜单: JavaBean Tools
     ]]></description>
 
     <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
@@ -27,13 +28,25 @@
     </extensions>
 
     <actions>
+        <!-- 创建JavaBean工具组 -->
+        <group id="JavaBeanToolsGroup" text="JavaBean Tools" description="JavaBean generation and management tools" popup="true">
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+        </group>
+
         <!-- 生成JavaBean方法的Action -->
         <action id="com.glowxq.plugs.GenerateJavaBeanMethodsAction"
                 class="com.glowxq.plugs.actions.GenerateJavaBeanMethodsAction"
                 text="Generate JavaBean Methods"
                 description="Generate getter/setter/toString methods for JavaBean">
+            <!-- 添加到Generate菜单 -->
             <add-to-group group-id="GenerateGroup" anchor="first"/>
+            <!-- 添加到JavaBean工具组 -->
+            <add-to-group group-id="JavaBeanToolsGroup" anchor="first"/>
+            <!-- Windows/Linux快捷键 -->
             <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt G"/>
+            <!-- macOS快捷键 (meta = Cmd键, alt = Option键) -->
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt G"/>
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt G"/>
         </action>
 
         <!-- 折叠方法的Action -->
@@ -41,8 +54,15 @@
                 class="com.glowxq.plugs.actions.FoldJavaBeanMethodsAction"
                 text="Fold JavaBean Methods"
                 description="Fold all getter/setter/toString methods">
+            <!-- 添加到Code菜单 -->
             <add-to-group group-id="CodeMenu" anchor="last"/>
+            <!-- 添加到JavaBean工具组 -->
+            <add-to-group group-id="JavaBeanToolsGroup" anchor="last"/>
+            <!-- Windows/Linux快捷键 -->
             <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt F"/>
+            <!-- macOS快捷键 (meta = Cmd键, alt = Option键) -->
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt F"/>
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt F"/>
         </action>
     </actions>
 </idea-plugin>
