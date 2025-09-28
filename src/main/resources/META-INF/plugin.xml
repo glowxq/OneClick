@@ -1,0 +1,48 @@
+<idea-plugin>
+    <id>com.glowxq.plugs.oneclick</id>
+    <name>OneClick JavaBean Generator</name>
+    <vendor email="glowxq@example.com" url="https://github.com/glowxq">glowxq</vendor>
+
+    <description><![CDATA[
+    一键生成JavaBean的getter/setter/toString方法，并支持方法折叠功能。
+    
+    功能特性：
+    - 一键生成所有字段的getter/setter方法
+    - 自动生成JSON格式的toString方法
+    - 智能删除已存在的toString方法并重新生成
+    - 一键折叠所有getter/setter/toString方法
+    
+    快捷键：
+    - Ctrl+Alt+G: 生成getter/setter/toString方法
+    - Ctrl+Alt+F: 折叠getter/setter/toString方法
+    ]]></description>
+
+    <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
+         on how to target different products -->
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.java</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+    </extensions>
+
+    <actions>
+        <!-- 生成JavaBean方法的Action -->
+        <action id="com.glowxq.plugs.GenerateJavaBeanMethodsAction"
+                class="com.glowxq.plugs.actions.GenerateJavaBeanMethodsAction"
+                text="Generate JavaBean Methods"
+                description="Generate getter/setter/toString methods for JavaBean">
+            <add-to-group group-id="GenerateGroup" anchor="first"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt G"/>
+        </action>
+
+        <!-- 折叠方法的Action -->
+        <action id="com.glowxq.plugs.FoldJavaBeanMethodsAction"
+                class="com.glowxq.plugs.actions.FoldJavaBeanMethodsAction"
+                text="Fold JavaBean Methods"
+                description="Fold all getter/setter/toString methods">
+            <add-to-group group-id="CodeMenu" anchor="last"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt F"/>
+        </action>
+    </actions>
+</idea-plugin>
