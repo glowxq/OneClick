@@ -1,10 +1,10 @@
 <idea-plugin>
     <id>com.glowxq.plugs.oneclick</id>
-    <name>OneClick Code Generator</name>
+    <name>OneClick</name>
     <vendor email="glowxq@example.com" url="https://github.com/glowxq">glowxq</vendor>
 
     <description><![CDATA[
-    智能代码生成器，支持JavaBean和业务类的一键代码生成。
+    OneClick - 智能代码生成器，支持JavaBean和业务类的一键代码生成。
 
     功能特性：
     - 智能检测类类型（JavaBean vs 业务类）
@@ -12,7 +12,7 @@
     - 业务类：生成日志字段、serialVersionUID等
     - 支持多种toString风格（JSON、简单、Apache Commons）
     - 支持fluent setter（链式调用）
-    - 可配置的设置面板
+    - 可配置的设置面板，支持中英双语
     - 一键折叠所有JavaBean方法
 
     快捷键：
