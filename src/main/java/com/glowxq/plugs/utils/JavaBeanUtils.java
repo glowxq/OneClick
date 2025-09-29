@@ -127,12 +127,30 @@ public class JavaBeanUtils {
         String setterName = getSetterName(field);
         String fieldName = field.getName();
         String paramType = field.getType().getCanonicalText();
-        
+
         return String.format(
             "public void %s(%s %s) {\n" +
             "    this.%s = %s;\n" +
-            "}", 
+            "}",
             setterName, paramType, fieldName, fieldName, fieldName
+        );
+    }
+
+    /**
+     * 生成fluent setter方法代码（返回this）
+     */
+    public static String generateFluentSetterCode(PsiField field, PsiClass psiClass) {
+        String fieldName = field.getName();
+        String fieldType = field.getType().getCanonicalText();
+        String methodName = "set" + capitalize(fieldName);
+        String className = psiClass.getName();
+
+        return String.format(
+            "public %s %s(%s %s) {\n" +
+            "    this.%s = %s;\n" +
+            "    return this;\n" +
+            "}",
+            className, methodName, fieldType, fieldName, fieldName, fieldName
         );
     }
 
@@ -169,6 +187,57 @@ public class JavaBeanUtils {
         }
 
         sb.append("            \"}\";\n");
+        sb.append("}");
+
+        return sb.toString();
+    }
+
+    /**
+     * 生成简单toString方法代码
+     */
+    public static String generateSimpleToStringCode(PsiClass psiClass) {
+        List<PsiField> fields = getInstanceFields(psiClass);
+        String className = psiClass.getName();
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("@Override\n");
+        sb.append("public String toString() {\n");
+        sb.append("    return \"").append(className).append("{\" +\n");
+
+        for (int i = 0; i < fields.size(); i++) {
+            PsiField field = fields.get(i);
+            String fieldName = field.getName();
+
+            if (i == 0) {
+                sb.append("            \"").append(fieldName).append("=\" + ").append(fieldName);
+            } else {
+                sb.append(" +\n            \", ").append(fieldName).append("=\" + ").append(fieldName);
+            }
+        }
+
+        sb.append(" +\n            \"}\";\n");
+        sb.append("}");
+
+        return sb.toString();
+    }
+
+    /**
+     * 生成Apache Commons风格toString方法代码
+     */
+    public static String generateApacheToStringCode(PsiClass psiClass) {
+        List<PsiField> fields = getInstanceFields(psiClass);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("@Override\n");
+        sb.append("public String toString() {\n");
+        sb.append("    return new ToStringBuilder(this)\n");
+
+        for (PsiField field : fields) {
+            String fieldName = field.getName();
+            sb.append("            .append(\"").append(fieldName).append("\", ").append(fieldName).append(")\n");
+        }
+
+        sb.append("            .toString();\n");
         sb.append("}");
 
         return sb.toString();

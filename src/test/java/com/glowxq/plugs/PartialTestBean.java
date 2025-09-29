@@ -1,5 +1,8 @@
 package com.glowxq.plugs;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.List;
 
 /**
@@ -15,14 +18,9 @@ public class PartialTestBean {
     private boolean isVip;
     private List<String> tags;
 
-    // 只为name字段提供getter/setter
-    public String getName() {
-        return name;
-    }
+    private List<ReorganizeTestBean> reorganizeTestBeans =  List.of(new ReorganizeTestBean());
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    private static final Logger LOGGER = LoggerFactory.getLogger(PartialTestBean.class);
 
     // 测试说明：
     // 1. 将光标放在类定义内

@@ -1,17 +1,20 @@
 <idea-plugin>
     <id>com.glowxq.plugs.oneclick</id>
-    <name>OneClick JavaBean Generator</name>
+    <name>OneClick Code Generator</name>
     <vendor email="glowxq@example.com" url="https://github.com/glowxq">glowxq</vendor>
 
     <description><![CDATA[
-    一键生成JavaBean的getter/setter/toString方法，并支持方法折叠功能。
-    
+    智能代码生成器，支持JavaBean和业务类的一键代码生成。
+
     功能特性：
-    - 一键生成所有字段的getter/setter方法
-    - 自动生成JSON格式的toString方法
-    - 智能删除已存在的toString方法并重新生成
-    - 一键折叠所有getter/setter/toString方法
-    
+    - 智能检测类类型（JavaBean vs 业务类）
+    - JavaBean：生成getter/setter/toString/equals/hashCode方法
+    - 业务类：生成日志字段、serialVersionUID等
+    - 支持多种toString风格（JSON、简单、Apache Commons）
+    - 支持fluent setter（链式调用）
+    - 可配置的设置面板
+    - 一键折叠所有JavaBean方法
+
     快捷键：
     - Windows/Linux: Ctrl+Alt+G / Ctrl+Alt+F
     - macOS: Cmd+Option+G / Cmd+Option+F
@@ -24,7 +27,15 @@
     <depends>com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <!-- Add your extensions here -->
+        <!-- 注册设置面板 -->
+        <applicationConfigurable
+            parentId="tools"
+            instance="com.glowxq.plugs.settings.OneClickSettingsConfigurable"
+            id="OneClickSettings"
+            displayName="OneClick Code Generator"/>
+
+        <!-- 注册设置服务 -->
+        <applicationService serviceImplementation="com.glowxq.plugs.settings.OneClickSettings"/>
     </extensions>
 
     <actions>

@@ -18,19 +18,9 @@ public class ReorganizeTestBean {
         System.out.println("Business logic method 1");
     }
 
-    // 现有的getter方法（位置不规范）
-    public String getName() {
-        return name;
-    }
-
     // 业务逻辑方法2
     public void processData() {
         System.out.println("Business logic method 2");
-    }
-
-    // 现有的setter方法（位置不规范）
-    public void setAge(int age) {
-        this.age = age;
     }
 
     // 业务逻辑方法3
@@ -38,17 +28,56 @@ public class ReorganizeTestBean {
         return true;
     }
 
-    // 现有的toString方法（位置不规范）
-    @Override
-    public String toString() {
-        return "ReorganizeTestBean{name='" + name + "', age=" + age + "}";
-    }
-
     // 业务逻辑方法4
     public void cleanup() {
         System.out.println("Business logic method 4");
     }
 
+    public ReorganizeTestBean() {
+        this.active = true;
+        this.age = 18;
+        this.name = "John Doe";
+    }
+
+    public static void main(String[] args) {
+        ReorganizeTestBean bean = new ReorganizeTestBean();
+        System.out.println(bean);
+    }
+
+    // ================================ JavaBean Methods ================================
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "\"name\":\"" + name + "\"" + "," +
+                "\"age\":" + age + "," +
+                "\"active\":" + active +
+                "}";
+    }
     // 测试说明：
     // 1. 当前类的方法顺序混乱：业务逻辑方法和JavaBean方法混在一起
     // 2. 缺少age的getter、name的setter、active的getter/setter
@@ -62,7 +91,6 @@ public class ReorganizeTestBean {
     // 预期的最终结构：
     // - 字段声明
     // - 业务逻辑方法（doSomething, processData, validateData, cleanup）
-    // - 分割注释：// ================================ JavaBean Methods ================================
     // - getName() + setName(String)
     // - getAge() + setAge(int)
     // - isActive() + setActive(boolean)
