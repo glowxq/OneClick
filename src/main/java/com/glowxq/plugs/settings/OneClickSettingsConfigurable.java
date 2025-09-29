@@ -46,7 +46,10 @@ public class OneClickSettingsConfigurable implements Configurable {
                mySettingsComponent.isUseBuilderPattern() != settings.isUseBuilderPattern() ||
                mySettingsComponent.isGenerateFluentSetters() != settings.isGenerateFluentSetters() ||
                !mySettingsComponent.getToStringStyle().equals(settings.getToStringStyle()) ||
-               mySettingsComponent.isUseEnglish() != settings.isUseEnglish();
+               mySettingsComponent.isUseEnglish() != settings.isUseEnglish() ||
+               mySettingsComponent.isProcessInnerClasses() != settings.isProcessInnerClasses() ||
+               mySettingsComponent.isGenerateInnerClassSeparator() != settings.isGenerateInnerClassSeparator() ||
+               mySettingsComponent.getMaxInnerClassDepth() != settings.getMaxInnerClassDepth();
     }
 
     @Override
@@ -67,6 +70,9 @@ public class OneClickSettingsConfigurable implements Configurable {
         settings.setGenerateFluentSetters(mySettingsComponent.isGenerateFluentSetters());
         settings.setToStringStyle(mySettingsComponent.getToStringStyle());
         settings.setUseEnglish(mySettingsComponent.isUseEnglish());
+        settings.setProcessInnerClasses(mySettingsComponent.isProcessInnerClasses());
+        settings.setGenerateInnerClassSeparator(mySettingsComponent.isGenerateInnerClassSeparator());
+        settings.setMaxInnerClassDepth(mySettingsComponent.getMaxInnerClassDepth());
     }
 
     @Override
@@ -87,6 +93,9 @@ public class OneClickSettingsConfigurable implements Configurable {
         mySettingsComponent.setGenerateFluentSetters(settings.isGenerateFluentSetters());
         mySettingsComponent.setToStringStyle(settings.getToStringStyle());
         mySettingsComponent.setUseEnglish(settings.isUseEnglish());
+        mySettingsComponent.setProcessInnerClasses(settings.isProcessInnerClasses());
+        mySettingsComponent.setGenerateInnerClassSeparator(settings.isGenerateInnerClassSeparator());
+        mySettingsComponent.setMaxInnerClassDepth(settings.getMaxInnerClassDepth());
     }
 
     @Override

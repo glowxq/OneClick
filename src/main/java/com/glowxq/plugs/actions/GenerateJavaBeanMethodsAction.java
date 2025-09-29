@@ -230,6 +230,21 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
 
         message.append("- 所有JavaBean方法已正确插入到业务方法之后");
 
+        // 处理内部类
+        int innerClassCount = 0;
+        if (settings.isProcessInnerClasses()) {
+            PsiClass[] innerClasses = psiClass.getInnerClasses();
+            for (PsiClass innerClass : innerClasses) {
+                if (innerClass != null && !innerClass.isInterface() && !innerClass.isEnum()) {
+                    innerClassCount++;
+                }
+            }
+            if (innerClassCount > 0) {
+                JavaBeanUtils.processInnerClasses(psiClass, settings);
+                message.append("\n- 处理了 ").append(innerClassCount).append(" 个内部类");
+            }
+        }
+
         System.out.println(message.toString());
         return message.toString();
     }

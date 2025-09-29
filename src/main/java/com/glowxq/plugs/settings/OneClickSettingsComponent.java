@@ -45,6 +45,11 @@ public class OneClickSettingsComponent {
     private final JBCheckBox generateFluentSetters = new JBCheckBox();
     private final JComboBox<String> toStringStyle = new JComboBox<>(new String[]{"json", "simple", "apache"});
 
+    // 内部类设置
+    private final JBCheckBox processInnerClasses = new JBCheckBox();
+    private final JBCheckBox generateInnerClassSeparator = new JBCheckBox();
+    private final JSpinner maxInnerClassDepth = new JSpinner(new SpinnerNumberModel(3, 1, 10, 1));
+
     public OneClickSettingsComponent() {
         // 初始化文本
         updateTexts();
@@ -101,6 +106,10 @@ public class OneClickSettingsComponent {
         // 代码风格设置
         useBuilderPattern.setText(I18nUtils.message("settings.style.builder.pattern"));
         generateFluentSetters.setText(I18nUtils.message("settings.style.fluent.setters"));
+
+        // 内部类设置
+        processInnerClasses.setText(I18nUtils.message("settings.inner.class.process"));
+        generateInnerClassSeparator.setText(I18nUtils.message("settings.inner.class.separator"));
     }
 
     /**
@@ -117,6 +126,8 @@ public class OneClickSettingsComponent {
                 .addComponent(createTitledPanel(I18nUtils.getGeneralSettingsTitle(), createGeneralPanel()))
                 .addVerticalGap(10)
                 .addComponent(createTitledPanel(I18nUtils.getStyleSettingsTitle(), createCodeStylePanel()))
+                .addVerticalGap(10)
+                .addComponent(createTitledPanel(I18nUtils.message("settings.inner.class.title"), createInnerClassPanel()))
                 .addComponentFillVertically(new JPanel(), 0)
                 .getPanel();
     }
@@ -188,6 +199,14 @@ public class OneClickSettingsComponent {
                 .addComponent(useBuilderPattern)
                 .addComponent(generateFluentSetters)
                 .addLabeledComponent(new JBLabel("ToString style:"), toStringStyle)
+                .getPanel();
+    }
+
+    private JPanel createInnerClassPanel() {
+        return FormBuilder.createFormBuilder()
+                .addComponent(processInnerClasses)
+                .addComponent(generateInnerClassSeparator)
+                .addLabeledComponent(new JBLabel(I18nUtils.message("settings.inner.class.depth")), maxInnerClassDepth)
                 .getPanel();
     }
 
@@ -319,5 +338,30 @@ public class OneClickSettingsComponent {
 
     public void setUseEnglish(boolean selected) {
         useEnglish.setSelected(selected);
+    }
+
+    // 内部类设置的getter和setter方法
+    public boolean isProcessInnerClasses() {
+        return processInnerClasses.isSelected();
+    }
+
+    public void setProcessInnerClasses(boolean selected) {
+        processInnerClasses.setSelected(selected);
+    }
+
+    public boolean isGenerateInnerClassSeparator() {
+        return generateInnerClassSeparator.isSelected();
+    }
+
+    public void setGenerateInnerClassSeparator(boolean selected) {
+        generateInnerClassSeparator.setSelected(selected);
+    }
+
+    public int getMaxInnerClassDepth() {
+        return (Integer) maxInnerClassDepth.getValue();
+    }
+
+    public void setMaxInnerClassDepth(int depth) {
+        maxInnerClassDepth.setValue(depth);
     }
 }

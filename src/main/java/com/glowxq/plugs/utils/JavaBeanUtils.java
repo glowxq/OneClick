@@ -1,5 +1,6 @@
 package com.glowxq.plugs.utils;
 
+import com.glowxq.plugs.settings.OneClickSettings;
 import com.intellij.psi.*;
 import com.intellij.psi.util.PsiUtil;
 import com.intellij.openapi.project.Project;
@@ -60,6 +61,109 @@ public class JavaBeanUtils {
                 .filter(method -> "toString".equals(method.getName()) && 
                         method.getParameterList().getParametersCount() == 0)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * 处理内部类的JavaBean方法生成
+     */
+    public static void processInnerClasses(PsiClass parentClass, OneClickSettings settings) {
+        processInnerClasses(parentClass, settings, 1);
+    }
+
+    /**
+     * 递归处理内部类的JavaBean方法生成
+     */
+    public static void processInnerClasses(PsiClass parentClass, OneClickSettings settings, int depth) {
+        if (!settings.isProcessInnerClasses() || depth > settings.getMaxInnerClassDepth()) {
+            return;
+        }
+
+        PsiClass[] innerClasses = parentClass.getInnerClasses();
+        for (PsiClass innerClass : innerClasses) {
+            if (innerClass != null && !innerClass.isInterface() && !innerClass.isEnum()) {
+                // 为内部类生成JavaBean方法
+                generateInnerClassMethods(innerClass, settings, depth);
+
+                // 递归处理嵌套的内部类
+                processInnerClasses(innerClass, settings, depth + 1);
+            }
+        }
+    }
+
+    /**
+     * 为内部类生成JavaBean方法
+     */
+    private static void generateInnerClassMethods(PsiClass innerClass, OneClickSettings settings, int depth) {
+        try {
+            List<PsiField> fields = getInstanceFields(innerClass);
+            if (fields.isEmpty()) {
+                return;
+            }
+
+            Project project = innerClass.getProject();
+            PsiElementFactory factory = JavaPsiFacade.getElementFactory(project);
+
+            // 移除现有的JavaBean方法
+            List<PsiMethod> existingMethods = getAllJavaBeanMethods(innerClass, fields);
+            for (PsiMethod method : existingMethods) {
+                method.delete();
+            }
+
+            // 移除现有的分割注释
+            if (settings.isGenerateSeparatorComment()) {
+                removeSeparatorComment(innerClass);
+            }
+
+            // 找到插入点
+            PsiElement insertionPoint = findInsertionPoint(innerClass, fields);
+            PsiElement lastInserted = insertionPoint;
+
+            // 添加内部类分割注释
+            if (settings.isGenerateInnerClassSeparator()) {
+                String separatorText = "// Inner Class " + innerClass.getName() + " Methods";
+                PsiComment separatorComment = factory.createCommentFromText(separatorText, innerClass);
+                lastInserted = insertCommentAfter(innerClass, separatorComment, lastInserted);
+            }
+
+            // 生成getter和setter方法
+            if (settings.isGenerateGetterSetter()) {
+                for (PsiField field : fields) {
+                    // 生成getter
+                    String getterCode = generateGetterCode(field);
+                    PsiMethod getterMethod = factory.createMethodFromText(getterCode, innerClass);
+                    lastInserted = insertAfter(innerClass, getterMethod, lastInserted);
+
+                    // 生成setter
+                    String setterCode = settings.isGenerateFluentSetters()
+                        ? generateFluentSetterCode(field, innerClass)
+                        : generateSetterCode(field);
+                    PsiMethod setterMethod = factory.createMethodFromText(setterCode, innerClass);
+                    lastInserted = insertAfter(innerClass, setterMethod, lastInserted);
+                }
+            }
+
+            // 生成toString方法
+            if (settings.isGenerateToString()) {
+                String toStringCode;
+                switch (settings.getToStringStyle()) {
+                    case "simple":
+                        toStringCode = generateSimpleToStringCode(innerClass);
+                        break;
+                    case "apache":
+                        toStringCode = generateApacheToStringCode(innerClass);
+                        break;
+                    default:
+                        toStringCode = generateToStringCode(innerClass);
+                        break;
+                }
+                PsiMethod toStringMethod = factory.createMethodFromText(toStringCode, innerClass);
+                insertAfter(innerClass, toStringMethod, lastInserted);
+            }
+
+        } catch (Exception e) {
+            // 记录错误但不中断处理
+            System.err.println("Error processing inner class " + innerClass.getName() + ": " + e.getMessage());
+        }
     }
 
     /**

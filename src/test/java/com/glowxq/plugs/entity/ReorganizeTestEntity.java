@@ -79,6 +79,7 @@ public class ReorganizeTestEntity {
                 "\"active\":" + active +
                 "}";
     }
+
     // 测试说明：
     // 1. 当前类的方法顺序混乱：业务逻辑方法和JavaBean方法混在一起
     // 2. 缺少age的getter、name的setter、active的getter/setter

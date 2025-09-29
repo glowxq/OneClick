@@ -60,6 +60,11 @@ public final class OneClickSettings implements PersistentStateComponent<OneClick
         public boolean generateFluentSetters = false;
         public String toStringStyle = "json"; // json, simple, apache
 
+        // 内部类设置
+        public boolean processInnerClasses = true;
+        public boolean generateInnerClassSeparator = true;
+        public int maxInnerClassDepth = 3;
+
         // 语言设置
         public boolean useEnglish = false; // 默认使用中文
     }
@@ -184,5 +189,30 @@ public final class OneClickSettings implements PersistentStateComponent<OneClick
 
     public void setUseEnglish(boolean useEnglish) {
         myState.useEnglish = useEnglish;
+    }
+
+    // 内部类设置的getter和setter方法
+    public boolean isProcessInnerClasses() {
+        return myState.processInnerClasses;
+    }
+
+    public void setProcessInnerClasses(boolean processInnerClasses) {
+        myState.processInnerClasses = processInnerClasses;
+    }
+
+    public boolean isGenerateInnerClassSeparator() {
+        return myState.generateInnerClassSeparator;
+    }
+
+    public void setGenerateInnerClassSeparator(boolean generateInnerClassSeparator) {
+        myState.generateInnerClassSeparator = generateInnerClassSeparator;
+    }
+
+    public int getMaxInnerClassDepth() {
+        return myState.maxInnerClassDepth;
+    }
+
+    public void setMaxInnerClassDepth(int maxInnerClassDepth) {
+        myState.maxInnerClassDepth = maxInnerClassDepth;
     }
 }

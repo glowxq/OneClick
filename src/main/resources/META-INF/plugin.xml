@@ -34,8 +34,16 @@
             id="OneClickSettings"
             displayName="OneClick"/>
 
+        <!-- 注册快捷键设置面板 -->
+        <applicationConfigurable
+            parentId="OneClickSettings"
+            instance="com.glowxq.plugs.settings.KeymapSettingsConfigurable"
+            id="OneClickKeymapSettings"
+            displayName="Keymap Settings"/>
+
         <!-- 注册设置服务 -->
         <applicationService serviceImplementation="com.glowxq.plugs.settings.OneClickSettings"/>
+        <applicationService serviceImplementation="com.glowxq.plugs.settings.KeymapSettings"/>
     </extensions>
 
     <actions>
@@ -82,6 +90,54 @@
             <!-- macOS快捷键 (meta = Cmd键, alt = Option键) -->
             <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt F"/>
             <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt F"/>
+        </action>
+
+        <!-- 代码模板生成Action -->
+        <action id="com.glowxq.plugs.GenerateCodeTemplateAction"
+                class="com.glowxq.plugs.actions.GenerateCodeTemplateAction"
+                text="Generate Code Template"
+                description="Generate common code templates">
+            <add-to-group group-id="GenerateGroup" anchor="after" relative-to-action="com.glowxq.plugs.GenerateJavaBeanMethodsAction"/>
+            <add-to-group group-id="JavaBeanToolsGroup" anchor="after" relative-to-action="com.glowxq.plugs.GenerateJavaBeanMethodsAction"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt T"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt T"/>
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt T"/>
+        </action>
+
+        <!-- 重构助手Action -->
+        <action id="com.glowxq.plugs.RefactorAssistantAction"
+                class="com.glowxq.plugs.actions.RefactorAssistantAction"
+                text="Refactor Assistant"
+                description="Provide common refactoring operations">
+            <add-to-group group-id="RefactoringMenu" anchor="last"/>
+            <add-to-group group-id="JavaBeanToolsGroup" anchor="after" relative-to-action="com.glowxq.plugs.GenerateCodeTemplateAction"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt R"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt R"/>
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt R"/>
+        </action>
+
+        <!-- 智能注释生成Action -->
+        <action id="com.glowxq.plugs.SmartCommentAction"
+                class="com.glowxq.plugs.actions.SmartCommentAction"
+                text="Smart Comment"
+                description="Generate comments based on code context">
+            <add-to-group group-id="CodeMenu" anchor="after" relative-to-action="com.glowxq.plugs.FoldJavaBeanMethodsAction"/>
+            <add-to-group group-id="JavaBeanToolsGroup" anchor="after" relative-to-action="com.glowxq.plugs.RefactorAssistantAction"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt C"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt C"/>
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt C"/>
+        </action>
+
+        <!-- 批量生成Action -->
+        <action id="com.glowxq.plugs.BatchGenerateAction"
+                class="com.glowxq.plugs.actions.BatchGenerateAction"
+                text="Batch Generate JavaBean Methods"
+                description="Batch generate JavaBean methods for selected files or packages">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt B"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt B"/>
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt B"/>
         </action>
     </actions>
 </idea-plugin>
