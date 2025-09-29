@@ -390,7 +390,7 @@ public class KeymapSettingsComponent {
         titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD));
         titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JBLabel descLabel = new JBLabel("<html><div style='width: 450px;'><b>%s+Shift+D</b> - 智能一键生成<br><br>• 选中文本：切换命名风格 / 生成常量<br>• 类级别：根据类类型智能生成代码<br>• 字段排序：业务类自动排序字段<br><br><i>💡 所有快捷键统一使用 %s+Shift 开头</i></div></html>".formatted(osModifier, osModifier));
+        JBLabel descLabel = new JBLabel("<html><div style='width: 450px;'><b>%s+Shift+D</b> - 智能一键生成<br><br>• 选中文本：切换命名风格 / 生成常量<br>• 类级别：根据类类型智能生成代码<br>• 字段排序：业务类自动排序字段<br><br><b>其他快捷键：</b><br>• %s+Shift+U - 开发工具集合<br>• %s+Shift+Y - 数据库工具<br>• %s+Shift+B - 批量生成<br><br><i>💡 所有快捷键统一使用 %s+Shift 开头</i></div></html>".formatted(osModifier, osModifier, osModifier, osModifier, osModifier));
         descLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         descPanel.add(titleLabel);
@@ -438,7 +438,7 @@ public class KeymapSettingsComponent {
                 shortcuts.put("generateJavaBean", SystemInfo.isMac ? "meta shift D" : "ctrl shift D");
                 shortcuts.put("foldJavaBean", SystemInfo.isMac ? "meta shift F" : "ctrl shift F");
                 shortcuts.put("batchGenerate", SystemInfo.isMac ? "meta shift B" : "ctrl shift B");
-                shortcuts.put("codeTemplate", SystemInfo.isMac ? "meta shift T" : "ctrl shift T");
+                shortcuts.put("generateTemplate", SystemInfo.isMac ? "meta shift T" : "ctrl shift T");
                 shortcuts.put("refactorAssistant", SystemInfo.isMac ? "meta shift R" : "ctrl shift R");
                 shortcuts.put("smartComment", SystemInfo.isMac ? "meta shift C" : "ctrl shift C");
                 shortcuts.put("codeCleanup", SystemInfo.isMac ? "meta shift L" : "ctrl shift L");
@@ -447,27 +447,27 @@ public class KeymapSettingsComponent {
                 break;
 
             case "VS Code 风格":
-                shortcuts.put("generateJavaBean", SystemInfo.isMac ? "meta shift P" : "ctrl shift P");
+                shortcuts.put("generateJavaBean", SystemInfo.isMac ? "meta shift D" : "ctrl shift D");
                 shortcuts.put("foldJavaBean", SystemInfo.isMac ? "meta K meta 0" : "ctrl K ctrl 0");
                 shortcuts.put("batchGenerate", SystemInfo.isMac ? "meta shift B" : "ctrl shift B");
-                shortcuts.put("codeTemplate", SystemInfo.isMac ? "meta shift T" : "ctrl shift T");
+                shortcuts.put("generateTemplate", SystemInfo.isMac ? "meta shift T" : "ctrl shift T");
                 shortcuts.put("refactorAssistant", SystemInfo.isMac ? "meta shift R" : "ctrl shift R");
                 shortcuts.put("smartComment", SystemInfo.isMac ? "meta SLASH" : "ctrl SLASH");
                 shortcuts.put("codeCleanup", SystemInfo.isMac ? "meta shift L" : "ctrl shift L");
                 shortcuts.put("codeAnalysis", SystemInfo.isMac ? "meta shift A" : "ctrl shift A");
-                shortcuts.put("quickDoc", SystemInfo.isMac ? "meta shift D" : "ctrl shift D");
+                shortcuts.put("quickDoc", SystemInfo.isMac ? "meta shift Q" : "ctrl shift Q");
                 break;
 
             case "Eclipse 风格":
-                shortcuts.put("generateJavaBean", SystemInfo.isMac ? "meta alt S" : "alt shift S");
+                shortcuts.put("generateJavaBean", SystemInfo.isMac ? "meta shift D" : "ctrl shift D");
                 shortcuts.put("foldJavaBean", SystemInfo.isMac ? "meta MINUS" : "ctrl MINUS");
-                shortcuts.put("batchGenerate", SystemInfo.isMac ? "meta alt B" : "alt shift B");
-                shortcuts.put("codeTemplate", SystemInfo.isMac ? "meta alt T" : "alt shift T");
-                shortcuts.put("refactorAssistant", SystemInfo.isMac ? "meta alt R" : "alt shift R");
-                shortcuts.put("smartComment", SystemInfo.isMac ? "meta alt C" : "alt shift C");
-                shortcuts.put("codeCleanup", SystemInfo.isMac ? "meta alt L" : "alt shift L");
-                shortcuts.put("codeAnalysis", SystemInfo.isMac ? "meta alt A" : "alt shift A");
-                shortcuts.put("quickDoc", SystemInfo.isMac ? "meta alt D" : "alt shift D");
+                shortcuts.put("batchGenerate", SystemInfo.isMac ? "meta shift B" : "ctrl shift B");
+                shortcuts.put("generateTemplate", SystemInfo.isMac ? "meta shift T" : "ctrl shift T");
+                shortcuts.put("refactorAssistant", SystemInfo.isMac ? "meta shift R" : "ctrl shift R");
+                shortcuts.put("smartComment", SystemInfo.isMac ? "meta shift C" : "ctrl shift C");
+                shortcuts.put("codeCleanup", SystemInfo.isMac ? "meta shift L" : "ctrl shift L");
+                shortcuts.put("codeAnalysis", SystemInfo.isMac ? "meta shift A" : "ctrl shift A");
+                shortcuts.put("quickDoc", SystemInfo.isMac ? "meta shift Q" : "ctrl shift Q");
                 break;
 
             default:

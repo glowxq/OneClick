@@ -148,10 +148,10 @@
             <!-- 添加到JavaBean工具组 -->
             <add-to-group group-id="JavaBeanToolsGroup" anchor="last"/>
             <!-- Windows/Linux快捷键 -->
-            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt F"/>
-            <!-- macOS快捷键 (meta = Cmd键, alt = Option键) -->
-            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt F"/>
-            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt F"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift F"/>
+            <!-- macOS快捷键 (meta = Cmd键, shift = Shift键) -->
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift F"/>
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta shift F"/>
         </action>
 
         <!-- 代码模板生成Action -->
@@ -162,9 +162,9 @@
             <add-to-group group-id="GenerateGroup" anchor="after" relative-to-action="com.glowxq.plugs.SmartOneClickAction"/>
             <!-- 放在数据库工具之后 -->
             <add-to-group group-id="JavaBeanToolsGroup" anchor="after" relative-to-action="com.glowxq.plugs.DatabaseToolsAction"/>
-            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt T"/>
-            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt T"/>
-            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt T"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift T"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift T"/>
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta shift T"/>
         </action>
 
         <!-- 重构助手Action -->
@@ -174,9 +174,9 @@
                 description="Provide common refactoring operations">
             <add-to-group group-id="RefactoringMenu" anchor="last"/>
             <add-to-group group-id="JavaBeanToolsGroup" anchor="after" relative-to-action="com.glowxq.plugs.GenerateCodeTemplateAction"/>
-            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt R"/>
-            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt R"/>
-            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt R"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift R"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift R"/>
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta shift R"/>
         </action>
 
         <!-- 智能注释生成Action -->
@@ -186,9 +186,9 @@
                 description="Generate comments based on code context">
             <add-to-group group-id="CodeMenu" anchor="after" relative-to-action="com.glowxq.plugs.FoldJavaBeanMethodsAction"/>
             <add-to-group group-id="JavaBeanToolsGroup" anchor="after" relative-to-action="com.glowxq.plugs.RefactorAssistantAction"/>
-            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt C"/>
-            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt C"/>
-            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt C"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift C"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift C"/>
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta shift C"/>
         </action>
 
         <!-- 批量生成Action -->
@@ -213,9 +213,9 @@
             <add-to-group group-id="EditorPopupMenu" anchor="last"/>
             <add-to-group group-id="CodeMenu" anchor="last"/>
             <add-to-group group-id="JavaBeanToolsGroup" anchor="last"/>
-            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt L"/>
-            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt L"/>
-            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt L"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift L"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift L"/>
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta shift L"/>
         </action>
 
         <!-- 代码分析器 -->
@@ -226,9 +226,9 @@
             <add-to-group group-id="EditorPopupMenu" anchor="last"/>
             <add-to-group group-id="CodeMenu" anchor="last"/>
             <add-to-group group-id="JavaBeanToolsGroup" anchor="last"/>
-            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt A"/>
-            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt A"/>
-            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt A"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift A"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift A"/>
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta shift A"/>
         </action>
 
         <!-- 快速文档生成 -->
@@ -239,9 +239,9 @@
             <add-to-group group-id="EditorPopupMenu" anchor="last"/>
             <add-to-group group-id="CodeMenu" anchor="last"/>
             <add-to-group group-id="JavaBeanToolsGroup" anchor="last"/>
-            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt D"/>
-            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt D"/>
-            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt D"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift Q"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift Q"/>
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta shift Q"/>
         </action>
 
         <!-- 显示插件概览 -->

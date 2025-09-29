@@ -129,16 +129,16 @@ OneClick 插件的核心是智能一键生成功能，它会根据不同的使�
 | 功能 | Windows/Linux | macOS | 说明 |
 |------|---------------|-------|------|
 | **智能一键生成** | `Ctrl+Shift+D` | `Cmd+Shift+D` | 🎯 **核心功能**：智能识别场景并执行 |
-| 开发工具集合 | `Ctrl+Shift+U` | `Cmd+Shift+U` | 🛠️ 20种开发工具 |
-| 数据库工具 | `Ctrl+Shift+Y` | `Cmd+Shift+Y` | 🗄️ 数据库代码生成 |
-| 批量生成 | `Ctrl+Shift+B` | `Cmd+Shift+B` | 📦 批量处理 |
-| 代码模板 | `Ctrl+Shift+T` | `Cmd+Shift+T` | 📝 设计模式模板 |
-| 重构助手 | `Ctrl+Shift+R` | `Cmd+Shift+R` | 🔄 重构操作 |
-| 智能注释 | `Ctrl+Shift+C` | `Cmd+Shift+C` | 💬 自动注释 |
-| 代码清理 | `Ctrl+Shift+L` | `Cmd+Shift+L` | 🧹 清理代码 |
-| 代码分析 | `Ctrl+Shift+A` | `Cmd+Shift+A` | 📊 质量分析 |
-| 快速文档 | `Ctrl+Shift+Q` | `Cmd+Shift+Q` | 📖 文档生成 |
-| 折叠方法 | `Ctrl+Shift+F` | `Cmd+Shift+F` | 📁 方法折叠 |
+| 开发工具集合 | `Ctrl+Shift+U` | `Cmd+Shift+U` | 🛠️ 20种开发工具：UUID、时间戳、枚举等 |
+| 数据库工具 | `Ctrl+Shift+Y` | `Cmd+Shift+Y` | 🗄️ 数据库代码生成：Entity、SQL、Repository |
+| 批量生成 | `Ctrl+Shift+B` | `Cmd+Shift+B` | 📦 批量处理多个文件或包 |
+| 代码模板 | `Ctrl+Shift+T` | `Cmd+Shift+T` | 📝 15种设计模式和架构模板 |
+| 重构助手 | `Ctrl+Shift+R` | `Cmd+Shift+R` | 🔄 10种重构操作 |
+| 智能注释 | `Ctrl+Shift+C` | `Cmd+Shift+C` | 💬 自动生成注释和JavaDoc |
+| 代码清理 | `Ctrl+Shift+L` | `Cmd+Shift+L` | 🧹 清理冗余代码和导入 |
+| 代码分析 | `Ctrl+Shift+A` | `Cmd+Shift+A` | 📊 代码质量分析和统计 |
+| 快速文档 | `Ctrl+Shift+Q` | `Cmd+Shift+Q` | 📖 生成README和API文档 |
+| 折叠方法 | `Ctrl+Shift+F` | `Cmd+Shift+F` | 📁 折叠JavaBean方法 |
 
 ### 快捷键优势
 - **统一规范**: 所有功能使用相同的修饰键组合

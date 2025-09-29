@@ -214,15 +214,34 @@ public class JavaBeanUtils {
                 sb.append(annotation.getText()).append("\n    ");
             }
 
-            // 添加修饰符（只添加可见性修饰符）
+            // 添加所有修饰符
             PsiModifierList modifierList = field.getModifierList();
             if (modifierList != null) {
+                // 可见性修饰符
                 if (modifierList.hasModifierProperty(PsiModifier.PUBLIC)) {
                     sb.append("public ");
                 } else if (modifierList.hasModifierProperty(PsiModifier.PROTECTED)) {
                     sb.append("protected ");
                 } else if (modifierList.hasModifierProperty(PsiModifier.PRIVATE)) {
                     sb.append("private ");
+                }
+
+                // static修饰符
+                if (modifierList.hasModifierProperty(PsiModifier.STATIC)) {
+                    sb.append("static ");
+                }
+
+                // final修饰符
+                if (modifierList.hasModifierProperty(PsiModifier.FINAL)) {
+                    sb.append("final ");
+                }
+
+                // 其他修饰符
+                if (modifierList.hasModifierProperty(PsiModifier.TRANSIENT)) {
+                    sb.append("transient ");
+                }
+                if (modifierList.hasModifierProperty(PsiModifier.VOLATILE)) {
+                    sb.append("volatile ");
                 }
             }
 

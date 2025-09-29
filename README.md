@@ -122,10 +122,10 @@ public class UserService {
 | 批量生成 | `Ctrl+Shift+B` | `Cmd+Shift+B` | 📦 批量处理多个文件或包 |
 | 代码模板 | `Ctrl+Shift+T` | `Cmd+Shift+T` | 📝 15种设计模式和架构模板 |
 | 重构助手 | `Ctrl+Shift+R` | `Cmd+Shift+R` | 🔄 10种重构操作 |
-| 智能注释 | `Ctrl+Shift+C` | `Cmd+Shift+C` | 💬 自动生成注释 |
-| 代码清理 | `Ctrl+Shift+L` | `Cmd+Shift+L` | 🧹 清理冗余代码 |
-| 代码分析 | `Ctrl+Shift+A` | `Cmd+Shift+A` | 📊 统计分析代码 |
-| 快速文档 | `Ctrl+Shift+Q` | `Cmd+Shift+Q` | 📖 生成JavaDoc |
+| 智能注释 | `Ctrl+Shift+C` | `Cmd+Shift+C` | 💬 自动生成注释和JavaDoc |
+| 代码清理 | `Ctrl+Shift+L` | `Cmd+Shift+L` | 🧹 清理冗余代码和导入 |
+| 代码分析 | `Ctrl+Shift+A` | `Cmd+Shift+A` | 📊 代码质量分析和统计 |
+| 快速文档 | `Ctrl+Shift+Q` | `Cmd+Shift+Q` | 📖 生成README和API文档 |
 | 折叠方法 | `Ctrl+Shift+F` | `Cmd+Shift+F` | 📁 折叠JavaBean方法 |
 
 ### 🎯 智能一键生成详解

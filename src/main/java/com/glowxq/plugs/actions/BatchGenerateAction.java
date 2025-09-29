@@ -71,7 +71,13 @@ public class BatchGenerateAction extends AnAction {
         Project project = e.getProject();
         VirtualFile[] selectedFiles = e.getData(CommonDataKeys.VIRTUAL_FILE_ARRAY);
 
-        if (project == null || selectedFiles == null || selectedFiles.length == 0) {
+        if (project == null) {
+            Messages.showErrorDialog("无法获取项目信息，请确保在项目中执行此操作", "错误");
+            return;
+        }
+
+        if (selectedFiles == null || selectedFiles.length == 0) {
+            Messages.showErrorDialog("请先选择要处理的文件或包", "错误");
             return;
         }
 
