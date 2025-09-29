@@ -390,13 +390,7 @@ public class KeymapSettingsComponent {
         titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD));
         titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JBLabel descLabel = new JBLabel("<html><div style='width: 450px;'>" +
-            "<b>" + osModifier + "+Alt+G</b> 是智能一键快捷键，不仅仅是生成JavaBean方法。<br>" +
-            "它会根据类的类型智能选择合适的生成操作：<br><br>" +
-            "• <b>JavaBean类</b>：生成getter/setter/toString/equals/hashCode方法<br>" +
-            "• <b>业务类</b>：生成Logger字段、serialVersionUID等<br><br>" +
-            "<i>其他快捷键可以在下方进行自定义配置</i>" +
-            "</div></html>");
+        JBLabel descLabel = new JBLabel("<html><div style='width: 450px;'><b>%s+Alt+G</b> 是智能一键快捷键<br>它会根据类的类型智能选择合适的生成操作：<br><br>• <b>JavaBean类</b>：生成getter/setter/toString/equals/hashCode方法<br>• <b>业务类</b>：生成Logger字段、serialVersionUID等<br><br><i>其他快捷键可以在下方进行自定义配置</i></div></html>".formatted(osModifier));
         descLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         descPanel.add(titleLabel);

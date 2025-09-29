@@ -114,24 +114,17 @@ public class PluginOverviewPanel {
         String osModifier = SystemInfo.isMac ? "Cmd" : "Ctrl";
 
         // 主要说明
-        JBLabel mainDesc = new JBLabel("<html><div style='width: 500px;'>" +
-            "<b>" + osModifier + "+Alt+G</b> 是智能一键快捷键，不仅仅是生成JavaBean方法。" +
-            "它会根据类的类型智能选择合适的生成操作：" +
-            "</div></html>");
+        JBLabel mainDesc = new JBLabel("<html><div style='width: 500px;'><b>%s+Alt+G</b> 是智能一键快捷键。它会根据类的类型智能选择合适的生成操作：</div></html>".formatted(osModifier));
         mainDesc.setBorder(JBUI.Borders.empty(5, 10));
         panel.add(mainDesc);
 
         // JavaBean类说明
-        JBLabel javaBeanDesc = new JBLabel("<html><div style='width: 500px;'>" +
-            "• <b>对于JavaBean类</b>：生成getter/setter/toString/equals/hashCode方法" +
-            "</div></html>");
+        JBLabel javaBeanDesc = new JBLabel("<html><div style='width: 500px;'>• <b>对于JavaBean类</b>：生成getter/setter/toString/equals/hashCode方法</div></html>".formatted());
         javaBeanDesc.setBorder(JBUI.Borders.empty(2, 20));
         panel.add(javaBeanDesc);
 
         // 业务类说明
-        JBLabel businessDesc = new JBLabel("<html><div style='width: 500px;'>" +
-            "• <b>对于业务类</b>：生成Logger字段、serialVersionUID等" +
-            "</div></html>");
+        JBLabel businessDesc = new JBLabel("<html><div style='width: 500px;'>• <b>对于业务类</b>：生成Logger字段、serialVersionUID等</div></html>".formatted());
         businessDesc.setBorder(JBUI.Borders.empty(2, 20));
         panel.add(businessDesc);
 
