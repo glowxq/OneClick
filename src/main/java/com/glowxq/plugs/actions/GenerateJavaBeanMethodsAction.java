@@ -104,8 +104,7 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
             // 添加分割注释
             String separatorComment = JavaBeanUtils.generateSeparatorComment();
             PsiComment comment = factory.createCommentFromText(separatorComment, psiClass);
-            JavaBeanUtils.insertAfter(psiClass, comment, lastInserted);
-            lastInserted = comment;
+            lastInserted = JavaBeanUtils.insertAfter(psiClass, comment, lastInserted);
         }
 
         int newGetterCount = 0;
@@ -118,16 +117,14 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
             // 生成getter方法
             String getterCode = JavaBeanUtils.generateGetterCode(field);
             PsiMethod getterMethod = factory.createMethodFromText(getterCode, psiClass);
-            JavaBeanUtils.insertAfter(psiClass, getterMethod, lastInserted);
-            lastInserted = getterMethod;
+            lastInserted = JavaBeanUtils.insertAfter(psiClass, getterMethod, lastInserted);
             newGetterCount++;
             System.out.println("Generated getter for field: " + fieldName);
 
             // 生成setter方法
             String setterCode = JavaBeanUtils.generateSetterCode(field);
             PsiMethod setterMethod = factory.createMethodFromText(setterCode, psiClass);
-            JavaBeanUtils.insertAfter(psiClass, setterMethod, lastInserted);
-            lastInserted = setterMethod;
+            lastInserted = JavaBeanUtils.insertAfter(psiClass, setterMethod, lastInserted);
             newSetterCount++;
             System.out.println("Generated setter for field: " + fieldName);
         }

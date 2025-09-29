@@ -333,17 +333,31 @@ public class JavaBeanUtils {
      * 在指定位置之后插入元素
      * 如果anchor为null，则插入到类的开始位置
      */
-    public static void insertAfter(PsiClass psiClass, PsiElement elementToInsert, PsiElement anchor) {
+    public static PsiElement insertAfter(PsiClass psiClass, PsiElement elementToInsert, PsiElement anchor) {
+        PsiElement inserted;
         if (anchor == null) {
             // 插入到类的开始位置（在左大括号之后）
             PsiElement lBrace = psiClass.getLBrace();
             if (lBrace != null) {
-                psiClass.addAfter(elementToInsert, lBrace);
+                inserted = psiClass.addAfter(elementToInsert, lBrace);
             } else {
-                psiClass.add(elementToInsert);
+                inserted = psiClass.add(elementToInsert);
             }
         } else {
-            psiClass.addAfter(elementToInsert, anchor);
+            inserted = psiClass.addAfter(elementToInsert, anchor);
+        }
+        return inserted;
+    }
+
+    /**
+     * 在类的末尾插入元素（在右大括号之前）
+     */
+    public static PsiElement insertAtEnd(PsiClass psiClass, PsiElement elementToInsert) {
+        PsiElement rBrace = psiClass.getRBrace();
+        if (rBrace != null) {
+            return psiClass.addBefore(elementToInsert, rBrace);
+        } else {
+            return psiClass.add(elementToInsert);
         }
     }
 }
