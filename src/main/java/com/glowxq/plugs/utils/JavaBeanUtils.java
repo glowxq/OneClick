@@ -242,17 +242,59 @@ public class JavaBeanUtils {
     }
 
     /**
+     * 创建格式化的分割注释元素
+     */
+    public static PsiElement createFormattedSeparatorComment(PsiElementFactory factory, PsiClass psiClass) {
+        // 创建一个简单的注释
+        return factory.createCommentFromText(generateSeparatorComment(), psiClass);
+    }
+
+    /**
      * 移除现有的分割注释
      */
     public static void removeSeparatorComment(PsiClass psiClass) {
+        // 使用列表收集要删除的元素，避免在遍历时修改集合
+        List<PsiElement> elementsToDelete = new ArrayList<>();
+
         PsiElement[] children = psiClass.getChildren();
-        for (PsiElement child : children) {
+        for (int i = 0; i < children.length; i++) {
+            PsiElement child = children[i];
+
+            // 检查注释元素
             if (child instanceof PsiComment) {
                 String commentText = child.getText();
                 if (commentText.contains("JavaBean Methods") ||
                     commentText.contains("================================")) {
-                    child.delete();
+                    elementsToDelete.add(child);
+
+                    // 检查前面的空白字符
+                    if (i > 0 && children[i-1] instanceof PsiWhiteSpace) {
+                        String prevText = children[i-1].getText();
+                        // 如果前面的空白包含多个换行，说明是我们添加的
+                        if (prevText.contains("\n\n")) {
+                            elementsToDelete.add(children[i-1]);
+                        }
+                    }
+
+                    // 检查后面的空白字符
+                    if (i < children.length - 1 && children[i+1] instanceof PsiWhiteSpace) {
+                        String nextText = children[i+1].getText();
+                        // 如果后面的空白包含多个换行，说明是我们添加的
+                        if (nextText.contains("\n\n")) {
+                            elementsToDelete.add(children[i+1]);
+                        }
+                    }
                 }
+            }
+        }
+
+        // 删除收集到的元素
+        for (PsiElement element : elementsToDelete) {
+            try {
+                element.delete();
+            } catch (Exception e) {
+                // 忽略删除失败的情况，可能元素已经被删除
+                System.out.println("Failed to delete element: " + e.getMessage());
             }
         }
     }
@@ -346,6 +388,30 @@ public class JavaBeanUtils {
         } else {
             inserted = psiClass.addAfter(elementToInsert, anchor);
         }
+        return inserted;
+    }
+
+    /**
+     * 在指定位置之后插入注释，并确保有适当的换行
+     */
+    public static PsiElement insertCommentAfter(PsiClass psiClass, PsiElement commentToInsert, PsiElement anchor) {
+        // 先插入注释
+        PsiElement inserted = insertAfter(psiClass, commentToInsert, anchor);
+
+        // 在注释前添加换行（如果需要）
+        if (anchor != null) {
+            try {
+                PsiElementFactory factory = JavaPsiFacade.getElementFactory(psiClass.getProject());
+                PsiElement newLineBefore = factory.createStatementFromText(";\n", psiClass);
+                PsiElement whitespace = newLineBefore.getFirstChild(); // 获取换行符
+                if (whitespace != null) {
+                    psiClass.addBefore(whitespace, inserted);
+                }
+            } catch (Exception e) {
+                // 忽略换行添加失败
+            }
+        }
+
         return inserted;
     }
 

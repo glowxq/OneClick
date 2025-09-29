@@ -101,10 +101,9 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
         PsiElement lastInserted = insertionPoint;
 
         if (!businessMethods.isEmpty()) {
-            // 添加分割注释
-            String separatorComment = JavaBeanUtils.generateSeparatorComment();
-            PsiComment comment = factory.createCommentFromText(separatorComment, psiClass);
-            lastInserted = JavaBeanUtils.insertAfter(psiClass, comment, lastInserted);
+            // 添加格式化的分割注释
+            PsiElement commentElement = JavaBeanUtils.createFormattedSeparatorComment(factory, psiClass);
+            lastInserted = JavaBeanUtils.insertCommentAfter(psiClass, commentElement, lastInserted);
         }
 
         int newGetterCount = 0;
