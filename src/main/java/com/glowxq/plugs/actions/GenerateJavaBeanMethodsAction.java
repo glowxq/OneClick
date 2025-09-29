@@ -47,6 +47,15 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
                 return;
             }
 
+            // 检查是否有选中的文本
+            String selectedText = editor.getSelectionModel().getSelectedText();
+            if (selectedText != null && !selectedText.trim().isEmpty()) {
+                // 有选中文本，执行智能操作
+                handleSelectedText(project, editor, psiFile, selectedText);
+                return;
+            }
+
+            // 没有选中文本，执行原有的类级别操作
             // 获取当前光标位置的类
             PsiElement element = psiFile.findElementAt(editor.getCaretModel().getOffset());
             PsiClass psiClass = PsiTreeUtil.getParentOfType(element, PsiClass.class);
@@ -64,9 +73,216 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
 
             Messages.showInfoMessage(project, result[0], "成功");
         } catch (Exception ex) {
-            Messages.showErrorDialog("生成JavaBean方法时发生错误: " + ex.getMessage(), "错误");
+            Messages.showErrorDialog("智能一键生成时发生错误: " + ex.getMessage(), "错误");
             ex.printStackTrace();
         }
+    }
+
+    /**
+     * 处理选中的文本
+     */
+    private void handleSelectedText(Project project, Editor editor, PsiFile psiFile, String selectedText) {
+        try {
+            // 获取选中文本的位置信息
+            int startOffset = editor.getSelectionModel().getSelectionStart();
+            int endOffset = editor.getSelectionModel().getSelectionEnd();
+            PsiElement elementAtStart = psiFile.findElementAt(startOffset);
+
+            if (elementAtStart == null) {
+                Messages.showErrorDialog(project, "无法确定选中内容的上下文", "错误");
+                return;
+            }
+
+            // 检查选中的是什么类型的元素
+            PsiElement parent = elementAtStart.getParent();
+
+            // 检查是否选中了类名、字段名或方法名
+            if (isIdentifierSelection(elementAtStart, parent)) {
+                // 切换命名风格
+                toggleNamingStyle(project, editor, selectedText, startOffset, endOffset);
+                return;
+            }
+
+            // 检查是否选中了字符串字面量
+            if (isStringLiteral(selectedText)) {
+                // 生成常量字段并替换
+                generateConstantField(project, editor, psiFile, selectedText, startOffset, endOffset);
+                return;
+            }
+
+            Messages.showInfoMessage(project, "智能识别：选中的内容类型暂不支持", "提示");
+
+        } catch (Exception ex) {
+            Messages.showErrorDialog("处理选中文本时发生错误: " + ex.getMessage(), "错误");
+            ex.printStackTrace();
+        }
+    }
+
+    /**
+     * 检查是否是标识符选择（类名、字段名、方法名）
+     */
+    private boolean isIdentifierSelection(PsiElement element, PsiElement parent) {
+        // 检查是否是标识符
+        if (element.getNode().getElementType().toString().equals("IDENTIFIER")) {
+            return true;
+        }
+
+        // 检查父元素类型
+        return parent instanceof PsiClass ||
+               parent instanceof PsiField ||
+               parent instanceof PsiMethod ||
+               parent instanceof PsiVariable;
+    }
+
+    /**
+     * 检查是否是字符串字面量
+     */
+    private boolean isStringLiteral(String text) {
+        // 简单检查：包含字母且不是纯数字
+        return text.matches(".*[a-zA-Z].*") && !text.matches("\\d+");
+    }
+
+    /**
+     * 切换命名风格
+     */
+    private void toggleNamingStyle(Project project, Editor editor, String selectedText, int startOffset, int endOffset) {
+        WriteCommandAction.runWriteCommandAction(project, () -> {
+            String convertedText;
+
+            if (selectedText.contains("_")) {
+                // 下划线转驼峰
+                convertedText = underscoreToCamelCase(selectedText);
+            } else if (selectedText.matches(".*[a-z][A-Z].*")) {
+                // 驼峰转下划线
+                convertedText = camelCaseToUnderscore(selectedText);
+            } else {
+                // 默认转为驼峰
+                convertedText = underscoreToCamelCase(selectedText);
+            }
+
+            // 替换选中的文本
+            editor.getDocument().replaceString(startOffset, endOffset, convertedText);
+        });
+
+        Messages.showInfoMessage(project, "命名风格已切换: " + selectedText + " → " +
+            (selectedText.contains("_") ? "驼峰命名" : "下划线命名"), "成功");
+    }
+
+    /**
+     * 下划线转驼峰
+     */
+    private String underscoreToCamelCase(String text) {
+        StringBuilder result = new StringBuilder();
+        boolean capitalizeNext = false;
+
+        for (char c : text.toCharArray()) {
+            if (c == '_') {
+                capitalizeNext = true;
+            } else if (capitalizeNext) {
+                result.append(Character.toUpperCase(c));
+                capitalizeNext = false;
+            } else {
+                result.append(Character.toLowerCase(c));
+            }
+        }
+
+        return result.toString();
+    }
+
+    /**
+     * 驼峰转下划线
+     */
+    private String camelCaseToUnderscore(String text) {
+        StringBuilder result = new StringBuilder();
+
+        for (int i = 0; i < text.length(); i++) {
+            char c = text.charAt(i);
+            if (Character.isUpperCase(c) && i > 0) {
+                result.append('_');
+            }
+            result.append(Character.toLowerCase(c));
+        }
+
+        return result.toString();
+    }
+
+    /**
+     * 生成常量字段并替换选中的字符串
+     */
+    private void generateConstantField(Project project, Editor editor, PsiFile psiFile, String selectedText, int startOffset, int endOffset) {
+        // 获取当前类
+        PsiElement element = psiFile.findElementAt(startOffset);
+        PsiClass psiClass = PsiTreeUtil.getParentOfType(element, PsiClass.class);
+
+        if (psiClass == null) {
+            Messages.showErrorDialog(project, "无法找到当前类", "错误");
+            return;
+        }
+
+        WriteCommandAction.runWriteCommandAction(project, () -> {
+            try {
+                // 生成常量名（转为大写下划线格式）
+                String constantName = generateConstantName(selectedText);
+
+                // 检查常量是否已存在
+                PsiField existingField = psiClass.findFieldByName(constantName, false);
+                if (existingField != null) {
+                    // 常量已存在，直接替换
+                    editor.getDocument().replaceString(startOffset, endOffset, constantName);
+                    return;
+                }
+
+                // 创建常量字段
+                PsiElementFactory factory = JavaPsiFacade.getElementFactory(project);
+                String fieldText = String.format("private static final String %s = \"%s\";", constantName, selectedText);
+                PsiField constantField = factory.createFieldFromText(fieldText, psiClass);
+
+                // 找到插入位置（类的最上面，在其他字段之前）
+                PsiElement insertionPoint = findConstantInsertionPoint(psiClass);
+
+                if (insertionPoint != null) {
+                    psiClass.addAfter(constantField, insertionPoint);
+                } else {
+                    psiClass.add(constantField);
+                }
+
+                // 替换选中的文本为常量名
+                editor.getDocument().replaceString(startOffset, endOffset, constantName);
+
+            } catch (Exception ex) {
+                Messages.showErrorDialog("生成常量字段时发生错误: " + ex.getMessage(), "错误");
+            }
+        });
+
+        Messages.showInfoMessage(project, "已生成常量字段并替换选中文本", "成功");
+    }
+
+    /**
+     * 生成常量名
+     */
+    private String generateConstantName(String text) {
+        // 移除特殊字符，转为大写下划线格式
+        String cleaned = text.replaceAll("[^a-zA-Z0-9\\s]", "")
+                             .replaceAll("\\s+", "_")
+                             .toUpperCase();
+
+        // 确保以字母开头
+        if (!cleaned.isEmpty() && Character.isDigit(cleaned.charAt(0))) {
+            cleaned = "CONST_" + cleaned;
+        }
+
+        return cleaned.isEmpty() ? "CONSTANT" : cleaned;
+    }
+
+    /**
+     * 找到常量字段的插入位置（类的最上面）
+     */
+    private PsiElement findConstantInsertionPoint(PsiClass psiClass) {
+        PsiElement lBrace = psiClass.getLBrace();
+        if (lBrace != null) {
+            return lBrace;
+        }
+        return null;
     }
 
     /**
@@ -81,6 +297,9 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
         if (settings.isAutoDetectClassType()) {
             classType = ClassTypeDetector.detectClassType(psiClass);
         }
+
+        // 首先执行字段重新排列（对所有类型都执行，内部会判断是否为业务类）
+        JavaBeanUtils.rearrangeFieldsPhysically(psiClass);
 
         StringBuilder resultMessage = new StringBuilder();
 
@@ -116,9 +335,6 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
     private String generateJavaBeanMethods(Project project, PsiClass psiClass) {
         OneClickSettings settings = OneClickSettings.getInstance();
         PsiElementFactory factory = JavaPsiFacade.getElementFactory(project);
-
-        // 首先重新排列字段的物理位置（仅对业务类生效）
-        JavaBeanUtils.rearrangeFieldsPhysically(psiClass);
 
         List<PsiField> fields = JavaBeanUtils.getInstanceFields(psiClass);
 

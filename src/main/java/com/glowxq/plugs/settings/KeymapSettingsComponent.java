@@ -386,11 +386,11 @@ public class KeymapSettingsComponent {
 
         String osModifier = SystemInfo.isMac ? "Cmd" : "Ctrl";
 
-        JBLabel titleLabel = new JBLabel("<html><h3>🎯 智能快捷键说明</h3></html>");
+        JBLabel titleLabel = new JBLabel("<html><h3>🚀 智能快捷键</h3></html>");
         titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD));
         titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JBLabel descLabel = new JBLabel("<html><div style='width: 450px;'><b>%s+Alt+G</b> 是智能一键快捷键<br>它会根据类的类型智能选择合适的生成操作：<br><br>• <b>JavaBean类</b>：生成getter/setter/toString/equals/hashCode方法<br>• <b>业务类</b>：生成Logger字段、serialVersionUID等<br><br><i>其他快捷键可以在下方进行自定义配置</i></div></html>".formatted(osModifier));
+        JBLabel descLabel = new JBLabel("<html><div style='width: 450px;'><b>%s+Alt+G</b> - 智能一键生成<br><br>• 选中文本：切换命名风格 / 生成常量<br>• 类级别：根据类类型智能生成代码<br>• 字段排序：业务类自动排序字段<br><br><i>💡 其他快捷键可在下方自定义</i></div></html>".formatted(osModifier));
         descLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         descPanel.add(titleLabel);

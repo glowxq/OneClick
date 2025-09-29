@@ -102,8 +102,8 @@
     </extensions>
 
     <actions>
-        <!-- 创建JavaBean工具组 -->
-        <group id="JavaBeanToolsGroup" text="JavaBean Tools" description="JavaBean generation and management tools" popup="true">
+        <!-- 创建OneClick工具组 -->
+        <group id="JavaBeanToolsGroup" text="OneClick" description="OneClick - 智能代码生成工具" popup="true">
             <add-to-group group-id="EditorPopupMenu" anchor="last"/>
         </group>
 
@@ -118,11 +118,11 @@
         <!-- 智能一键生成Action -->
         <action id="com.glowxq.plugs.SmartOneClickAction"
                 class="com.glowxq.plugs.actions.GenerateJavaBeanMethodsAction"
-                text="Smart One-Click Generate"
-                description="Intelligently generate appropriate methods based on class type">
+                text="🚀 智能一键生成"
+                description="智能快捷键：根据选中内容或类类型智能执行相应操作">
             <!-- 添加到Generate菜单 -->
             <add-to-group group-id="GenerateGroup" anchor="first"/>
-            <!-- 添加到JavaBean工具组 -->
+            <!-- 添加到OneClick工具组 - 最重要，放在第一位 -->
             <add-to-group group-id="JavaBeanToolsGroup" anchor="first"/>
             <!-- Windows/Linux快捷键 -->
             <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt G"/>
@@ -150,10 +150,11 @@
         <!-- 代码模板生成Action -->
         <action id="com.glowxq.plugs.GenerateCodeTemplateAction"
                 class="com.glowxq.plugs.actions.GenerateCodeTemplateAction"
-                text="Generate Code Template"
-                description="Generate common code templates">
+                text="📝 代码模板"
+                description="生成常用代码模板：设计模式、架构模板等">
             <add-to-group group-id="GenerateGroup" anchor="after" relative-to-action="com.glowxq.plugs.SmartOneClickAction"/>
-            <add-to-group group-id="JavaBeanToolsGroup" anchor="after" relative-to-action="com.glowxq.plugs.SmartOneClickAction"/>
+            <!-- 放在数据库工具之后 -->
+            <add-to-group group-id="JavaBeanToolsGroup" anchor="after" relative-to-action="com.glowxq.plugs.DatabaseToolsAction"/>
             <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt T"/>
             <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt T"/>
             <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt T"/>
@@ -186,12 +187,13 @@
         <!-- 批量生成Action -->
         <action id="com.glowxq.plugs.BatchGenerateAction"
                 class="com.glowxq.plugs.actions.BatchGenerateAction"
-                text="Batch Generate JavaBean Methods"
-                description="Batch generate JavaBean methods for selected files or packages">
+                text="📦 批量生成"
+                description="批量生成JavaBean方法，支持选中的文件或包">
             <!-- 只在项目视图中显示，不在编辑器中显示 -->
             <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="NewGroup"/>
             <add-to-group group-id="ProjectViewPopupMenuModifyGroup" anchor="first"/>
-            <add-to-group group-id="JavaBeanToolsGroup" anchor="last"/>
+            <!-- 重要功能，放在第二位 -->
+            <add-to-group group-id="JavaBeanToolsGroup" anchor="after" relative-to-action="com.glowxq.plugs.SmartOneClickAction"/>
             <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt B"/>
             <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt B"/>
             <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt B"/>
@@ -248,9 +250,10 @@
         <!-- 开发工具集合 -->
         <action id="com.glowxq.plugs.DevToolsAction"
                 class="com.glowxq.plugs.actions.DevToolsAction"
-                text="Developer Tools"
-                description="Various development utilities">
-            <add-to-group group-id="JavaBeanToolsGroup" anchor="last"/>
+                text="🛠️ 开发工具"
+                description="实用的开发工具集合：UUID生成、时间戳、常量生成等">
+            <!-- 重要工具，放在第三位 -->
+            <add-to-group group-id="JavaBeanToolsGroup" anchor="after" relative-to-action="com.glowxq.plugs.BatchGenerateAction"/>
             <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt U"/>
             <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt U"/>
             <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt U"/>
@@ -259,9 +262,10 @@
         <!-- 数据库工具集合 -->
         <action id="com.glowxq.plugs.DatabaseToolsAction"
                 class="com.glowxq.plugs.actions.DatabaseToolsAction"
-                text="Database Tools"
-                description="Database related code generation utilities">
-            <add-to-group group-id="JavaBeanToolsGroup" anchor="last"/>
+                text="🗄️ 数据库工具"
+                description="数据库相关代码生成：Entity注解、SQL语句、Repository等">
+            <!-- 重要工具，放在第四位 -->
+            <add-to-group group-id="JavaBeanToolsGroup" anchor="after" relative-to-action="com.glowxq.plugs.DevToolsAction"/>
             <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt Y"/>
             <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt Y"/>
             <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt Y"/>
