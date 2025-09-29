@@ -67,7 +67,7 @@ public final class OneClickSettings implements PersistentStateComponent<OneClick
 
         // JavaBean包规则设置
         public String javaBeanPackagePatterns = "entity,model,bean,pojo,dto,vo,domain,data";
-        public String businessClassPackagePatterns = "service,controller,manager,handler,component,config,util";
+        public String businessClassPackagePatterns = "service,controller,manager,handler,component,config,util,debug,demo";
         public boolean enablePackageDetection = true;
 
         // 字段排序设置（仅对业务类生效）
