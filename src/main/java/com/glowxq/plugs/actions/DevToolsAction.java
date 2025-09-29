@@ -7,6 +7,7 @@ import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
@@ -14,7 +15,9 @@ import com.intellij.openapi.ui.popup.ListPopup;
 import com.intellij.openapi.ui.popup.PopupStep;
 import com.intellij.openapi.ui.popup.util.BaseListPopupStep;
 import com.intellij.psi.*;
+import com.intellij.psi.impl.file.PsiJavaDirectoryImpl;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.ide.fileTemplates.JavaTemplateUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -172,33 +175,7 @@ public class DevToolsAction extends AnAction {
         );
 
         if (enumName != null && !enumName.trim().isEmpty()) {
-            String enumTemplate = String.format(
-                "public enum %s {\n" +
-                "    // 枚举值\n" +
-                "    VALUE1(\"value1\", \"描述1\"),\n" +
-                "    VALUE2(\"value2\", \"描述2\");\n" +
-                "\n" +
-                "    private final String code;\n" +
-                "    private final String description;\n" +
-                "\n" +
-                "    %s(String code, String description) {\n" +
-                "        this.code = code;\n" +
-                "        this.description = description;\n" +
-                "    }\n" +
-                "\n" +
-                "    public String getCode() {\n" +
-                "        return code;\n" +
-                "    }\n" +
-                "\n" +
-                "    public String getDescription() {\n" +
-                "        return description;\n" +
-                "    }\n" +
-                "}",
-                enumName.trim(),
-                enumName.trim()
-            );
-            insertTextAtCursor(e, enumTemplate);
-            showNotification("枚举已生成: " + enumName);
+            createEnumFile(e, enumName.trim());
         }
     }
 
@@ -248,6 +225,97 @@ public class DevToolsAction extends AnAction {
             replaceSelectedText(e, converted);
             showNotification("命名风格已转换: " + selected);
         }
+    }
+
+    /**
+     * 创建枚举文件
+     */
+    private static void createEnumFile(AnActionEvent e, String enumName) {
+        Project project = e.getProject();
+        if (project == null) return;
+
+        // 获取当前文件所在的目录
+        PsiFile currentFile = e.getData(CommonDataKeys.PSI_FILE);
+        if (currentFile == null) {
+            showNotification("无法获取当前文件信息");
+            return;
+        }
+
+        PsiDirectory directory = currentFile.getContainingDirectory();
+        if (directory == null) {
+            showNotification("无法获取当前目录信息");
+            return;
+        }
+
+        WriteCommandAction.runWriteCommandAction(project, () -> {
+            try {
+                // 获取包名
+                String packageName = "";
+                if (currentFile instanceof PsiJavaFile) {
+                    packageName = ((PsiJavaFile) currentFile).getPackageName();
+                }
+
+                // 生成枚举内容
+                String enumContent = generateEnumContent(enumName, packageName);
+
+                // 创建文件
+                PsiFile enumFile = PsiFileFactory.getInstance(project)
+                    .createFileFromText(enumName + ".java", enumContent);
+
+                // 添加到目录
+                PsiElement addedFile = directory.add(enumFile);
+
+                // 打开新创建的文件
+                if (addedFile instanceof PsiFile) {
+                    FileEditorManager.getInstance(project).openFile(
+                        ((PsiFile) addedFile).getVirtualFile(), true);
+                }
+
+                showNotification("枚举文件已创建: " + enumName + ".java");
+            } catch (Exception ex) {
+                showNotification("创建枚举文件失败: " + ex.getMessage());
+            }
+        });
+    }
+
+    /**
+     * 生成枚举内容
+     */
+    private static String generateEnumContent(String enumName, String packageName) {
+        StringBuilder content = new StringBuilder();
+
+        // 包声明
+        if (!packageName.isEmpty()) {
+            content.append("package ").append(packageName).append(";\n\n");
+        }
+
+        // 枚举类
+        content.append("/**\n");
+        content.append(" * ").append(enumName).append(" 枚举\n");
+        content.append(" */\n");
+        content.append("public enum ").append(enumName).append(" {\n");
+        content.append("    // 枚举值\n");
+        content.append("    VALUE1(\"value1\", \"描述1\"),\n");
+        content.append("    VALUE2(\"value2\", \"描述2\");\n");
+        content.append("\n");
+        content.append("    private final String code;\n");
+        content.append("    private final String description;\n");
+        content.append("\n");
+        content.append("    ").append(enumName).append("(String code, String description) {\n");
+        content.append("        this.code = code;\n");
+        content.append("        this.description = description;\n");
+        content.append("    }\n");
+        content.append("\n");
+        content.append("    public String getCode() {\n");
+        content.append("        return code;\n");
+        content.append("    }\n");
+        content.append("\n");
+        content.append("    public String getDescription() {\n");
+        content.append("        return description;\n");
+        content.append("    }\n");
+        content.append("}\n");
+
+        return content.toString();
     }
 
     // 生成Builder模式

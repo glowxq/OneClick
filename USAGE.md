@@ -1,71 +1,176 @@
 # OneClick 插件使用指南
 
-## 🎯 智能一键功能
+## 🎯 智能一键功能 (Command+Shift+D)
 
-### 1. 智能一键生成 (核心功能)
-- **快捷键**: `Ctrl+Alt+G` (Windows/Linux) / `Cmd+Alt+G` (macOS)
-- **智能特性**: 根据类类型自动选择合适的生成操作
-  - **JavaBean类**: 生成 getter、setter、toString、equals、hashCode 方法
-  - **业务类**: 生成 Logger 字段、serialVersionUID 等
-- **使用方法**: 在 Java 类中按快捷键，插件会智能识别类类型并提供相应选项
+OneClick 的核心功能是智能一键生成，它会根据当前的使用场景自动选择最合适的操作。
 
-## 🛠️ 开发工具集合
+### 📝 场景一：选中文本智能处理
 
-### 2. 开发工具 (Ctrl+Alt+U)
-提供各种实用的开发辅助功能：
+#### 1.1 字符串常量生成
+```java
+public class UserService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
 
+    public void processUser() {
+        // 选中字符串 "USER_NOT_FOUND" → 按 Command+Shift+D
+        throw new RuntimeException("USER_NOT_FOUND");
+
+        // 自动生成常量字段（插入到LOGGER下方）：
+        // private static final String USER_NOT_FOUND = "USER_NOT_FOUND";
+    }
+}
+```
+
+#### 1.2 命名风格智能转换
+```java
+// 驼峰转下划线
+userService → user_service
+emailAddress → email_address
+createTime → create_time
+
+// 下划线转驼峰
+user_name → userName
+email_address → emailAddress
+create_time → createTime
+```
+
+**使用方法**：
+1. 选中要转换的标识符
+2. 按 `Command+Shift+D` (macOS) / `Ctrl+Shift+D` (Windows)
+3. 自动静默转换，无弹窗干扰
+
+### 🏗️ 场景二：类级别智能生成
+
+#### 2.1 JavaBean类自动识别
+```java
+// 包名包含：model, entity, dto, vo, bean 等
+package com.example.model;
+
+public class User {
+    private Long id;
+    private String username;
+    private String email;
+    private Date createTime;
+
+    // 按 Command+Shift+D 自动生成：
+    // - getter/setter 方法
+    // - toString 方法 (JSON格式)
+    // - equals/hashCode 方法
+}
+```
+
+#### 2.2 业务类智能增强
+```java
+// 包名包含：service, controller, manager, handler 等
+package com.example.service;
+
+@Service
+public class UserService {
+    // 按 Command+Shift+D 自动执行：
+    // 1. 生成 Logger 字段
+    // 2. 生成 serialVersionUID
+    // 3. 字段智能排序（只排序实例字段，保护常量和静态字段）
+
+    private UserRepository userRepository;
+    private EmailService emailService;
+    private ValidationService validationService;
+}
+```
+
+### 🔧 智能特性详解
+
+#### 字段排序规则
+- **只排序实例字段**：排除 static、final、常量字段
+- **保护重要字段**：LOGGER、serialVersionUID 等保持原位置
+- **智能识别常量**：全大写+下划线命名的字段不参与排序
+- **排序方式**：支持按名称、长度、类型排序
+
+#### 常量生成位置
+- **有LOGGER字段**：常量插入到LOGGER下一行
+- **无LOGGER字段**：常量插入到类的最上面
+- **重复检测**：避免生成重复的常量字段
+
+#### 类类型识别
+| 类类型 | 包名特征 | 生成内容 |
+|--------|---------|---------|
+| JavaBean | model, entity, dto, vo, bean, pojo | getter/setter/toString/equals/hashCode |
+| 业务类 | service, controller, manager, handler, component | Logger/serialVersionUID/字段排序 |
+
+## 🛠️ 开发工具集合 (Command+Shift+U)
+
+### 代码生成工具
 - **🔧 生成UUID**: 生成随机UUID字符串
 - **📅 插入时间戳**: 插入当前时间戳
 - **🔍 生成序列化ID**: 生成serialVersionUID
 - **📝 生成TODO注释**: 生成带时间和作者的TODO注释
 - **🎯 生成测试方法**: 生成单元测试方法模板
+
+### 代码转换工具
 - **🔒 生成常量**: 将选中文本转换为常量定义
-- **📊 生成枚举**: 生成枚举类模板
+- **📊 生成枚举**: 创建新的枚举文件（不在当前文件中插入）
 - **🌐 生成JSON模板**: 生成JSON数据模板
 - **🔄 转换命名风格**: 转换驼峰/下划线命名
 - **📋 生成Builder模式**: 为当前类生成Builder模式
 
-### 3. 数据库工具 (Ctrl+Alt+Y)
-提供数据库相关的代码生成功能：
+### 特殊功能说明
+- **枚举生成**：会在当前文件同目录下创建新的枚举文件，而不是在当前文件中插入代码
+- **常量生成**：智能检测LOGGER字段，将常量插入到合适位置
+- **Builder模式**：为当前类生成完整的Builder模式实现
 
+## 🗄️ 数据库工具集合 (Command+Shift+Y)
+
+### JPA/Hibernate工具
 - **🗃️ 生成Entity注解**: 为实体类添加JPA注解
 - **📝 生成SQL建表语句**: 根据实体类生成CREATE TABLE语句
 - **🔍 生成Repository接口**: 生成Spring Data JPA Repository
+
+### MyBatis工具
 - **📊 生成MyBatis Mapper**: 生成MyBatis Mapper接口和XML
 - **🔄 生成数据转换器**: 生成Entity与DTO转换器
+
+### Spring Boot集成
 - **📋 生成CRUD Service**: 生成完整的CRUD Service类
 - **🌐 生成REST Controller**: 生成RESTful API控制器
 - **🔧 生成数据库配置**: 生成数据源配置类
 
 ## 📋 其他功能
 
-### 4. 批量生成 (Ctrl+Alt+B)
+### 批量生成 (Command+Shift+B)
 - **功能**: 批量处理多个Java文件或包
-- **使用方法**: 在项目视图中选中文件或包，右键选择"批量生成"
+- **项目视图集成**: 右键包或文件 → OneClick → 批量生成
+- **多文件支持**: 可同时选中多个文件进行批量处理
+- **进度显示**: 显示处理进度和结果统计
 
-### 5. 代码模板 (Ctrl+Alt+T)
+### 代码模板 (Command+Shift+T)
 - **功能**: 提供15种设计模式和架构模板
-- **包含**: 单例模式、工厂模式、观察者模式、Spring配置等
+- **设计模式**: 单例、工厂、观察者、建造者、策略模式等
+- **架构模板**: REST Controller、Service Layer、Repository等
+- **工具类**: 验证工具、日期工具、字符串工具等
 
-### 6. 重构助手 (Ctrl+Alt+R)
-- **功能**: 代码重构和优化建议
-- **特性**: 智能分析代码结构，提供改进建议
+### 重构助手 (Command+Shift+R)
+- **功能**: 10种代码重构操作
+- **包含**: 提取常量、转换Stream API、添加空值检查等
+- **智能分析**: 根据代码上下文提供重构建议
 
-### 7. 智能注释 (Ctrl+Alt+C)
+### 智能注释 (Command+Shift+C)
 - **功能**: 生成智能注释和文档
-- **特性**: 根据方法签名自动生成JavaDoc
+- **JavaDoc**: 根据方法签名自动生成标准JavaDoc
+- **中文注释**: 根据代码上下文生成中文注释
 
-### 8. 代码清理 (Ctrl+Alt+L)
+### 代码清理 (Command+Shift+L)
 - **功能**: 清理无用代码和导入
-- **特性**: 自动移除未使用的导入和变量
+- **清理项目**: 移除未使用导入、空行、调试代码等
+- **格式化**: 统一代码格式和导入顺序
 
-### 9. 代码分析 (Ctrl+Alt+A)
+### 代码分析 (Command+Shift+A)
 - **功能**: 代码质量分析
-- **特性**: 检测潜在问题和性能优化点
+- **统计指标**: 行数、复杂度、方法长度等
+- **质量检测**: 长方法、大类、TODO注释统计
 
-### 10. 快速文档 (Ctrl+Alt+D)
+### 快速文档 (Command+Shift+Q)
 - **功能**: 快速生成文档
-- **特性**: 生成README、API文档等
+- **文档类型**: README、API文档、使用说明等
+- **自动格式**: 生成标准格式的项目文档
 
 ## ⚙️ 设置配置
 
@@ -87,25 +192,36 @@
 
 ## 🚀 使用技巧
 
-### 智能快捷键使用
-- `Ctrl+Alt+G` 是智能快捷键，会根据当前类的类型自动选择合适的功能
-- 在JavaBean类中：优先生成getter/setter等方法
-- 在业务类中：优先生成Logger字段等
+### 智能快捷键使用策略
+- **`Command+Shift+D`** 是核心智能快捷键，会根据当前上下文自动选择操作
+- **选中文本时**：优先进行文本处理（常量生成、命名转换）
+- **类级别时**：根据类类型智能生成相应代码
+- **无选中时**：分析类特征并执行相应的增强操作
 
-### 操作系统适配
-- **Windows/Linux**: 使用 `Ctrl` 作为主修饰键
-- **macOS**: 使用 `Cmd` 作为主修饰键，`Option` 相当于 `Alt`
-- 插件会自动检测操作系统并显示相应的快捷键格式
+### 快捷键规范 (统一使用Command+Shift)
+| 功能 | Windows/Linux | macOS | 说明 |
+|------|---------------|-------|------|
+| 智能一键 | `Ctrl+Shift+D` | `Cmd+Shift+D` | 核心功能 |
+| 开发工具 | `Ctrl+Shift+U` | `Cmd+Shift+U` | 工具集合 |
+| 数据库工具 | `Ctrl+Shift+Y` | `Cmd+Shift+Y` | 数据库代码 |
+| 批量生成 | `Ctrl+Shift+B` | `Cmd+Shift+B` | 批量处理 |
 
-### 批量操作
-- 在项目视图中可以选中多个文件或整个包进行批量处理
-- 支持进度显示和错误统计
-- 可以同时处理多种类型的Java文件
+### 项目视图集成
+- **OneClick菜单组**：在项目视图右键菜单中提供完整的OneClick工具
+- **批量操作**：选中多个文件或包进行批量处理
+- **上下文感知**：根据选中的文件类型提供相应功能
 
-### 设置同步
-- 所有设置都会实时保存
-- 支持导入/导出设置配置
-- 可以在不同项目间共享设置
+### 智能特性利用
+- **字段排序**：业务类中自动排序，JavaBean类保持原顺序
+- **常量位置**：新常量自动插入到LOGGER下方，保持代码整洁
+- **枚举文件**：生成独立枚举文件，避免当前文件过于复杂
+- **命名转换**：静默执行，无弹窗干扰，提升操作流畅度
+
+### 设置优化
+- **语言设置**：下拉菜单选择，支持中英文切换
+- **快捷键预设**：提供多种预设方案，一键应用
+- **字段排序配置**：支持按名称、长度、类型排序
+- **包规则自定义**：可自定义JavaBean和业务类的包名规则
 
 ## 📞 获取帮助
 

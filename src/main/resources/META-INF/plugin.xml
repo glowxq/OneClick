@@ -107,6 +107,11 @@
             <add-to-group group-id="EditorPopupMenu" anchor="last"/>
         </group>
 
+        <!-- 项目视图OneClick菜单组 -->
+        <group id="ProjectViewOneClickGroup" text="OneClick" description="OneClick - 智能代码生成工具" popup="true">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="NewGroup"/>
+        </group>
+
         <!-- 测试Action -->
         <action id="com.glowxq.plugs.TestAction"
                 class="com.glowxq.plugs.actions.TestAction"
@@ -125,10 +130,10 @@
             <!-- 添加到OneClick工具组 - 最重要，放在第一位 -->
             <add-to-group group-id="JavaBeanToolsGroup" anchor="first"/>
             <!-- Windows/Linux快捷键 -->
-            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt G"/>
-            <!-- macOS快捷键 (meta = Cmd键, alt = Option键) -->
-            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt G"/>
-            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt G"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift D"/>
+            <!-- macOS快捷键 (meta = Cmd键, shift = Shift键) -->
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift D"/>
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta shift D"/>
         </action>
 
         <!-- 折叠方法的Action -->
@@ -189,14 +194,13 @@
                 class="com.glowxq.plugs.actions.BatchGenerateAction"
                 text="📦 批量生成"
                 description="批量生成JavaBean方法，支持选中的文件或包">
-            <!-- 只在项目视图中显示，不在编辑器中显示 -->
-            <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="NewGroup"/>
-            <add-to-group group-id="ProjectViewPopupMenuModifyGroup" anchor="first"/>
+            <!-- 添加到项目视图OneClick菜单组 -->
+            <add-to-group group-id="ProjectViewOneClickGroup" anchor="first"/>
             <!-- 重要功能，放在第二位 -->
             <add-to-group group-id="JavaBeanToolsGroup" anchor="after" relative-to-action="com.glowxq.plugs.SmartOneClickAction"/>
-            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt B"/>
-            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt B"/>
-            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt B"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift B"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift B"/>
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta shift B"/>
         </action>
 
         <!-- 代码清理助手 -->
@@ -254,9 +258,11 @@
                 description="实用的开发工具集合：UUID生成、时间戳、常量生成等">
             <!-- 重要工具，放在第三位 -->
             <add-to-group group-id="JavaBeanToolsGroup" anchor="after" relative-to-action="com.glowxq.plugs.BatchGenerateAction"/>
-            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt U"/>
-            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt U"/>
-            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt U"/>
+            <!-- 添加到项目视图OneClick菜单 -->
+            <add-to-group group-id="ProjectViewOneClickGroup" anchor="after" relative-to-action="com.glowxq.plugs.BatchGenerateAction"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift U"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift U"/>
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta shift U"/>
         </action>
 
         <!-- 数据库工具集合 -->
@@ -266,9 +272,11 @@
                 description="数据库相关代码生成：Entity注解、SQL语句、Repository等">
             <!-- 重要工具，放在第四位 -->
             <add-to-group group-id="JavaBeanToolsGroup" anchor="after" relative-to-action="com.glowxq.plugs.DevToolsAction"/>
-            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt Y"/>
-            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt Y"/>
-            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt Y"/>
+            <!-- 添加到项目视图OneClick菜单 -->
+            <add-to-group group-id="ProjectViewOneClickGroup" anchor="after" relative-to-action="com.glowxq.plugs.DevToolsAction"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift Y"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift Y"/>
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta shift Y"/>
         </action>
     </actions>
 </idea-plugin>

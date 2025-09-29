@@ -390,7 +390,7 @@ public class KeymapSettingsComponent {
         titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD));
         titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JBLabel descLabel = new JBLabel("<html><div style='width: 450px;'><b>%s+Alt+G</b> - 智能一键生成<br><br>• 选中文本：切换命名风格 / 生成常量<br>• 类级别：根据类类型智能生成代码<br>• 字段排序：业务类自动排序字段<br><br><i>💡 其他快捷键可在下方自定义</i></div></html>".formatted(osModifier));
+        JBLabel descLabel = new JBLabel("<html><div style='width: 450px;'><b>%s+Shift+D</b> - 智能一键生成<br><br>• 选中文本：切换命名风格 / 生成常量<br>• 类级别：根据类类型智能生成代码<br>• 字段排序：业务类自动排序字段<br><br><i>💡 所有快捷键统一使用 %s+Shift 开头</i></div></html>".formatted(osModifier, osModifier));
         descLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         descPanel.add(titleLabel);
@@ -435,15 +435,15 @@ public class KeymapSettingsComponent {
 
         switch (presetName) {
             case "默认预设 (推荐)":
-                shortcuts.put("generateJavaBean", SystemInfo.isMac ? "meta alt G" : "ctrl alt G");
-                shortcuts.put("foldJavaBean", SystemInfo.isMac ? "meta alt F" : "ctrl alt F");
-                shortcuts.put("batchGenerate", SystemInfo.isMac ? "meta alt B" : "ctrl alt B");
-                shortcuts.put("codeTemplate", SystemInfo.isMac ? "meta alt T" : "ctrl alt T");
-                shortcuts.put("refactorAssistant", SystemInfo.isMac ? "meta alt R" : "ctrl alt R");
-                shortcuts.put("smartComment", SystemInfo.isMac ? "meta alt C" : "ctrl alt C");
-                shortcuts.put("codeCleanup", SystemInfo.isMac ? "meta alt L" : "ctrl alt L");
-                shortcuts.put("codeAnalysis", SystemInfo.isMac ? "meta alt A" : "ctrl alt A");
-                shortcuts.put("quickDoc", SystemInfo.isMac ? "meta alt D" : "ctrl alt D");
+                shortcuts.put("generateJavaBean", SystemInfo.isMac ? "meta shift D" : "ctrl shift D");
+                shortcuts.put("foldJavaBean", SystemInfo.isMac ? "meta shift F" : "ctrl shift F");
+                shortcuts.put("batchGenerate", SystemInfo.isMac ? "meta shift B" : "ctrl shift B");
+                shortcuts.put("codeTemplate", SystemInfo.isMac ? "meta shift T" : "ctrl shift T");
+                shortcuts.put("refactorAssistant", SystemInfo.isMac ? "meta shift R" : "ctrl shift R");
+                shortcuts.put("smartComment", SystemInfo.isMac ? "meta shift C" : "ctrl shift C");
+                shortcuts.put("codeCleanup", SystemInfo.isMac ? "meta shift L" : "ctrl shift L");
+                shortcuts.put("codeAnalysis", SystemInfo.isMac ? "meta shift A" : "ctrl shift A");
+                shortcuts.put("quickDoc", SystemInfo.isMac ? "meta shift Q" : "ctrl shift Q");
                 break;
 
             case "VS Code 风格":

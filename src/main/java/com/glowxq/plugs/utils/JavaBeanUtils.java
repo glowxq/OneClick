@@ -82,9 +82,11 @@ public class JavaBeanUtils {
             return;
         }
 
-        // 只获取非静态的实例字段进行排序
+        // 只获取非静态、非final的实例字段进行排序（排除常量）
         List<PsiField> allFields = Arrays.stream(psiClass.getFields())
                 .filter(field -> !field.hasModifierProperty(PsiModifier.STATIC))
+                .filter(field -> !field.hasModifierProperty(PsiModifier.FINAL))
+                .filter(field -> !isConstantField(field))
                 .collect(Collectors.toList());
 
         if (allFields.size() <= 1) {
@@ -140,6 +142,24 @@ public class JavaBeanUtils {
         }
 
         System.out.println("字段重新排列完成！");
+    }
+
+    /**
+     * 判断是否为常量字段
+     */
+    private static boolean isConstantField(PsiField field) {
+        // 检查字段名是否为全大写（常量命名规范）
+        String fieldName = field.getName();
+        if (fieldName != null && fieldName.equals(fieldName.toUpperCase()) && fieldName.contains("_")) {
+            return true;
+        }
+
+        // 检查是否为static final组合
+        if (field.hasModifierProperty(PsiModifier.STATIC) && field.hasModifierProperty(PsiModifier.FINAL)) {
+            return true;
+        }
+
+        return false;
     }
 
     /**

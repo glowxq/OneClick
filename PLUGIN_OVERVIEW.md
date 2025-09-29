@@ -1,44 +1,74 @@
-# OneClick 插件功能优化完成总结 🚀
+# OneClick 插件功能完整指南 🚀
 
-## 最新优化内容
+## 🎯 智能一键生成 (Command+Shift+D) - 核心功能
 
-### 1. ✅ 智能快捷键系统优化
+OneClick 插件的核心是智能一键生成功能，它会根据不同的使用场景自动选择最合适的操作。
 
-#### 1.1 智能一键快捷键 (Ctrl+Alt+G)
-- **重新定义**: 不再仅仅是JavaBean方法生成，而是智能一键生成
-- **智能识别**: 根据类类型自动选择合适的生成操作
-  - **JavaBean类**: 生成getter/setter/toString/equals/hashCode方法
-  - **业务类**: 生成Logger字段、serialVersionUID等
-- **操作系统适配**:
-  - Windows/Linux: `Ctrl+Alt+G`
-  - macOS: `Cmd+Alt+G`
+### 📝 场景识别与智能处理
 
-#### 1.2 快捷键设置优化
-- **操作系统区分**: 自动检测并显示适合当前系统的快捷键格式
-- **预设方案**: 提供默认、VS Code风格、Eclipse风格等预设
-- **便捷设置**: 一键应用预设方案，简化配置过程
-- **智能提示**: 详细的操作系统快捷键说明和使用提示
+#### 场景一：选中文本智能处理
+| 选中内容类型 | 自动操作 | 示例 |
+|-------------|---------|------|
+| 字符串字面量 | 生成常量字段 | `"USER_NOT_FOUND"` → `private static final String USER_NOT_FOUND = "USER_NOT_FOUND";` |
+| 驼峰命名标识符 | 转为下划线命名 | `userService` → `user_service` |
+| 下划线命名标识符 | 转为驼峰命名 | `user_name` → `userName` |
 
-### 2. ✅ 新增开发工具集合
+#### 场景二：类级别智能生成
+| 类类型 | 识别规则 | 自动操作 |
+|--------|---------|---------|
+| JavaBean类 | 包名包含：model, entity, dto, vo, bean | 生成getter/setter/toString/equals/hashCode |
+| 业务类 | 包名包含：service, controller, manager, handler | 生成Logger、serialVersionUID、字段排序 |
 
-#### 2.1 开发工具 (Ctrl+Alt+U)
-- **🔧 生成UUID**: 生成随机UUID
+### 🔧 智能特性详解
+
+#### 常量生成位置智能化
+- **有LOGGER字段**：新常量插入到LOGGER下一行
+- **无LOGGER字段**：新常量插入到类的最上面
+- **重复检测**：避免生成重复的常量字段
+
+#### 字段排序智能化
+- **只排序实例字段**：排除static、final、常量字段
+- **保护重要字段**：LOGGER、serialVersionUID等保持原位置
+- **智能识别常量**：全大写+下划线命名的字段不参与排序
+
+#### 命名转换智能化
+- **静默执行**：无弹窗干扰，操作更流畅
+- **双向转换**：智能识别当前命名风格并转换
+- **保持选中**：转换后保持文本选中状态
+
+## 🛠️ 开发工具集合 (Command+Shift+U)
+
+### 代码生成工具
+- **🔧 生成UUID**: 生成随机UUID字符串
 - **📅 插入时间戳**: 插入当前时间戳
 - **🔍 生成序列化ID**: 生成serialVersionUID
-- **📝 生成TODO注释**: 生成带时间的TODO注释
+- **📝 生成TODO注释**: 生成带时间和作者的TODO注释
 - **🎯 生成测试方法**: 生成单元测试方法模板
-- **🔒 生成常量**: 将选中文本转换为常量
-- **📊 生成枚举**: 生成枚举类模板
+
+### 代码转换工具
+- **🔒 生成常量**: 将选中文本转换为常量定义
+- **📊 生成枚举**: 创建新的枚举文件（不在当前文件中插入）
 - **🌐 生成JSON模板**: 生成JSON数据模板
 - **🔄 转换命名风格**: 转换驼峰/下划线命名
 - **📋 生成Builder模式**: 为当前类生成Builder模式
 
-#### 2.2 数据库工具 (Ctrl+Alt+Y)
+### 特殊功能说明
+- **枚举生成优化**: 直接创建独立的枚举文件，而不是在当前文件中插入代码
+- **文件自动打开**: 创建枚举文件后自动打开新文件
+- **包名自动检测**: 新枚举文件自动继承当前文件的包名
+
+## 🗄️ 数据库工具集合 (Command+Shift+Y)
+
+### JPA/Hibernate工具
 - **🗃️ 生成Entity注解**: 为实体类添加JPA注解
 - **📝 生成SQL建表语句**: 根据实体类生成CREATE TABLE语句
 - **🔍 生成Repository接口**: 生成Spring Data JPA Repository
+
+### MyBatis工具
 - **📊 生成MyBatis Mapper**: 生成MyBatis Mapper接口和XML
 - **🔄 生成数据转换器**: 生成Entity与DTO转换器
+
+### Spring Boot集成
 - **📋 生成CRUD Service**: 生成完整的CRUD Service类
 - **🌐 生成REST Controller**: 生成RESTful API控制器
 - **🔧 生成数据库配置**: 生成数据源配置类
@@ -79,25 +109,42 @@
 - Help菜单中的"OneClick Help"
 - 设置面板中的概览页面
 
-## 快捷键说明优化
+## 📋 项目视图集成
 
-### 📱 自动操作系统适配
-- **Windows/Linux**: 显示 `Ctrl+Alt+X` 格式
-- **macOS**: 自动显示 `Cmd+Alt+X` 格式
-- **动态检测**: 根据当前操作系统自动调整显示
+### OneClick菜单组
+- **位置**: 项目视图右键菜单 → OneClick
+- **功能**: 提供完整的OneClick工具集合
+- **批量操作**: 支持选中多个文件或包进行批量处理
 
-### 📊 快捷键表格
+### 菜单项目
+- **📦 批量生成**: 批量处理选中的文件或包
+- **🛠️ 开发工具**: 在项目视图中也可使用开发工具
+- **🗄️ 数据库工具**: 在项目视图中也可使用数据库工具
+
+## ⌨️ 快捷键规范化 (Command+Shift)
+
+### 统一快捷键规范
+所有OneClick功能统一使用 `Command+Shift` 开头，提供更一致的用户体验：
+
 | 功能 | Windows/Linux | macOS | 说明 |
 |------|---------------|-------|------|
-| JavaBean 方法生成 | `Ctrl+Alt+G` | `Cmd+Alt+G` | 生成getter/setter/toString等方法 |
-| 批量生成 | `Ctrl+Alt+B` | `Cmd+Alt+B` | 批量处理多个文件 |
-| 代码模板 | `Ctrl+Alt+T` | `Cmd+Alt+T` | 15种设计模式模板 |
-| 重构助手 | `Ctrl+Alt+R` | `Cmd+Alt+R` | 10种重构操作 |
-| 智能注释 | `Ctrl+Alt+C` | `Cmd+Alt+C` | 自动生成注释 |
-| 代码清理 | `Ctrl+Alt+L` | `Cmd+Alt+L` | 清理冗余代码 |
-| 代码分析 | `Ctrl+Alt+A` | `Cmd+Alt+A` | 统计分析代码 |
-| 快速文档 | `Ctrl+Alt+D` | `Cmd+Alt+D` | 生成JavaDoc |
-| 折叠方法 | `Ctrl+Alt+F` | `Cmd+Alt+F` | 折叠JavaBean方法 |
+| **智能一键生成** | `Ctrl+Shift+D` | `Cmd+Shift+D` | 🎯 **核心功能**：智能识别场景并执行 |
+| 开发工具集合 | `Ctrl+Shift+U` | `Cmd+Shift+U` | 🛠️ 20种开发工具 |
+| 数据库工具 | `Ctrl+Shift+Y` | `Cmd+Shift+Y` | 🗄️ 数据库代码生成 |
+| 批量生成 | `Ctrl+Shift+B` | `Cmd+Shift+B` | 📦 批量处理 |
+| 代码模板 | `Ctrl+Shift+T` | `Cmd+Shift+T` | 📝 设计模式模板 |
+| 重构助手 | `Ctrl+Shift+R` | `Cmd+Shift+R` | 🔄 重构操作 |
+| 智能注释 | `Ctrl+Shift+C` | `Cmd+Shift+C` | 💬 自动注释 |
+| 代码清理 | `Ctrl+Shift+L` | `Cmd+Shift+L` | 🧹 清理代码 |
+| 代码分析 | `Ctrl+Shift+A` | `Cmd+Shift+A` | 📊 质量分析 |
+| 快速文档 | `Ctrl+Shift+Q` | `Cmd+Shift+Q` | 📖 文档生成 |
+| 折叠方法 | `Ctrl+Shift+F` | `Cmd+Shift+F` | 📁 方法折叠 |
+
+### 快捷键优势
+- **统一规范**: 所有功能使用相同的修饰键组合
+- **易于记忆**: Command+Shift+字母的简单模式
+- **避免冲突**: 与IDE默认快捷键冲突更少
+- **跨平台**: Windows和macOS自动适配
 
 ## 用户体验改进
 
@@ -152,10 +199,58 @@
 3. **右键菜单**: 在Java文件中右键选择"OneClick Help"
 4. **设置页面**: 查看详细配置选项
 
-### ⌨️ 快捷键使用
-1. 记住常用快捷键（如`Ctrl+Alt+G`生成JavaBean方法）
-2. 在设置中自定义快捷键
-3. 使用快捷键提示功能
-4. 查看快捷键冲突检测
+### ⌨️ 快捷键使用策略
+1. **核心快捷键**: 记住 `Command+Shift+D` 智能一键生成
+2. **工具快捷键**: `Command+Shift+U` 开发工具，`Command+Shift+Y` 数据库工具
+3. **批量操作**: `Command+Shift+B` 批量生成，配合项目视图使用
+4. **自定义设置**: 在设置中查看和修改快捷键配置
 
-现在OneClick插件提供了完整的用户引导和帮助系统，让用户能够快速上手并充分利用所有功能！🎉
+## 🎯 使用场景示例
+
+### 场景1：字符串常量管理
+```java
+public class UserService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
+
+    public void validateUser() {
+        // 选中 "INVALID_USER" → Command+Shift+D
+        // 自动生成常量并插入到LOGGER下方
+        throw new RuntimeException("INVALID_USER");
+    }
+}
+```
+
+### 场景2：命名风格统一
+```java
+// 选中 userService → Command+Shift+D → user_service
+// 选中 user_name → Command+Shift+D → userName
+// 静默转换，无弹窗干扰
+```
+
+### 场景3：JavaBean快速开发
+```java
+public class UserDTO {
+    private Long id;
+    private String username;
+    private String email;
+
+    // Command+Shift+D 一键生成所有JavaBean方法
+}
+```
+
+### 场景4：业务类智能增强
+```java
+@Service
+public class UserService {
+    // Command+Shift+D 自动生成Logger、serialVersionUID
+    // 同时对实例字段进行智能排序
+}
+```
+
+### 场景5：枚举文件创建
+```java
+// Command+Shift+U → 生成枚举 → 输入枚举名
+// 自动在同目录创建独立的枚举文件
+```
+
+现在OneClick插件提供了真正智能化的代码生成体验，让Java开发更加高效和便捷！🎉

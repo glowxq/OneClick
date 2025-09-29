@@ -12,10 +12,15 @@ import org.slf4j.LoggerFactory;
  * 用户控制器类 - 应该被识别为业务类
  * 测试业务类代码生成功能（如日志字段）
  * 包名包含controller，应该被识别为业务类类型
+ *
+ * @author glowxq
+ * @date 2025/09/29
  */
 // @RestController
 // @RequestMapping("/api/users")
 public class UserController {
+
+    private static final String USER = "User";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 

@@ -9,11 +9,25 @@ OneClick 是一个功能强大的 IntelliJ IDEA 插件，专为 Java 开发者�
 
 ## 🌟 核心特性
 
-### 🎯 智能代码生成
-- **JavaBean 方法生成**：getter/setter/toString/equals/hashCode
-- **代码模板生成器**：15种常用设计模式和架构模板
+### 🎯 智能一键生成 (Command+Shift+D)
+OneClick 的核心功能是智能一键生成，它会根据不同的使用场景自动选择最合适的操作：
+
+#### 📝 选中文本场景
+- **字符串常量生成**：选中字符串 → 自动生成常量字段（插入到LOGGER下方）
+- **命名风格转换**：选中标识符 → 智能切换驼峰/下划线命名
+  - `userService` ↔ `user_service`
+  - `userName` ↔ `user_name`
+
+#### 🏗️ 类级别场景
+- **JavaBean类**：自动生成 getter/setter/toString/equals/hashCode 方法
+- **业务类**：生成 Logger 字段、serialVersionUID、字段排序等
+- **智能识别**：根据包名和类特征自动判断类类型
+
+#### 🔧 其他强大功能
+- **开发工具集合** (Command+Shift+U)：UUID生成、时间戳、枚举创建等20种实用工具
+- **数据库工具** (Command+Shift+Y)：Entity注解、SQL语句、Repository生成等
 - **批量生成功能**：支持选中包或多个文件进行批量处理
-- **内部类支持**：递归处理嵌套内部类，可配置处理深度
+- **项目视图集成**：右键菜单中的OneClick工具组
 
 ### 🔧 代码重构助手
 - **10种重构操作**：提取常量、转换Stream API、添加空值检查等
@@ -46,26 +60,55 @@ OneClick 是一个功能强大的 IntelliJ IDEA 插件，专为 Java 开发者�
 
 ### 基本使用
 
-#### 1. JavaBean 方法生成
+#### 1. 智能一键生成 (Command+Shift+D)
+
+**场景一：选中字符串生成常量**
+```java
+public class UserService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
+
+    public void processUser() {
+        // 选中 "USER_NOT_FOUND" → 按 Command+Shift+D
+        throw new RuntimeException("USER_NOT_FOUND");
+        // 自动生成常量：private static final String USER_NOT_FOUND = "USER_NOT_FOUND";
+    }
+}
+```
+
+**场景二：选中标识符切换命名风格**
+```java
+// 选中 userService → 按 Command+Shift+D → 变为 user_service
+// 选中 user_name → 按 Command+Shift+D → 变为 userName
+```
+
+**场景三：JavaBean类自动生成方法**
 ```java
 public class User {
     private Long id;
     private String name;
     private String email;
-    
-    // 右键 → JavaBean Tools → Generate JavaBean Methods
-    // 或使用快捷键 Ctrl+Alt+G (Windows/Linux) / Cmd+Alt+G (macOS)
+
+    // 按 Command+Shift+D 自动生成所有JavaBean方法
 }
 ```
 
-#### 2. 批量生成
-- 在项目视图中选中包或多个文件
-- 右键 → Batch Generate JavaBean Methods
-- 或使用快捷键 `Ctrl+Alt+B`
+**场景四：业务类生成Logger和工具**
+```java
+@Service
+public class UserService {
+    // 按 Command+Shift+D 自动生成Logger、serialVersionUID等
+    // 同时对字段进行智能排序
+}
+```
 
-#### 3. 代码模板生成
-- 使用快捷键 `Ctrl+Alt+T`
-- 选择需要的模板类型（Singleton、Builder、REST Controller等）
+#### 2. 批量生成 (Command+Shift+B)
+- 在项目视图中选中包或多个文件
+- 右键 → OneClick → 批量生成
+- 或使用快捷键 `Command+Shift+B`
+
+#### 3. 开发工具集合 (Command+Shift+U)
+- UUID生成、时间戳插入、枚举文件创建
+- 常量生成、Builder模式、JSON模板等
 
 ## 📋 功能详览
 
@@ -73,17 +116,73 @@ public class User {
 
 | 功能 | 快捷键 (Win/Linux) | 快捷键 (macOS) | 描述 |
 |------|-------------------|----------------|------|
-| JavaBean 方法生成 | `Ctrl+Alt+G` | `Cmd+Alt+G` | 生成getter/setter/toString等 |
-| 批量生成 | `Ctrl+Alt+B` | `Cmd+Alt+B` | 批量处理多个文件 |
-| 代码模板 | `Ctrl+Alt+T` | `Cmd+Alt+T` | 15种设计模式模板 |
-| 重构助手 | `Ctrl+Alt+R` | `Cmd+Alt+R` | 10种重构操作 |
-| 智能注释 | `Ctrl+Alt+C` | `Cmd+Alt+C` | 自动生成注释 |
-| 代码清理 | `Ctrl+Alt+L` | `Cmd+Alt+L` | 清理冗余代码 |
-| 代码分析 | `Ctrl+Alt+A` | `Cmd+Alt+A` | 统计分析代码 |
-| 快速文档 | `Ctrl+Alt+D` | `Cmd+Alt+D` | 生成JavaDoc |
-| 折叠方法 | `Ctrl+Alt+F` | `Cmd+Alt+F` | 折叠JavaBean方法 |
+| **智能一键生成** | `Ctrl+Shift+D` | `Cmd+Shift+D` | 🎯 **核心功能**：智能识别场景并执行相应操作 |
+| 开发工具集合 | `Ctrl+Shift+U` | `Cmd+Shift+U` | 🛠️ 20种开发工具：UUID、时间戳、枚举等 |
+| 数据库工具 | `Ctrl+Shift+Y` | `Cmd+Shift+Y` | 🗄️ 数据库代码生成：Entity、SQL、Repository |
+| 批量生成 | `Ctrl+Shift+B` | `Cmd+Shift+B` | 📦 批量处理多个文件或包 |
+| 代码模板 | `Ctrl+Shift+T` | `Cmd+Shift+T` | 📝 15种设计模式和架构模板 |
+| 重构助手 | `Ctrl+Shift+R` | `Cmd+Shift+R` | 🔄 10种重构操作 |
+| 智能注释 | `Ctrl+Shift+C` | `Cmd+Shift+C` | 💬 自动生成注释 |
+| 代码清理 | `Ctrl+Shift+L` | `Cmd+Shift+L` | 🧹 清理冗余代码 |
+| 代码分析 | `Ctrl+Shift+A` | `Cmd+Shift+A` | 📊 统计分析代码 |
+| 快速文档 | `Ctrl+Shift+Q` | `Cmd+Shift+Q` | 📖 生成JavaDoc |
+| 折叠方法 | `Ctrl+Shift+F` | `Cmd+Shift+F` | 📁 折叠JavaBean方法 |
 
-### 🏗️ 代码模板库
+### 🎯 智能一键生成详解
+
+OneClick 的核心功能是智能一键生成 (`Command+Shift+D`)，它会根据当前上下文智能选择操作：
+
+#### 📝 文本选中场景
+| 选中内容 | 操作结果 | 示例 |
+|---------|---------|------|
+| 字符串字面量 | 生成常量字段 | `"USER_NOT_FOUND"` → 生成 `private static final String USER_NOT_FOUND = "USER_NOT_FOUND";` |
+| 驼峰命名标识符 | 转为下划线命名 | `userService` → `user_service` |
+| 下划线命名标识符 | 转为驼峰命名 | `user_name` → `userName` |
+
+#### 🏗️ 类级别场景
+| 类类型 | 操作结果 | 识别规则 |
+|--------|---------|---------|
+| JavaBean类 | 生成getter/setter/toString/equals/hashCode | 包名包含：model, entity, dto, vo, bean |
+| 业务类 | 生成Logger、serialVersionUID、字段排序 | 包名包含：service, controller, manager, handler |
+
+#### 🔧 特殊功能
+- **字段排序**：业务类中自动按字母顺序排列实例字段（排除常量和静态字段）
+- **常量位置**：新生成的常量自动插入到LOGGER字段下方
+- **智能检测**：根据包名、类名、注解等多维度判断类类型
+
+### 🛠️ 开发工具集合 (Command+Shift+U)
+
+#### 代码生成工具
+- **🔧 生成UUID** - 生成随机UUID字符串
+- **📅 插入时间戳** - 插入当前时间戳
+- **🔍 生成序列化ID** - 生成serialVersionUID
+- **📝 生成TODO注释** - 生成带时间和作者的TODO注释
+- **🎯 生成测试方法** - 生成单元测试方法模板
+
+#### 代码转换工具
+- **🔒 生成常量** - 将选中文本转换为常量定义
+- **📊 生成枚举** - 创建新的枚举文件（不在当前文件中）
+- **🌐 生成JSON模板** - 生成JSON数据模板
+- **🔄 转换命名风格** - 转换驼峰/下划线命名
+- **📋 生成Builder模式** - 为当前类生成Builder模式
+
+### 🗄️ 数据库工具集合 (Command+Shift+Y)
+
+#### JPA/Hibernate工具
+- **🗃️ 生成Entity注解** - 为实体类添加JPA注解
+- **📝 生成SQL建表语句** - 根据实体类生成CREATE TABLE语句
+- **🔍 生成Repository接口** - 生成Spring Data JPA Repository
+
+#### MyBatis工具
+- **📊 生成MyBatis Mapper** - 生成MyBatis Mapper接口和XML
+- **🔄 生成数据转换器** - 生成Entity与DTO转换器
+
+#### Spring Boot集成
+- **📋 生成CRUD Service** - 生成完整的CRUD Service类
+- **🌐 生成REST Controller** - 生成RESTful API控制器
+- **🔧 生成数据库配置** - 生成数据源配置类
+
+### 📝 代码模板库 (Command+Shift+T)
 
 #### 设计模式
 - **Singleton Pattern** - 单例模式
@@ -180,36 +279,63 @@ File → Settings → Tools → OneClick → Keymap Settings
 
 ## 🎯 使用场景
 
-### 1. JavaBean 开发
+### 1. 智能文本处理
+```java
+public class UserService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
+
+    public void validateUser() {
+        // 场景1：选中字符串 "INVALID_USER" → Command+Shift+D
+        // 自动生成：private static final String INVALID_USER = "INVALID_USER";
+        if (user == null) {
+            throw new RuntimeException("INVALID_USER");
+        }
+
+        // 场景2：选中 userService → Command+Shift+D → 变为 user_service
+        // 场景3：选中 user_name → Command+Shift+D → 变为 userName
+    }
+}
+```
+
+### 2. JavaBean 快速开发
 ```java
 public class UserDTO {
     private Long id;
     private String username;
     private String email;
     private LocalDateTime createTime;
-    
-    // 使用 OneClick 一键生成所有标准方法
+
+    // 按 Command+Shift+D 一键生成所有标准方法
+    // 自动识别为JavaBean类，生成getter/setter/toString/equals/hashCode
 }
 ```
 
-### 2. 业务类开发
+### 3. 业务类智能增强
 ```java
 @Service
 public class UserService {
-    // 自动生成 SLF4J Logger
-    // 生成常用业务方法模板
+    // 按 Command+Shift+D 自动生成：
+    // 1. SLF4J Logger字段
+    // 2. serialVersionUID
+    // 3. 字段自动排序（只排序实例字段，不影响常量）
+
+    private UserRepository userRepository;
+    private EmailService emailService;
+    private ValidationService validationService;
 }
 ```
 
-### 3. 批量处理
-- 选中整个包进行批量JavaBean方法生成
-- 新项目快速搭建基础代码结构
-- 重构现有项目的代码规范
+### 4. 项目级批量处理
+- **项目视图操作**：右键包或文件 → OneClick → 批量生成
+- **多文件处理**：选中多个Java文件进行批量JavaBean方法生成
+- **新项目搭建**：快速为整个项目生成基础代码结构
+- **代码规范统一**：批量应用代码规范和最佳实践
 
-### 4. 代码质量提升
-- 定期使用代码分析功能检查代码质量
-- 使用代码清理功能保持代码整洁
-- 自动生成标准文档注释
+### 5. 开发效率提升
+- **枚举文件创建**：Command+Shift+U → 生成枚举 → 自动创建独立枚举文件
+- **数据库代码生成**：Command+Shift+Y → 一键生成Entity、Repository、Service
+- **常量管理**：智能常量生成，自动插入到合适位置（LOGGER下方）
+- **命名规范**：一键转换不同命名风格，保持代码一致性
 
 ## 🔧 开发指南
 

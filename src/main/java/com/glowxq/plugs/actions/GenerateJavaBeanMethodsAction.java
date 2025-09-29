@@ -235,7 +235,7 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
                 String fieldText = String.format("private static final String %s = \"%s\";", constantName, selectedText);
                 PsiField constantField = factory.createFieldFromText(fieldText, psiClass);
 
-                // 找到插入位置（类的最上面，在其他字段之前）
+                // 找到插入位置（如果有LOGGER，放在LOGGER下一行；否则放在类的最上面）
                 PsiElement insertionPoint = findConstantInsertionPoint(psiClass);
 
                 if (insertionPoint != null) {
@@ -270,9 +270,26 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
     }
 
     /**
-     * 找到常量字段的插入位置（类的最上面）
+     * 找到常量字段的插入位置（如果有LOGGER，放在LOGGER下一行；否则放在类的最上面）
      */
     private PsiElement findConstantInsertionPoint(PsiClass psiClass) {
+        // 首先查找LOGGER字段
+        PsiField loggerField = null;
+        for (PsiField field : psiClass.getFields()) {
+            if (field.hasModifierProperty(PsiModifier.STATIC) &&
+                field.hasModifierProperty(PsiModifier.FINAL) &&
+                "LOGGER".equals(field.getName())) {
+                loggerField = field;
+                break;
+            }
+        }
+
+        // 如果找到LOGGER字段，在其后插入
+        if (loggerField != null) {
+            return loggerField;
+        }
+
+        // 否则在类的开始位置插入
         PsiElement lBrace = psiClass.getLBrace();
         if (lBrace != null) {
             return lBrace;
