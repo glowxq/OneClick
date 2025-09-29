@@ -164,8 +164,7 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
             editor.getDocument().replaceString(startOffset, endOffset, convertedText);
         });
 
-        Messages.showInfoMessage(project, "命名风格已切换: " + selectedText + " → " +
-            (selectedText.contains("_") ? "驼峰命名" : "下划线命名"), "成功");
+        // 不再显示弹窗提示，静默执行
     }
 
     /**
@@ -207,7 +206,7 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
     }
 
     /**
-     * 生成常量字段并替换选中的字符串
+     * 生成常量字段（不替换选中文本）
      */
     private void generateConstantField(Project project, Editor editor, PsiFile psiFile, String selectedText, int startOffset, int endOffset) {
         // 获取当前类
@@ -227,8 +226,7 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
                 // 检查常量是否已存在
                 PsiField existingField = psiClass.findFieldByName(constantName, false);
                 if (existingField != null) {
-                    // 常量已存在，直接替换
-                    editor.getDocument().replaceString(startOffset, endOffset, constantName);
+                    Messages.showInfoMessage(project, "常量 " + constantName + " 已存在", "提示");
                     return;
                 }
 
@@ -246,15 +244,12 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
                     psiClass.add(constantField);
                 }
 
-                // 替换选中的文本为常量名
-                editor.getDocument().replaceString(startOffset, endOffset, constantName);
+                Messages.showInfoMessage(project, "已生成常量字段: " + constantName, "成功");
 
             } catch (Exception ex) {
                 Messages.showErrorDialog("生成常量字段时发生错误: " + ex.getMessage(), "错误");
             }
         });
-
-        Messages.showInfoMessage(project, "已生成常量字段并替换选中文本", "成功");
     }
 
     /**

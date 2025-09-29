@@ -21,7 +21,7 @@ public class OneClickSettingsComponent {
     private final JPanel myMainPanel;
 
     // 语言设置
-    private final JBCheckBox useEnglish = new JBCheckBox();
+    private final JComboBox<String> languageComboBox = new JComboBox<>(new String[]{"中文", "English"});
     
     // JavaBean相关设置
     private final JBCheckBox generateSeparatorComment = new JBCheckBox();
@@ -85,11 +85,12 @@ public class OneClickSettingsComponent {
         sortAscending.setSelected(true);
 
         // 添加语言切换监听器
-        useEnglish.addActionListener(new ActionListener() {
+        languageComboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // 更新设置
-                OneClickSettings.getInstance().setUseEnglish(useEnglish.isSelected());
+                boolean useEnglish = languageComboBox.getSelectedIndex() == 1; // 1表示English
+                OneClickSettings.getInstance().setUseEnglish(useEnglish);
                 // 刷新语言
                 I18nUtils.refreshLanguage();
                 // 更新界面文本
@@ -105,8 +106,7 @@ public class OneClickSettingsComponent {
      * 更新界面文本（支持国际化）
      */
     private void updateTexts() {
-        // 语言设置
-        useEnglish.setText(I18nUtils.message("settings.language.english"));
+        // 语言设置 - 下拉菜单不需要更新文本
 
         // JavaBean设置
         generateSeparatorComment.setText(I18nUtils.message("settings.javabean.separator.comment"));
@@ -176,7 +176,7 @@ public class OneClickSettingsComponent {
         panel.add(titleLabel, BorderLayout.NORTH);
 
         JPanel contentPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        contentPanel.add(useEnglish);
+        contentPanel.add(languageComboBox);
         panel.add(contentPanel, BorderLayout.CENTER);
 
         return panel;
@@ -379,11 +379,11 @@ public class OneClickSettingsComponent {
     }
 
     public boolean isUseEnglish() {
-        return useEnglish.isSelected();
+        return languageComboBox.getSelectedIndex() == 1;
     }
 
     public void setUseEnglish(boolean selected) {
-        useEnglish.setSelected(selected);
+        languageComboBox.setSelectedIndex(selected ? 1 : 0);
     }
 
     // 内部类设置的getter和setter方法

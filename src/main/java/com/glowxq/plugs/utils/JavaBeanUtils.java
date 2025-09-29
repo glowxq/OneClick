@@ -75,64 +75,37 @@ public class JavaBeanUtils {
     public static void rearrangeFieldsPhysically(PsiClass psiClass) {
         OneClickSettings settings = OneClickSettings.getInstance();
 
-        System.out.println("=== 字段重新排列调试信息 ===");
-        System.out.println("类名: " + psiClass.getName());
-        System.out.println("包名: " + (psiClass.getContainingFile() != null ?
-            psiClass.getContainingFile().getContainingDirectory().getName() : "unknown"));
-
         ClassTypeDetector.ClassType classType = ClassTypeDetector.detectClassType(psiClass);
-        System.out.println("检测到的类类型: " + classType);
-        System.out.println("字段排序启用: " + settings.isEnableFieldSorting());
 
         // 只有业务类才启用字段排序
         if (!settings.isEnableFieldSorting() || classType != ClassTypeDetector.ClassType.BUSINESS_CLASS) {
-            System.out.println("跳过字段排序 - 原因: " +
-                (!settings.isEnableFieldSorting() ? "字段排序未启用" : "不是业务类"));
             return;
         }
 
-        System.out.println("开始执行字段重新排列...");
-
+        // 只获取非静态的实例字段进行排序
         List<PsiField> allFields = Arrays.stream(psiClass.getFields())
                 .filter(field -> !field.hasModifierProperty(PsiModifier.STATIC))
-                .filter(field -> !field.hasModifierProperty(PsiModifier.FINAL))
                 .collect(Collectors.toList());
 
-        System.out.println("找到 " + allFields.size() + " 个实例字段");
-        for (PsiField field : allFields) {
-            System.out.println("  - " + field.getName());
-        }
-
         if (allFields.size() <= 1) {
-            System.out.println("字段数量不足，跳过排序");
             return; // 没有需要排序的字段
         }
 
         // 获取排序后的字段列表
         List<PsiField> sortedFields = sortFields(allFields, psiClass);
 
-        System.out.println("排序后的字段顺序:");
-        for (PsiField field : sortedFields) {
-            System.out.println("  - " + field.getName());
-        }
-
         // 检查是否需要重新排列
         boolean needsRearrangement = false;
         for (int i = 0; i < allFields.size(); i++) {
             if (!allFields.get(i).equals(sortedFields.get(i))) {
                 needsRearrangement = true;
-                System.out.println("位置 " + i + " 需要调整: " +
-                    allFields.get(i).getName() + " -> " + sortedFields.get(i).getName());
                 break;
             }
         }
 
         if (!needsRearrangement) {
-            System.out.println("字段已经是正确的顺序，无需重新排列");
             return; // 字段已经是正确的顺序
         }
-
-        System.out.println("开始重新排列字段...");
 
         // 收集字段的完整信息（包括注解、修饰符、注释等）
         List<FieldInfo> fieldInfos = new ArrayList<>();
@@ -147,18 +120,23 @@ public class JavaBeanUtils {
 
         // 按新顺序重新添加字段
         PsiElementFactory factory = JavaPsiFacade.getElementFactory(psiClass.getProject());
-        PsiElement insertionPoint = findFieldInsertionPoint(psiClass);
 
+        // 找到类的左大括号作为插入起点
+        PsiElement lBrace = psiClass.getLBrace();
+        if (lBrace == null) {
+            return;
+        }
+
+        PsiElement insertionPoint = lBrace;
         for (FieldInfo fieldInfo : fieldInfos) {
-            PsiField newField = factory.createFieldFromText(fieldInfo.getFullFieldText(), psiClass);
-            if (insertionPoint != null) {
-                psiClass.addAfter(newField, insertionPoint);
-                insertionPoint = newField;
-            } else {
-                psiClass.add(newField);
-                insertionPoint = newField;
+            try {
+                PsiField newField = factory.createFieldFromText(fieldInfo.getFullFieldText(), psiClass);
+                // 在insertionPoint之后插入
+                PsiElement inserted = psiClass.addAfter(newField, insertionPoint);
+                insertionPoint = inserted;
+            } catch (Exception e) {
+                // 静默处理错误
             }
-            System.out.println("重新添加字段: " + newField.getName());
         }
 
         System.out.println("字段重新排列完成！");
