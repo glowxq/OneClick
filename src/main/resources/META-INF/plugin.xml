@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.glowxq.plugs.oneclick</id>
     <name>OneClick</name>
-    <vendor email="glowxq@example.com" url="https://github.com/glowxq">glowxq</vendor>
+    <vendor email="glowxq@qq.com" url="https://github.com/glowxq">glowxq</vendor>
 
     <description><![CDATA[
     OneClick - 智能代码生成器，支持JavaBean和业务类的一键代码生成。

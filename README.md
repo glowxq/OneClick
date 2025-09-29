@@ -172,5 +172,5 @@ MIT License
 ## 📞 联系方式
 
 - 作者：glowxq
-- 邮箱：glowxq@example.com
+- 邮箱：glowxq@qq.com
 - GitHub：https://github.com/glowxq
