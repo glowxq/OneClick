@@ -129,6 +129,8 @@
             <add-to-group group-id="GenerateGroup" anchor="first"/>
             <!-- 添加到OneClick工具组 - 最重要，放在第一位 -->
             <add-to-group group-id="JavaBeanToolsGroup" anchor="first"/>
+            <!-- 添加到项目视图OneClick菜单组 - 最重要的功能放在第一位 -->
+            <add-to-group group-id="ProjectViewOneClickGroup" anchor="first"/>
             <!-- Windows/Linux快捷键 -->
             <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift D"/>
             <!-- macOS快捷键 (meta = Cmd键, shift = Shift键) -->
@@ -194,8 +196,8 @@
                 class="com.glowxq.plugs.actions.BatchGenerateAction"
                 text="📦 批量生成"
                 description="批量生成JavaBean方法，支持选中的文件或包">
-            <!-- 添加到项目视图OneClick菜单组 -->
-            <add-to-group group-id="ProjectViewOneClickGroup" anchor="first"/>
+            <!-- 添加到项目视图OneClick菜单组 - 在智能一键生成之后 -->
+            <add-to-group group-id="ProjectViewOneClickGroup" anchor="after" relative-to-action="com.glowxq.plugs.SmartOneClickAction"/>
             <!-- 重要功能，放在第二位 -->
             <add-to-group group-id="JavaBeanToolsGroup" anchor="after" relative-to-action="com.glowxq.plugs.SmartOneClickAction"/>
             <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift B"/>

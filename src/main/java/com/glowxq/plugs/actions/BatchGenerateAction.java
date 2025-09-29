@@ -212,75 +212,13 @@ public class BatchGenerateAction extends AnAction {
     }
 
     /**
-     * 为单个类生成JavaBean方法（简化版本）
+     * 为单个类生成代码（使用智能一键生成逻辑）
      */
     private void generateJavaBeanMethodsForClass(PsiClass psiClass, OneClickSettings settings) throws Exception {
-        Project project = psiClass.getProject();
-        PsiElementFactory factory = JavaPsiFacade.getElementFactory(project);
-        List<PsiField> fields = JavaBeanUtils.getInstanceFields(psiClass);
-
-        if (fields.isEmpty()) {
-            return;
-        }
-
-        // 移除现有的JavaBean方法
-        List<PsiMethod> existingMethods = JavaBeanUtils.getAllJavaBeanMethods(psiClass, fields);
-        for (PsiMethod method : existingMethods) {
-            method.delete();
-        }
-
-        // 移除现有的分割注释
-        if (settings.isGenerateSeparatorComment()) {
-            JavaBeanUtils.removeSeparatorComment(psiClass);
-        }
-
-        // 找到插入点
-        PsiElement insertionPoint = JavaBeanUtils.findInsertionPoint(psiClass, fields);
-        PsiElement lastInserted = insertionPoint;
-
-        // 添加分割注释
-        if (settings.isGenerateSeparatorComment()) {
-            List<PsiMethod> businessMethods = JavaBeanUtils.getBusinessMethods(psiClass, fields);
-            if (!businessMethods.isEmpty()) {
-                PsiElement commentElement = JavaBeanUtils.createFormattedSeparatorComment(factory, psiClass);
-                lastInserted = JavaBeanUtils.insertCommentAfter(psiClass, commentElement, lastInserted);
-            }
-        }
-
-        // 生成getter和setter方法
-        if (settings.isGenerateGetterSetter()) {
-            for (PsiField field : fields) {
-                // 生成getter
-                String getterCode = JavaBeanUtils.generateGetterCode(field);
-                PsiMethod getterMethod = factory.createMethodFromText(getterCode, psiClass);
-                lastInserted = JavaBeanUtils.insertAfter(psiClass, getterMethod, lastInserted);
-
-                // 生成setter
-                String setterCode = settings.isGenerateFluentSetters()
-                    ? JavaBeanUtils.generateFluentSetterCode(field, psiClass)
-                    : JavaBeanUtils.generateSetterCode(field);
-                PsiMethod setterMethod = factory.createMethodFromText(setterCode, psiClass);
-                lastInserted = JavaBeanUtils.insertAfter(psiClass, setterMethod, lastInserted);
-            }
-        }
-
-        // 生成toString方法
-        if (settings.isGenerateToString()) {
-            String toStringCode;
-            switch (settings.getToStringStyle()) {
-                case "simple":
-                    toStringCode = JavaBeanUtils.generateSimpleToStringCode(psiClass);
-                    break;
-                case "apache":
-                    toStringCode = JavaBeanUtils.generateApacheToStringCode(psiClass);
-                    break;
-                default:
-                    toStringCode = JavaBeanUtils.generateToStringCode(psiClass);
-                    break;
-            }
-            PsiMethod toStringMethod = factory.createMethodFromText(toStringCode, psiClass);
-            JavaBeanUtils.insertAfter(psiClass, toStringMethod, lastInserted);
-        }
+        // 使用智能一键生成的逻辑 - 调用GenerateJavaBeanMethodsAction的核心方法
+        GenerateJavaBeanMethodsAction action = new GenerateJavaBeanMethodsAction();
+        // 直接调用智能生成逻辑
+        action.performSmartGeneration(psiClass.getProject(), psiClass);
     }
 
     private void showBatchResult(Project project, int totalFiles, int successCount, 

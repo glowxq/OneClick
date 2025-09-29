@@ -68,7 +68,7 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
             // 执行生成操作
             String[] result = new String[1]; // 用于存储结果消息
             WriteCommandAction.runWriteCommandAction(project, () -> {
-                result[0] = generateCodeForClass(project, psiClass);
+                result[0] = performSmartGeneration(project, psiClass);
             });
 
             Messages.showInfoMessage(project, result[0], "成功");
@@ -301,7 +301,7 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
      * 为类生成代码（根据类型自动判断）
      * @return 生成结果消息
      */
-    private String generateCodeForClass(Project project, PsiClass psiClass) {
+    public String performSmartGeneration(Project project, PsiClass psiClass) {
         OneClickSettings settings = OneClickSettings.getInstance();
 
         // 检测类类型

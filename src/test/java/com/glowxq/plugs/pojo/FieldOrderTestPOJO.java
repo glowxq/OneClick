@@ -110,14 +110,4 @@ public class FieldOrderTestPOJO {
                 "\"skills\":" + skills +
                 "}";
     }
-
-    // 在这里使用插件生成getter/setter/toString方法
-    // 预期结果：
-    // 1. getter方法按字段声明顺序生成：
-    //    getFirstName(), getLastName(), getAge(), getBirthDate(), 
-    //    getEmail(), getPhoneNumber(), isActive(), getSalary(), getSkills()
-    // 2. setter方法按相同顺序生成：
-    //    setFirstName(), setLastName(), setAge(), setBirthDate(),
-    //    setEmail(), setPhoneNumber(), setActive(), setSalary(), setSkills()
-    // 3. toString方法包含所有字段，按声明顺序排列
 }

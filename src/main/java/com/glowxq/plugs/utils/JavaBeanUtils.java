@@ -70,7 +70,7 @@ public class JavaBeanUtils {
 
     /**
      * 重新排列类中字段的物理位置（包括注解）
-     * 仅对业务类生效
+     * 仅对业务类生效，按照 static final -> static -> final -> 实例字段 的顺序
      */
     public static void rearrangeFieldsPhysically(PsiClass psiClass) {
         OneClickSettings settings = OneClickSettings.getInstance();
@@ -82,24 +82,44 @@ public class JavaBeanUtils {
             return;
         }
 
-        // 只获取非静态、非final的实例字段进行排序（排除常量）
-        List<PsiField> allFields = Arrays.stream(psiClass.getFields())
-                .filter(field -> !field.hasModifierProperty(PsiModifier.STATIC))
-                .filter(field -> !field.hasModifierProperty(PsiModifier.FINAL))
-                .filter(field -> !isConstantField(field))
-                .collect(Collectors.toList());
-
+        // 获取所有字段并按类型分组
+        List<PsiField> allFields = Arrays.asList(psiClass.getFields());
         if (allFields.size() <= 1) {
             return; // 没有需要排序的字段
         }
 
-        // 获取排序后的字段列表
-        List<PsiField> sortedFields = sortFields(allFields, psiClass);
+        // 按字段类型分组
+        List<PsiField> staticFinalFields = new ArrayList<>();  // static final 字段
+        List<PsiField> staticFields = new ArrayList<>();       // static 字段
+        List<PsiField> finalFields = new ArrayList<>();        // final 字段
+        List<PsiField> instanceFields = new ArrayList<>();     // 实例字段
+
+        for (PsiField field : allFields) {
+            if (field.hasModifierProperty(PsiModifier.STATIC) && field.hasModifierProperty(PsiModifier.FINAL)) {
+                staticFinalFields.add(field);
+            } else if (field.hasModifierProperty(PsiModifier.STATIC)) {
+                staticFields.add(field);
+            } else if (field.hasModifierProperty(PsiModifier.FINAL)) {
+                finalFields.add(field);
+            } else {
+                instanceFields.add(field);
+            }
+        }
+
+        // 只对实例字段进行排序，其他字段保持原有顺序
+        List<PsiField> sortedInstanceFields = sortFields(instanceFields, psiClass);
+
+        // 构建最终的字段顺序：static final -> static -> final -> 排序后的实例字段
+        List<PsiField> finalOrder = new ArrayList<>();
+        finalOrder.addAll(staticFinalFields);
+        finalOrder.addAll(staticFields);
+        finalOrder.addAll(finalFields);
+        finalOrder.addAll(sortedInstanceFields);
 
         // 检查是否需要重新排列
         boolean needsRearrangement = false;
         for (int i = 0; i < allFields.size(); i++) {
-            if (!allFields.get(i).equals(sortedFields.get(i))) {
+            if (!allFields.get(i).equals(finalOrder.get(i))) {
                 needsRearrangement = true;
                 break;
             }
@@ -111,11 +131,11 @@ public class JavaBeanUtils {
 
         // 收集字段的完整信息（包括注解、修饰符、注释等）
         List<FieldInfo> fieldInfos = new ArrayList<>();
-        for (PsiField field : sortedFields) {
+        for (PsiField field : finalOrder) {
             fieldInfos.add(new FieldInfo(field));
         }
 
-        // 删除原有字段
+        // 删除所有字段
         for (PsiField field : allFields) {
             field.delete();
         }
@@ -141,7 +161,7 @@ public class JavaBeanUtils {
             }
         }
 
-        System.out.println("字段重新排列完成！");
+        System.out.println("字段重新排列完成！按顺序：static final -> static -> final -> 实例字段");
     }
 
     /**
