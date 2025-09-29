@@ -1,6 +1,7 @@
 package com.glowxq.plugs.settings;
 
 import com.glowxq.plugs.utils.I18nUtils;
+import com.glowxq.plugs.utils.KeymapApplier;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.util.NlsContexts;
@@ -41,6 +42,8 @@ public class KeymapSettingsConfigurable implements Configurable {
         KeymapSettings settings = KeymapSettings.getInstance();
         if (mySettingsComponent != null) {
             mySettingsComponent.saveSettings(settings);
+            // 应用快捷键设置到实际的Action
+            KeymapApplier.applyKeymapSettings(settings);
         }
     }
 

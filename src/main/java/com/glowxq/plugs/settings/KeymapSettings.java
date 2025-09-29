@@ -46,6 +46,10 @@ public class KeymapSettings implements PersistentStateComponent<KeymapSettings.S
         public String generateTemplateWindows = "ctrl alt T";
         public String refactorAssistantWindows = "ctrl alt R";
         public String smartCommentWindows = "ctrl alt C";
+        public String batchGenerateWindows = "ctrl alt B";
+        public String codeCleanupWindows = "ctrl alt L";
+        public String codeAnalysisWindows = "ctrl alt A";
+        public String quickDocWindows = "ctrl alt D";
         public String quickFixWindows = "ctrl alt Q";
         
         // macOS 快捷键
@@ -54,6 +58,10 @@ public class KeymapSettings implements PersistentStateComponent<KeymapSettings.S
         public String generateTemplateMac = "cmd alt T";
         public String refactorAssistantMac = "cmd alt R";
         public String smartCommentMac = "cmd alt C";
+        public String batchGenerateMac = "cmd alt B";
+        public String codeCleanupMac = "cmd alt L";
+        public String codeAnalysisMac = "cmd alt A";
+        public String quickDocMac = "cmd alt D";
         public String quickFixMac = "cmd alt Q";
         
         // 自定义快捷键映射
@@ -90,6 +98,22 @@ public class KeymapSettings implements PersistentStateComponent<KeymapSettings.S
         return myState.smartCommentWindows;
     }
 
+    public String getBatchGenerateWindows() {
+        return myState.batchGenerateWindows;
+    }
+
+    public String getCodeCleanupWindows() {
+        return myState.codeCleanupWindows;
+    }
+
+    public String getCodeAnalysisWindows() {
+        return myState.codeAnalysisWindows;
+    }
+
+    public String getQuickDocWindows() {
+        return myState.quickDocWindows;
+    }
+
     public String getQuickFixWindows() {
         return myState.quickFixWindows;
     }
@@ -113,6 +137,22 @@ public class KeymapSettings implements PersistentStateComponent<KeymapSettings.S
 
     public String getSmartCommentMac() {
         return myState.smartCommentMac;
+    }
+
+    public String getBatchGenerateMac() {
+        return myState.batchGenerateMac;
+    }
+
+    public String getCodeCleanupMac() {
+        return myState.codeCleanupMac;
+    }
+
+    public String getCodeAnalysisMac() {
+        return myState.codeAnalysisMac;
+    }
+
+    public String getQuickDocMac() {
+        return myState.quickDocMac;
     }
 
     public String getQuickFixMac() {
@@ -140,6 +180,22 @@ public class KeymapSettings implements PersistentStateComponent<KeymapSettings.S
         myState.smartCommentWindows = shortcut;
     }
 
+    public void setBatchGenerateWindows(String shortcut) {
+        myState.batchGenerateWindows = shortcut;
+    }
+
+    public void setCodeCleanupWindows(String shortcut) {
+        myState.codeCleanupWindows = shortcut;
+    }
+
+    public void setCodeAnalysisWindows(String shortcut) {
+        myState.codeAnalysisWindows = shortcut;
+    }
+
+    public void setQuickDocWindows(String shortcut) {
+        myState.quickDocWindows = shortcut;
+    }
+
     public void setQuickFixWindows(String shortcut) {
         myState.quickFixWindows = shortcut;
     }
@@ -163,6 +219,22 @@ public class KeymapSettings implements PersistentStateComponent<KeymapSettings.S
 
     public void setSmartCommentMac(String shortcut) {
         myState.smartCommentMac = shortcut;
+    }
+
+    public void setBatchGenerateMac(String shortcut) {
+        myState.batchGenerateMac = shortcut;
+    }
+
+    public void setCodeCleanupMac(String shortcut) {
+        myState.codeCleanupMac = shortcut;
+    }
+
+    public void setCodeAnalysisMac(String shortcut) {
+        myState.codeAnalysisMac = shortcut;
+    }
+
+    public void setQuickDocMac(String shortcut) {
+        myState.quickDocMac = shortcut;
     }
 
     public void setQuickFixMac(String shortcut) {
@@ -224,6 +296,14 @@ public class KeymapSettings implements PersistentStateComponent<KeymapSettings.S
                 return isMac ? getRefactorAssistantMac() : getRefactorAssistantWindows();
             case "smartComment":
                 return isMac ? getSmartCommentMac() : getSmartCommentWindows();
+            case "batchGenerate":
+                return isMac ? getBatchGenerateMac() : getBatchGenerateWindows();
+            case "codeCleanup":
+                return isMac ? getCodeCleanupMac() : getCodeCleanupWindows();
+            case "codeAnalysis":
+                return isMac ? getCodeAnalysisMac() : getCodeAnalysisWindows();
+            case "quickDoc":
+                return isMac ? getQuickDocMac() : getQuickDocWindows();
             case "quickFix":
                 return isMac ? getQuickFixMac() : getQuickFixWindows();
             default:
@@ -258,6 +338,22 @@ public class KeymapSettings implements PersistentStateComponent<KeymapSettings.S
                 if (isMac) setSmartCommentMac(shortcut);
                 else setSmartCommentWindows(shortcut);
                 break;
+            case "batchGenerate":
+                if (isMac) setBatchGenerateMac(shortcut);
+                else setBatchGenerateWindows(shortcut);
+                break;
+            case "codeCleanup":
+                if (isMac) setCodeCleanupMac(shortcut);
+                else setCodeCleanupWindows(shortcut);
+                break;
+            case "codeAnalysis":
+                if (isMac) setCodeAnalysisMac(shortcut);
+                else setCodeAnalysisWindows(shortcut);
+                break;
+            case "quickDoc":
+                if (isMac) setQuickDocMac(shortcut);
+                else setQuickDocWindows(shortcut);
+                break;
             case "quickFix":
                 if (isMac) setQuickFixMac(shortcut);
                 else setQuickFixWindows(shortcut);
@@ -277,6 +373,10 @@ public class KeymapSettings implements PersistentStateComponent<KeymapSettings.S
         myState.generateTemplateWindows = "ctrl alt T";
         myState.refactorAssistantWindows = "ctrl alt R";
         myState.smartCommentWindows = "ctrl alt C";
+        myState.batchGenerateWindows = "ctrl alt B";
+        myState.codeCleanupWindows = "ctrl alt L";
+        myState.codeAnalysisWindows = "ctrl alt A";
+        myState.quickDocWindows = "ctrl alt D";
         myState.quickFixWindows = "ctrl alt Q";
         
         myState.generateJavaBeanMac = "cmd alt G";
@@ -284,6 +384,10 @@ public class KeymapSettings implements PersistentStateComponent<KeymapSettings.S
         myState.generateTemplateMac = "cmd alt T";
         myState.refactorAssistantMac = "cmd alt R";
         myState.smartCommentMac = "cmd alt C";
+        myState.batchGenerateMac = "cmd alt B";
+        myState.codeCleanupMac = "cmd alt L";
+        myState.codeAnalysisMac = "cmd alt A";
+        myState.quickDocMac = "cmd alt D";
         myState.quickFixMac = "cmd alt Q";
         
         myState.customKeymaps.clear();

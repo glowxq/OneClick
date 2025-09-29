@@ -117,6 +117,8 @@ public class UserDTO {
                     "}";
         }
 
+        // Inner Class Address Methods
+
         // 这里应该生成JavaBean方法
         // 使用 Ctrl+Alt+G 测试生成功能
     }

@@ -3,6 +3,8 @@
     <name>OneClick</name>
     <vendor email="glowxq@qq.com" url="https://github.com/glowxq">glowxq</vendor>
 
+
+
     <description><![CDATA[
     OneClick - 智能代码生成器，支持JavaBean和业务类的一键代码生成。
 
@@ -134,10 +136,51 @@
                 text="Batch Generate JavaBean Methods"
                 description="Batch generate JavaBean methods for selected files or packages">
             <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+            <add-to-group group-id="ProjectViewPopupMenuModifyGroup" anchor="last"/>
             <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+            <add-to-group group-id="JavaBeanToolsGroup" anchor="last"/>
             <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt B"/>
             <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt B"/>
             <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt B"/>
+        </action>
+
+        <!-- 代码清理助手 -->
+        <action id="com.glowxq.plugs.CodeCleanupAction"
+                class="com.glowxq.plugs.actions.CodeCleanupAction"
+                text="Code Cleanup"
+                description="Clean up code with various operations">
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+            <add-to-group group-id="CodeMenu" anchor="last"/>
+            <add-to-group group-id="JavaBeanToolsGroup" anchor="last"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt L"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt L"/>
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt L"/>
+        </action>
+
+        <!-- 代码分析器 -->
+        <action id="com.glowxq.plugs.CodeAnalysisAction"
+                class="com.glowxq.plugs.actions.CodeAnalysisAction"
+                text="Code Analysis"
+                description="Analyze code statistics and metrics">
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+            <add-to-group group-id="CodeMenu" anchor="last"/>
+            <add-to-group group-id="JavaBeanToolsGroup" anchor="last"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt A"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt A"/>
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt A"/>
+        </action>
+
+        <!-- 快速文档生成 -->
+        <action id="com.glowxq.plugs.QuickDocAction"
+                class="com.glowxq.plugs.actions.QuickDocAction"
+                text="Quick Documentation"
+                description="Generate JavaDoc documentation quickly">
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+            <add-to-group group-id="CodeMenu" anchor="last"/>
+            <add-to-group group-id="JavaBeanToolsGroup" anchor="last"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt D"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt D"/>
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt D"/>
         </action>
     </actions>
 </idea-plugin>

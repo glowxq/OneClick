@@ -56,6 +56,10 @@ public class KeymapSettingsComponent {
         shortcutFields.put("generateTemplate", new JBTextField(20));
         shortcutFields.put("refactorAssistant", new JBTextField(20));
         shortcutFields.put("smartComment", new JBTextField(20));
+        shortcutFields.put("batchGenerate", new JBTextField(20));
+        shortcutFields.put("codeCleanup", new JBTextField(20));
+        shortcutFields.put("codeAnalysis", new JBTextField(20));
+        shortcutFields.put("quickDoc", new JBTextField(20));
         shortcutFields.put("quickFix", new JBTextField(20));
     }
 
@@ -172,7 +176,35 @@ public class KeymapSettingsComponent {
         gbc.gridx = 1;
         contentPanel.add(shortcutFields.get("smartComment"), gbc);
         row++;
-        
+
+        // 批量生成
+        gbc.gridx = 0; gbc.gridy = row;
+        contentPanel.add(new JBLabel(I18nUtils.message("settings.keymap.batch.generate")), gbc);
+        gbc.gridx = 1;
+        contentPanel.add(shortcutFields.get("batchGenerate"), gbc);
+        row++;
+
+        // 代码清理
+        gbc.gridx = 0; gbc.gridy = row;
+        contentPanel.add(new JBLabel(I18nUtils.message("settings.keymap.code.cleanup")), gbc);
+        gbc.gridx = 1;
+        contentPanel.add(shortcutFields.get("codeCleanup"), gbc);
+        row++;
+
+        // 代码分析
+        gbc.gridx = 0; gbc.gridy = row;
+        contentPanel.add(new JBLabel(I18nUtils.message("settings.keymap.code.analysis")), gbc);
+        gbc.gridx = 1;
+        contentPanel.add(shortcutFields.get("codeAnalysis"), gbc);
+        row++;
+
+        // 快速文档
+        gbc.gridx = 0; gbc.gridy = row;
+        contentPanel.add(new JBLabel(I18nUtils.message("settings.keymap.quick.doc")), gbc);
+        gbc.gridx = 1;
+        contentPanel.add(shortcutFields.get("quickDoc"), gbc);
+        row++;
+
         // 快速修复
         gbc.gridx = 0; gbc.gridy = row;
         contentPanel.add(new JBLabel(I18nUtils.message("settings.keymap.quick.fix")), gbc);

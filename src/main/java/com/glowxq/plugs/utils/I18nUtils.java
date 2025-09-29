@@ -41,6 +41,14 @@ public class I18nUtils extends DynamicBundle {
             return Locale.CHINESE;
         }
     }
+
+    /**
+     * 是否使用英语
+     */
+    public static boolean isUseEnglish() {
+        OneClickSettings settings = OneClickSettings.getInstance();
+        return settings.isUseEnglish();
+    }
     
     /**
      * 获取本地化的ResourceBundle
