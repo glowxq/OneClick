@@ -24,6 +24,93 @@ public class FieldOrderTestPOJO {
     private BigDecimal salary;    // 第8个字段
     private List<String> skills;  // 第9个字段
 
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public Date getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(Date birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public BigDecimal getSalary() {
+        return salary;
+    }
+
+    public void setSalary(BigDecimal salary) {
+        this.salary = salary;
+    }
+
+    public List<String> getSkills() {
+        return skills;
+    }
+
+    public void setSkills(List<String> skills) {
+        this.skills = skills;
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "\"firstName\":\"" + firstName + "\"" + "," +
+                "\"lastName\":\"" + lastName + "\"" + "," +
+                "\"age\":" + age + "," +
+                "\"birthDate\":" + birthDate + "," +
+                "\"email\":\"" + email + "\"" + "," +
+                "\"phoneNumber\":\"" + phoneNumber + "\"" + "," +
+                "\"active\":" + active + "," +
+                "\"salary\":" + salary + "," +
+                "\"skills\":" + skills +
+                "}";
+    }
+
     // 在这里使用插件生成getter/setter/toString方法
     // 预期结果：
     // 1. getter方法按字段声明顺序生成：

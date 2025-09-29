@@ -33,6 +33,40 @@ import java.util.List;
 public class BatchGenerateAction extends AnAction {
 
     @Override
+    public void update(@NotNull AnActionEvent e) {
+        Project project = e.getProject();
+        VirtualFile[] selectedFiles = e.getData(CommonDataKeys.VIRTUAL_FILE_ARRAY);
+
+        // 只有在项目视图中选中文件或目录时才显示
+        boolean visible = project != null && selectedFiles != null && selectedFiles.length > 0;
+        e.getPresentation().setVisible(visible);
+        e.getPresentation().setEnabled(visible);
+
+        // 动态更新Action文本
+        if (visible) {
+            int fileCount = 0;
+            int dirCount = 0;
+            for (VirtualFile file : selectedFiles) {
+                if (file.isDirectory()) {
+                    dirCount++;
+                } else {
+                    fileCount++;
+                }
+            }
+
+            String text;
+            if (dirCount > 0 && fileCount > 0) {
+                text = I18nUtils.message("action.batch.mixed", fileCount + dirCount);
+            } else if (dirCount > 0) {
+                text = I18nUtils.message("action.batch.packages", dirCount);
+            } else {
+                text = I18nUtils.message("action.batch.files", fileCount);
+            }
+            e.getPresentation().setText(text);
+        }
+    }
+
+    @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
         Project project = e.getProject();
         VirtualFile[] selectedFiles = e.getData(CommonDataKeys.VIRTUAL_FILE_ARRAY);
@@ -43,7 +77,7 @@ public class BatchGenerateAction extends AnAction {
 
         // 收集所有需要处理的Java文件
         List<VirtualFile> javaFiles = collectJavaFiles(project, selectedFiles);
-        
+
         if (javaFiles.isEmpty()) {
             Messages.showInfoMessage(project,
                 I18nUtils.message("message.batch.no.java.files"),
@@ -270,42 +304,5 @@ public class BatchGenerateAction extends AnAction {
             Messages.showInfoMessage(project, message.toString(), 
                 I18nUtils.message("action.batch.title"));
         }
-    }
-
-    @Override
-    public void update(@NotNull AnActionEvent e) {
-        Project project = e.getProject();
-        VirtualFile[] selectedFiles = e.getData(CommonDataKeys.VIRTUAL_FILE_ARRAY);
-        
-        boolean enabled = project != null && selectedFiles != null && selectedFiles.length > 0;
-        
-        // 检查是否至少有一个Java文件或包含Java文件的目录
-        if (enabled) {
-            enabled = hasJavaFilesOrDirectories(selectedFiles);
-        }
-        
-        e.getPresentation().setEnabledAndVisible(enabled);
-        
-        // 动态更新Action文本
-        if (enabled && selectedFiles != null) {
-            if (selectedFiles.length == 1) {
-                if (selectedFiles[0].isDirectory()) {
-                    e.getPresentation().setText(I18nUtils.message("action.batch.package.text"));
-                } else {
-                    e.getPresentation().setText(I18nUtils.message("action.batch.file.text"));
-                }
-            } else {
-                e.getPresentation().setText(I18nUtils.message("action.batch.files.text", selectedFiles.length));
-            }
-        }
-    }
-
-    private boolean hasJavaFilesOrDirectories(VirtualFile[] files) {
-        for (VirtualFile file : files) {
-            if (file.isDirectory() || isJavaFile(file)) {
-                return true;
-            }
-        }
-        return false;
     }
 }

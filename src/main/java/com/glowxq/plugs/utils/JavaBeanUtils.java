@@ -18,9 +18,53 @@ public class JavaBeanUtils {
      * 获取类中的所有字段（排除静态和final字段）
      */
     public static List<PsiField> getInstanceFields(PsiClass psiClass) {
-        return Arrays.stream(psiClass.getFields())
+        List<PsiField> fields = Arrays.stream(psiClass.getFields())
                 .filter(field -> !field.hasModifierProperty(PsiModifier.STATIC))
                 .filter(field -> !field.hasModifierProperty(PsiModifier.FINAL))
+                .collect(Collectors.toList());
+
+        // 应用字段排序（仅对业务类生效）
+        return sortFields(fields, psiClass);
+    }
+
+    /**
+     * 根据设置对字段进行排序（仅对业务类生效）
+     */
+    public static List<PsiField> sortFields(List<PsiField> fields, PsiClass psiClass) {
+        OneClickSettings settings = OneClickSettings.getInstance();
+
+        // 只有业务类才启用字段排序
+        if (!settings.isEnableFieldSorting() || ClassTypeDetector.detectClassType(psiClass) != ClassTypeDetector.ClassType.BUSINESS_CLASS) {
+            return fields;
+        }
+
+        String sortType = settings.getFieldSortType();
+        boolean ascending = settings.isSortAscending();
+
+        Comparator<PsiField> comparator;
+
+        switch (sortType) {
+            case "LENGTH":
+                comparator = Comparator.comparing(field -> field.getName().length());
+                break;
+            case "TYPE":
+                comparator = Comparator.comparing(field -> {
+                    PsiType type = field.getType();
+                    return type.getPresentableText();
+                });
+                break;
+            case "NAME":
+            default:
+                comparator = Comparator.comparing(PsiField::getName);
+                break;
+        }
+
+        if (!ascending) {
+            comparator = comparator.reversed();
+        }
+
+        return fields.stream()
+                .sorted(comparator)
                 .collect(Collectors.toList());
     }
 

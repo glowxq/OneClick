@@ -81,7 +81,7 @@ public class TestJavaBean implements Serializable {
                 "\"name\":\"" + name + "\"" + "," +
                 "\"age\":" + age + "," +
                 "\"active\":" + active + "," +
-                "\"createTime\":\"" + createTime + "\"" + "," +
+                "\"createTime\":" + createTime + "," +
                 "\"tags\":" + tags +
                 "}";
     }

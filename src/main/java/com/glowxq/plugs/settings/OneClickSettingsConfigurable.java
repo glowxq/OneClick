@@ -73,6 +73,16 @@ public class OneClickSettingsConfigurable implements Configurable {
         settings.setProcessInnerClasses(mySettingsComponent.isProcessInnerClasses());
         settings.setGenerateInnerClassSeparator(mySettingsComponent.isGenerateInnerClassSeparator());
         settings.setMaxInnerClassDepth(mySettingsComponent.getMaxInnerClassDepth());
+
+        // 包规则设置
+        settings.setEnablePackageDetection(mySettingsComponent.isEnablePackageDetection());
+        settings.setJavaBeanPackagePatterns(mySettingsComponent.getJavaBeanPackagePatterns());
+        settings.setBusinessClassPackagePatterns(mySettingsComponent.getBusinessClassPackagePatterns());
+
+        // 字段排序设置
+        settings.setEnableFieldSorting(mySettingsComponent.isEnableFieldSorting());
+        settings.setFieldSortType(mySettingsComponent.getFieldSortType());
+        settings.setSortAscending(mySettingsComponent.isSortAscending());
     }
 
     @Override
@@ -96,6 +106,16 @@ public class OneClickSettingsConfigurable implements Configurable {
         mySettingsComponent.setProcessInnerClasses(settings.isProcessInnerClasses());
         mySettingsComponent.setGenerateInnerClassSeparator(settings.isGenerateInnerClassSeparator());
         mySettingsComponent.setMaxInnerClassDepth(settings.getMaxInnerClassDepth());
+
+        // 包规则设置
+        mySettingsComponent.setEnablePackageDetection(settings.isEnablePackageDetection());
+        mySettingsComponent.setJavaBeanPackagePatterns(settings.getJavaBeanPackagePatterns());
+        mySettingsComponent.setBusinessClassPackagePatterns(settings.getBusinessClassPackagePatterns());
+
+        // 字段排序设置
+        mySettingsComponent.setEnableFieldSorting(settings.isEnableFieldSorting());
+        mySettingsComponent.setFieldSortType(settings.getFieldSortType());
+        mySettingsComponent.setSortAscending(settings.isSortAscending());
     }
 
     @Override

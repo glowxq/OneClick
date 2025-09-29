@@ -6,21 +6,61 @@
 
 
     <description><![CDATA[
-    OneClick - 智能代码生成器，支持JavaBean和业务类的一键代码生成。
+    <h2>OneClick - 智能代码生成器 🚀</h2>
+    <p>功能强大的 IntelliJ IDEA 插件，专为 Java 开发者设计，提供全方位的智能代码生成、分析和管理功能。</p>
 
-    功能特性：
-    - 智能检测类类型（JavaBean vs 业务类）
-    - JavaBean：生成getter/setter/toString/equals/hashCode方法
-    - 业务类：生成日志字段、serialVersionUID等
-    - 支持多种toString风格（JSON、简单、Apache Commons）
-    - 支持fluent setter（链式调用）
-    - 可配置的设置面板，支持中英双语
-    - 一键折叠所有JavaBean方法
+    <h3>🎯 核心功能</h3>
+    <ul>
+        <li><strong>JavaBean 方法生成</strong> - getter/setter/toString/equals/hashCode</li>
+        <li><strong>代码模板生成器</strong> - 15种设计模式和架构模板</li>
+        <li><strong>批量生成功能</strong> - 支持选中包或多个文件进行批量处理</li>
+        <li><strong>内部类支持</strong> - 递归处理嵌套内部类，可配置处理深度</li>
+        <li><strong>代码重构助手</strong> - 10种重构操作</li>
+        <li><strong>智能注释生成</strong> - 根据代码上下文自动生成中文注释</li>
+        <li><strong>代码清理助手</strong> - 移除未使用导入、空行、调试代码等</li>
+        <li><strong>代码分析工具</strong> - 详细统计分析和质量检测</li>
+        <li><strong>快速文档生成</strong> - 自动生成标准JavaDoc文档</li>
+    </ul>
 
-    快捷键：
-    - Windows/Linux: Ctrl+Alt+G / Ctrl+Alt+F
-    - macOS: Cmd+Option+G / Cmd+Option+F
-    - 右键菜单: JavaBean Tools
+    <h3>⚙️ 高级特性</h3>
+    <ul>
+        <li><strong>智能类型检测</strong> - 自动识别JavaBean vs 业务类</li>
+        <li><strong>可配置包规则</strong> - 自定义JavaBean和业务类包名模式</li>
+        <li><strong>字段排序功能</strong> - 支持按名称、长度、类型排序</li>
+        <li><strong>快捷键自定义</strong> - 支持不同操作系统的快捷键配置</li>
+        <li><strong>多语言支持</strong> - 完整的中英双语界面</li>
+        <li><strong>多种toString风格</strong> - JSON、简单、Apache Commons</li>
+        <li><strong>Fluent Setter</strong> - 支持链式调用风格</li>
+    </ul>
+
+    <h3>⌨️ 快捷键说明</h3>
+    <table border="1" cellpadding="5" cellspacing="0">
+        <tr><th>功能</th><th>Windows/Linux</th><th>macOS</th></tr>
+        <tr><td>智能一键生成</td><td>Ctrl+Alt+G</td><td>Cmd+Alt+G</td></tr>
+        <tr><td>批量生成</td><td>Ctrl+Alt+B</td><td>Cmd+Alt+B</td></tr>
+        <tr><td>代码模板</td><td>Ctrl+Alt+T</td><td>Cmd+Alt+T</td></tr>
+        <tr><td>重构助手</td><td>Ctrl+Alt+R</td><td>Cmd+Alt+R</td></tr>
+        <tr><td>智能注释</td><td>Ctrl+Alt+C</td><td>Cmd+Alt+C</td></tr>
+        <tr><td>代码清理</td><td>Ctrl+Alt+L</td><td>Cmd+Alt+L</td></tr>
+        <tr><td>代码分析</td><td>Ctrl+Alt+A</td><td>Cmd+Alt+A</td></tr>
+        <tr><td>快速文档</td><td>Ctrl+Alt+D</td><td>Cmd+Alt+D</td></tr>
+        <tr><td>折叠方法</td><td>Ctrl+Alt+F</td><td>Cmd+Alt+F</td></tr>
+    </table>
+
+    <h3>🚀 使用方法</h3>
+    <ul>
+        <li><strong>右键菜单</strong> - 在Java类中右键选择 "JavaBean Tools"</li>
+        <li><strong>项目视图</strong> - 选中包或文件右键选择 "Batch Generate"</li>
+        <li><strong>设置面板</strong> - File → Settings → Tools → OneClick</li>
+        <li><strong>快捷键</strong> - 使用上述快捷键快速访问功能</li>
+    </ul>
+
+    <h3>📋 代码模板库</h3>
+    <p><strong>设计模式:</strong> Singleton, Builder, Factory, Observer, Strategy</p>
+    <p><strong>架构层:</strong> REST Controller, Service Layer, Repository Layer, Exception Handler</p>
+    <p><strong>工具类:</strong> Validation Utils, Date Utils, String Utils, File Utils, JSON Utils, Test Class</p>
+
+    <p><em>更多功能和详细说明请查看项目文档。</em></p>
     ]]></description>
 
     <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
@@ -34,7 +74,14 @@
             parentId="tools"
             instance="com.glowxq.plugs.settings.OneClickSettingsConfigurable"
             id="OneClickSettings"
-            displayName="OneClick"/>
+            displayName="OneClick Settings"/>
+
+        <!-- 插件概览页面 -->
+        <applicationConfigurable
+            parentId="OneClickSettings"
+            instance="com.glowxq.plugs.settings.PluginOverviewConfigurable"
+            id="OneClickOverview"
+            displayName="OneClick Overview"/>
 
         <!-- 注册快捷键设置面板 -->
         <applicationConfigurable
@@ -42,6 +89,12 @@
             instance="com.glowxq.plugs.settings.KeymapSettingsConfigurable"
             id="OneClickKeymapSettings"
             displayName="Keymap Settings"/>
+
+        <!-- 通知组 -->
+        <notificationGroup id="OneClick Plugin" displayType="BALLOON"/>
+
+        <!-- 启动活动 -->
+        <postStartupActivity implementation="com.glowxq.plugs.startup.OneClickStartupActivity"/>
 
         <!-- 注册设置服务 -->
         <applicationService serviceImplementation="com.glowxq.plugs.settings.OneClickSettings"/>
@@ -62,11 +115,11 @@
             <add-to-group group-id="JavaBeanToolsGroup" anchor="first"/>
         </action>
 
-        <!-- 生成JavaBean方法的Action -->
-        <action id="com.glowxq.plugs.GenerateJavaBeanMethodsAction"
+        <!-- 智能一键生成Action -->
+        <action id="com.glowxq.plugs.SmartOneClickAction"
                 class="com.glowxq.plugs.actions.GenerateJavaBeanMethodsAction"
-                text="Generate JavaBean Methods"
-                description="Generate getter/setter/toString methods for JavaBean">
+                text="Smart One-Click Generate"
+                description="Intelligently generate appropriate methods based on class type">
             <!-- 添加到Generate菜单 -->
             <add-to-group group-id="GenerateGroup" anchor="first"/>
             <!-- 添加到JavaBean工具组 -->
@@ -99,8 +152,8 @@
                 class="com.glowxq.plugs.actions.GenerateCodeTemplateAction"
                 text="Generate Code Template"
                 description="Generate common code templates">
-            <add-to-group group-id="GenerateGroup" anchor="after" relative-to-action="com.glowxq.plugs.GenerateJavaBeanMethodsAction"/>
-            <add-to-group group-id="JavaBeanToolsGroup" anchor="after" relative-to-action="com.glowxq.plugs.GenerateJavaBeanMethodsAction"/>
+            <add-to-group group-id="GenerateGroup" anchor="after" relative-to-action="com.glowxq.plugs.SmartOneClickAction"/>
+            <add-to-group group-id="JavaBeanToolsGroup" anchor="after" relative-to-action="com.glowxq.plugs.SmartOneClickAction"/>
             <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt T"/>
             <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt T"/>
             <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt T"/>
@@ -135,9 +188,9 @@
                 class="com.glowxq.plugs.actions.BatchGenerateAction"
                 text="Batch Generate JavaBean Methods"
                 description="Batch generate JavaBean methods for selected files or packages">
-            <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
-            <add-to-group group-id="ProjectViewPopupMenuModifyGroup" anchor="last"/>
-            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+            <!-- 只在项目视图中显示，不在编辑器中显示 -->
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="NewGroup"/>
+            <add-to-group group-id="ProjectViewPopupMenuModifyGroup" anchor="first"/>
             <add-to-group group-id="JavaBeanToolsGroup" anchor="last"/>
             <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt B"/>
             <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt B"/>
@@ -181,6 +234,15 @@
             <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt D"/>
             <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt D"/>
             <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt D"/>
+        </action>
+
+        <!-- 显示插件概览 -->
+        <action id="com.glowxq.plugs.ShowOverviewAction"
+                class="com.glowxq.plugs.actions.ShowOverviewAction"
+                text="OneClick Help"
+                description="Show OneClick plugin overview and help">
+            <add-to-group group-id="JavaBeanToolsGroup" anchor="last"/>
+            <add-to-group group-id="HelpMenu" anchor="after" relative-to-action="HelpTopics"/>
         </action>
     </actions>
 </idea-plugin>

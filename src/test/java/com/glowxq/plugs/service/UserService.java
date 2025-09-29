@@ -1,5 +1,8 @@
 package com.glowxq.plugs.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * 用户服务类 - 应该被识别为业务类
  * 测试业务类代码生成功能（如日志字段）
@@ -10,6 +13,8 @@ package com.glowxq.plugs.service;
  */
 // @Service
 public class UserService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
 
     // 这里应该生成日志字段（LOGGER）
     // 使用 Ctrl+Alt+G 测试生成功能

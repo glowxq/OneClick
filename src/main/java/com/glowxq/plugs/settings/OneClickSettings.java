@@ -65,6 +65,16 @@ public final class OneClickSettings implements PersistentStateComponent<OneClick
         public boolean generateInnerClassSeparator = true;
         public int maxInnerClassDepth = 3;
 
+        // JavaBean包规则设置
+        public String javaBeanPackagePatterns = "entity,model,bean,pojo,dto,vo,domain,data";
+        public String businessClassPackagePatterns = "service,controller,manager,handler,component,config,util";
+        public boolean enablePackageDetection = true;
+
+        // 字段排序设置（仅对业务类生效）
+        public boolean enableFieldSorting = true; // 默认启用
+        public String fieldSortType = "NAME"; // NAME, LENGTH, TYPE
+        public boolean sortAscending = true;
+
         // 语言设置
         public boolean useEnglish = false; // 默认使用中文
     }
@@ -214,5 +224,55 @@ public final class OneClickSettings implements PersistentStateComponent<OneClick
 
     public void setMaxInnerClassDepth(int maxInnerClassDepth) {
         myState.maxInnerClassDepth = maxInnerClassDepth;
+    }
+
+    // JavaBean包规则设置的getter和setter方法
+    public String getJavaBeanPackagePatterns() {
+        return myState.javaBeanPackagePatterns;
+    }
+
+    public void setJavaBeanPackagePatterns(String javaBeanPackagePatterns) {
+        myState.javaBeanPackagePatterns = javaBeanPackagePatterns;
+    }
+
+    public String getBusinessClassPackagePatterns() {
+        return myState.businessClassPackagePatterns;
+    }
+
+    public void setBusinessClassPackagePatterns(String businessClassPackagePatterns) {
+        myState.businessClassPackagePatterns = businessClassPackagePatterns;
+    }
+
+    public boolean isEnablePackageDetection() {
+        return myState.enablePackageDetection;
+    }
+
+    public void setEnablePackageDetection(boolean enablePackageDetection) {
+        myState.enablePackageDetection = enablePackageDetection;
+    }
+
+    // 字段排序设置的getter和setter方法
+    public boolean isEnableFieldSorting() {
+        return myState.enableFieldSorting;
+    }
+
+    public void setEnableFieldSorting(boolean enableFieldSorting) {
+        myState.enableFieldSorting = enableFieldSorting;
+    }
+
+    public String getFieldSortType() {
+        return myState.fieldSortType;
+    }
+
+    public void setFieldSortType(String fieldSortType) {
+        myState.fieldSortType = fieldSortType;
+    }
+
+    public boolean isSortAscending() {
+        return myState.sortAscending;
+    }
+
+    public void setSortAscending(boolean sortAscending) {
+        myState.sortAscending = sortAscending;
     }
 }

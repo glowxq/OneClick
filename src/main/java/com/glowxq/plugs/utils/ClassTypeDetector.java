@@ -1,5 +1,6 @@
 package com.glowxq.plugs.utils;
 
+import com.glowxq.plugs.settings.OneClickSettings;
 import com.intellij.psi.*;
 import com.intellij.psi.util.PsiUtil;
 
@@ -48,6 +49,42 @@ public class ClassTypeDetector {
     ));
 
     /**
+     * 获取动态的JavaBean包规则
+     */
+    private static Set<String> getJavaBeanPackagePatterns() {
+        OneClickSettings settings = OneClickSettings.getInstance();
+        if (settings.isEnablePackageDetection()) {
+            String patterns = settings.getJavaBeanPackagePatterns();
+            if (patterns != null && !patterns.trim().isEmpty()) {
+                Set<String> result = new HashSet<>();
+                for (String pattern : patterns.split(",")) {
+                    result.add(pattern.trim());
+                }
+                return result;
+            }
+        }
+        return BEAN_PACKAGE_PATTERNS;
+    }
+
+    /**
+     * 获取动态的业务类包规则
+     */
+    private static Set<String> getBusinessClassPackagePatterns() {
+        OneClickSettings settings = OneClickSettings.getInstance();
+        if (settings.isEnablePackageDetection()) {
+            String patterns = settings.getBusinessClassPackagePatterns();
+            if (patterns != null && !patterns.trim().isEmpty()) {
+                Set<String> result = new HashSet<>();
+                for (String pattern : patterns.split(",")) {
+                    result.add(pattern.trim());
+                }
+                return result;
+            }
+        }
+        return BUSINESS_PACKAGE_PATTERNS;
+    }
+
+    /**
      * 检测类的类型
      */
     public static ClassType detectClassType(PsiClass psiClass) {
@@ -58,18 +95,21 @@ public class ClassTypeDetector {
         int beanScore = 0;
         int businessScore = 0;
 
-        // 1. 检查包名
+        // 1. 检查包名（使用动态包规则）
         String packageName = getPackageName(psiClass);
         if (packageName != null) {
             String lowerPackage = packageName.toLowerCase();
-            for (String pattern : BEAN_PACKAGE_PATTERNS) {
-                if (lowerPackage.contains(pattern)) {
+            Set<String> beanPatterns = getJavaBeanPackagePatterns();
+            Set<String> businessPatterns = getBusinessClassPackagePatterns();
+
+            for (String pattern : beanPatterns) {
+                if (lowerPackage.contains(pattern.toLowerCase())) {
                     beanScore += 3;
                     break;
                 }
             }
-            for (String pattern : BUSINESS_PACKAGE_PATTERNS) {
-                if (lowerPackage.contains(pattern)) {
+            for (String pattern : businessPatterns) {
+                if (lowerPackage.contains(pattern.toLowerCase())) {
                     businessScore += 3;
                     break;
                 }

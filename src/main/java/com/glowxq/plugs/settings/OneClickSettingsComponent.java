@@ -50,6 +50,16 @@ public class OneClickSettingsComponent {
     private final JBCheckBox generateInnerClassSeparator = new JBCheckBox();
     private final JSpinner maxInnerClassDepth = new JSpinner(new SpinnerNumberModel(3, 1, 10, 1));
 
+    // JavaBean包规则设置
+    private final JBCheckBox enablePackageDetection = new JBCheckBox();
+    private final JBTextField javaBeanPackagePatterns = new JBTextField();
+    private final JBTextField businessClassPackagePatterns = new JBTextField();
+
+    // 字段排序设置
+    private final JBCheckBox enableFieldSorting = new JBCheckBox();
+    private final JComboBox<String> fieldSortType = new JComboBox<>(new String[]{"NAME", "LENGTH", "TYPE"});
+    private final JBCheckBox sortAscending = new JBCheckBox();
+
     public OneClickSettingsComponent() {
         // 初始化文本
         updateTexts();
@@ -63,6 +73,16 @@ public class OneClickSettingsComponent {
         loggerType.setSelectedItem("slf4j");
         autoDetectClassType.setSelected(true);
         toStringStyle.setSelectedItem("json");
+
+        // 包规则设置默认值
+        enablePackageDetection.setSelected(true);
+        javaBeanPackagePatterns.setText("entity,model,bean,pojo,dto,vo,domain,data");
+        businessClassPackagePatterns.setText("service,controller,manager,handler,component,config,util");
+
+        // 字段排序设置默认值（仅对业务类生效）
+        enableFieldSorting.setSelected(true); // 默认启用
+        fieldSortType.setSelectedItem("NAME");
+        sortAscending.setSelected(true);
 
         // 添加语言切换监听器
         useEnglish.addActionListener(new ActionListener() {
@@ -110,6 +130,13 @@ public class OneClickSettingsComponent {
         // 内部类设置
         processInnerClasses.setText(I18nUtils.message("settings.inner.class.process"));
         generateInnerClassSeparator.setText(I18nUtils.message("settings.inner.class.separator"));
+
+        // 包规则设置
+        enablePackageDetection.setText(I18nUtils.message("settings.package.detection.enable"));
+
+        // 字段排序设置（仅对业务类生效）
+        enableFieldSorting.setText(I18nUtils.message("settings.field.sorting.enable.business"));
+        sortAscending.setText(I18nUtils.message("settings.field.sorting.ascending"));
     }
 
     /**
@@ -128,6 +155,8 @@ public class OneClickSettingsComponent {
                 .addComponent(createTitledPanel(I18nUtils.getStyleSettingsTitle(), createCodeStylePanel()))
                 .addVerticalGap(10)
                 .addComponent(createTitledPanel(I18nUtils.message("settings.inner.class.title"), createInnerClassPanel()))
+                .addVerticalGap(10)
+                .addComponent(createTitledPanel(I18nUtils.message("settings.package.rules.title"), createPackageRulesPanel()))
                 .addComponentFillVertically(new JPanel(), 0)
                 .getPanel();
     }
@@ -183,6 +212,10 @@ public class OneClickSettingsComponent {
                 .addComponent(generateLogger)
                 .addLabeledComponent(new JBLabel("Logger field name:"), loggerFieldName)
                 .addLabeledComponent(new JBLabel("Logger type:"), loggerType)
+                .addSeparator()
+                .addComponent(enableFieldSorting)
+                .addLabeledComponent(new JBLabel(I18nUtils.message("settings.field.sorting.type")), fieldSortType)
+                .addComponent(sortAscending)
                 .getPanel();
     }
 
@@ -209,6 +242,19 @@ public class OneClickSettingsComponent {
                 .addLabeledComponent(new JBLabel(I18nUtils.message("settings.inner.class.depth")), maxInnerClassDepth)
                 .getPanel();
     }
+
+    /**
+     * 创建包规则设置面板
+     */
+    private JPanel createPackageRulesPanel() {
+        return FormBuilder.createFormBuilder()
+                .addComponent(enablePackageDetection)
+                .addLabeledComponent(new JBLabel(I18nUtils.message("settings.package.javabean.patterns")), javaBeanPackagePatterns)
+                .addLabeledComponent(new JBLabel(I18nUtils.message("settings.package.business.patterns")), businessClassPackagePatterns)
+                .getPanel();
+    }
+
+
 
     public JPanel getPanel() {
         return myMainPanel;
@@ -363,5 +409,55 @@ public class OneClickSettingsComponent {
 
     public void setMaxInnerClassDepth(int depth) {
         maxInnerClassDepth.setValue(depth);
+    }
+
+    // 包规则设置的getter和setter方法
+    public boolean isEnablePackageDetection() {
+        return enablePackageDetection.isSelected();
+    }
+
+    public void setEnablePackageDetection(boolean selected) {
+        enablePackageDetection.setSelected(selected);
+    }
+
+    public String getJavaBeanPackagePatterns() {
+        return javaBeanPackagePatterns.getText();
+    }
+
+    public void setJavaBeanPackagePatterns(String patterns) {
+        javaBeanPackagePatterns.setText(patterns);
+    }
+
+    public String getBusinessClassPackagePatterns() {
+        return businessClassPackagePatterns.getText();
+    }
+
+    public void setBusinessClassPackagePatterns(String patterns) {
+        businessClassPackagePatterns.setText(patterns);
+    }
+
+    // 字段排序设置的getter和setter方法
+    public boolean isEnableFieldSorting() {
+        return enableFieldSorting.isSelected();
+    }
+
+    public void setEnableFieldSorting(boolean selected) {
+        enableFieldSorting.setSelected(selected);
+    }
+
+    public String getFieldSortType() {
+        return (String) fieldSortType.getSelectedItem();
+    }
+
+    public void setFieldSortType(String sortType) {
+        fieldSortType.setSelectedItem(sortType);
+    }
+
+    public boolean isSortAscending() {
+        return sortAscending.isSelected();
+    }
+
+    public void setSortAscending(boolean selected) {
+        sortAscending.setSelected(selected);
     }
 }
