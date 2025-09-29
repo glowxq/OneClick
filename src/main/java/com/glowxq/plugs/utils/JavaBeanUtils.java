@@ -256,4 +256,94 @@ public class JavaBeanUtils {
             }
         }
     }
+
+    /**
+     * 获取类中所有的业务方法（非JavaBean方法）
+     * 业务方法是指除了getter/setter/toString之外的方法
+     */
+    public static List<PsiMethod> getBusinessMethods(PsiClass psiClass, List<PsiField> fields) {
+        List<PsiMethod> businessMethods = new ArrayList<>();
+
+        for (PsiMethod method : psiClass.getMethods()) {
+            // 跳过构造方法
+            if (method.isConstructor()) {
+                continue;
+            }
+
+            // 跳过JavaBean方法
+            if (isJavaBeanMethod(method, fields)) {
+                continue;
+            }
+
+            businessMethods.add(method);
+        }
+
+        return businessMethods;
+    }
+
+    /**
+     * 检查方法是否为JavaBean方法（getter/setter/toString）
+     */
+    public static boolean isJavaBeanMethod(PsiMethod method, List<PsiField> fields) {
+        // 检查是否为toString方法
+        if (isToStringMethod(method)) {
+            return true;
+        }
+
+        // 检查是否为getter或setter方法
+        String methodName = method.getName();
+        for (PsiField field : fields) {
+            String getterName = getGetterName(field);
+            String setterName = getSetterName(field);
+
+            if (methodName.equals(getterName) && isGetterMethod(method)) {
+                return true;
+            }
+            if (methodName.equals(setterName) && isSetterMethod(method)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * 找到插入JavaBean方法的最佳位置
+     * 返回应该在其后插入的元素，如果返回null则表示应该插入到类的开始位置
+     */
+    public static PsiElement findInsertionPoint(PsiClass psiClass, List<PsiField> fields) {
+        List<PsiMethod> businessMethods = getBusinessMethods(psiClass, fields);
+
+        // 如果没有业务方法，在最后一个字段后插入
+        if (businessMethods.isEmpty()) {
+            PsiField[] allFields = psiClass.getFields();
+            if (allFields.length > 0) {
+                return allFields[allFields.length - 1];
+            }
+            // 如果连字段都没有，返回null表示插入到类的开始
+            return null;
+        }
+
+        // 找到最后一个业务方法
+        PsiMethod lastBusinessMethod = businessMethods.get(businessMethods.size() - 1);
+        return lastBusinessMethod;
+    }
+
+    /**
+     * 在指定位置之后插入元素
+     * 如果anchor为null，则插入到类的开始位置
+     */
+    public static void insertAfter(PsiClass psiClass, PsiElement elementToInsert, PsiElement anchor) {
+        if (anchor == null) {
+            // 插入到类的开始位置（在左大括号之后）
+            PsiElement lBrace = psiClass.getLBrace();
+            if (lBrace != null) {
+                psiClass.addAfter(elementToInsert, lBrace);
+            } else {
+                psiClass.add(elementToInsert);
+            }
+        } else {
+            psiClass.addAfter(elementToInsert, anchor);
+        }
+    }
 }

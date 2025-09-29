@@ -93,53 +93,70 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
         // 2. 移除现有的分割注释（如果存在）
         JavaBeanUtils.removeSeparatorComment(psiClass);
 
-        // 3. 添加分割注释
-        String separatorComment = JavaBeanUtils.generateSeparatorComment();
-        PsiComment comment = factory.createCommentFromText(separatorComment, psiClass);
-        psiClass.add(comment);
+        // 3. 找到插入JavaBean方法的最佳位置（在业务方法之后）
+        PsiElement insertionPoint = JavaBeanUtils.findInsertionPoint(psiClass, fields);
+
+        // 4. 检查是否需要添加分割注释（只有当存在业务方法时才添加）
+        List<PsiMethod> businessMethods = JavaBeanUtils.getBusinessMethods(psiClass, fields);
+        PsiElement lastInserted = insertionPoint;
+
+        if (!businessMethods.isEmpty()) {
+            // 添加分割注释
+            String separatorComment = JavaBeanUtils.generateSeparatorComment();
+            PsiComment comment = factory.createCommentFromText(separatorComment, psiClass);
+            JavaBeanUtils.insertAfter(psiClass, comment, lastInserted);
+            lastInserted = comment;
+        }
 
         int newGetterCount = 0;
         int newSetterCount = 0;
 
-        // 4. 按字段顺序重新生成所有getter和setter方法（放在类的最底部）
+        // 5. 按字段顺序重新生成所有getter和setter方法（在正确位置插入）
         for (PsiField field : fields) {
             String fieldName = field.getName();
 
             // 生成getter方法
             String getterCode = JavaBeanUtils.generateGetterCode(field);
             PsiMethod getterMethod = factory.createMethodFromText(getterCode, psiClass);
-            psiClass.add(getterMethod);
+            JavaBeanUtils.insertAfter(psiClass, getterMethod, lastInserted);
+            lastInserted = getterMethod;
             newGetterCount++;
             System.out.println("Generated getter for field: " + fieldName);
 
             // 生成setter方法
             String setterCode = JavaBeanUtils.generateSetterCode(field);
             PsiMethod setterMethod = factory.createMethodFromText(setterCode, psiClass);
-            psiClass.add(setterMethod);
+            JavaBeanUtils.insertAfter(psiClass, setterMethod, lastInserted);
+            lastInserted = setterMethod;
             newSetterCount++;
             System.out.println("Generated setter for field: " + fieldName);
         }
 
-        // 5. 生成新的JSON格式toString方法（放在最后）
+        // 6. 生成新的JSON格式toString方法（放在最后）
         int newToStringCount = 0;
         if (!fields.isEmpty()) {
             String toStringCode = JavaBeanUtils.generateToStringCode(psiClass);
             PsiMethod toStringMethod = factory.createMethodFromText(toStringCode, psiClass);
-            psiClass.add(toStringMethod);
+            JavaBeanUtils.insertAfter(psiClass, toStringMethod, lastInserted);
             newToStringCount = 1;
         }
 
         // 显示详细的生成结果
+        String separatorInfo = businessMethods.isEmpty() ?
+            "- 未添加分割注释（无业务方法）" :
+            "- 添加了分割注释便于区分业务逻辑";
+
         String message = String.format(
             "JavaBean方法重新整理完成！\n" +
             "- 移除了 %d 个旧的getter方法，重新生成了 %d 个\n" +
             "- 移除了 %d 个旧的setter方法，重新生成了 %d 个\n" +
             "- %s toString方法\n" +
-            "- 所有JavaBean方法已移动到类的底部\n" +
-            "- 添加了分割注释便于区分业务逻辑",
+            "- 所有JavaBean方法已正确插入到业务方法之后\n" +
+            "%s",
             existingGetterCount, newGetterCount,
             existingSetterCount, newSetterCount,
-            newToStringCount > 0 ? "重新生成了" : "未生成"
+            newToStringCount > 0 ? "重新生成了" : "未生成",
+            separatorInfo
         );
         System.out.println(message);
         return message;
