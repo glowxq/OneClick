@@ -41,28 +41,28 @@ public class KeymapSettings implements PersistentStateComponent<KeymapSettings.S
 
     public static class State {
         // Windows/Linux 快捷键
-        public String generateJavaBeanWindows = "ctrl alt G";
-        public String foldJavaBeanWindows = "ctrl alt F";
-        public String generateTemplateWindows = "ctrl alt T";
-        public String refactorAssistantWindows = "ctrl alt R";
-        public String smartCommentWindows = "ctrl alt C";
-        public String batchGenerateWindows = "ctrl alt B";
-        public String codeCleanupWindows = "ctrl alt L";
-        public String codeAnalysisWindows = "ctrl alt A";
-        public String quickDocWindows = "ctrl alt D";
-        public String quickFixWindows = "ctrl alt Q";
-        
+        public String generateJavaBeanWindows = "ctrl shift D";
+        public String foldJavaBeanWindows = "ctrl shift F";
+        public String generateTemplateWindows = "ctrl shift T";
+        public String refactorAssistantWindows = "ctrl shift R";
+        public String smartCommentWindows = "ctrl shift C";
+        public String batchGenerateWindows = "ctrl shift B";
+        public String codeCleanupWindows = "ctrl shift L";
+        public String codeAnalysisWindows = "ctrl shift A";
+        public String quickDocWindows = "ctrl shift Q";
+        public String quickFixWindows = "ctrl shift X";
+
         // macOS 快捷键
-        public String generateJavaBeanMac = "cmd alt G";
-        public String foldJavaBeanMac = "cmd alt F";
-        public String generateTemplateMac = "cmd alt T";
-        public String refactorAssistantMac = "cmd alt R";
-        public String smartCommentMac = "cmd alt C";
-        public String batchGenerateMac = "cmd alt B";
-        public String codeCleanupMac = "cmd alt L";
-        public String codeAnalysisMac = "cmd alt A";
-        public String quickDocMac = "cmd alt D";
-        public String quickFixMac = "cmd alt Q";
+        public String generateJavaBeanMac = "meta shift D";
+        public String foldJavaBeanMac = "meta shift F";
+        public String generateTemplateMac = "meta shift T";
+        public String refactorAssistantMac = "meta shift R";
+        public String smartCommentMac = "meta shift C";
+        public String batchGenerateMac = "meta shift B";
+        public String codeCleanupMac = "meta shift L";
+        public String codeAnalysisMac = "meta shift A";
+        public String quickDocMac = "meta shift Q";
+        public String quickFixMac = "meta shift X";
         
         // 自定义快捷键映射
         public Map<String, String> customKeymaps = new HashMap<>();
@@ -368,27 +368,27 @@ public class KeymapSettings implements PersistentStateComponent<KeymapSettings.S
      * 重置为默认快捷键
      */
     public void resetToDefaults() {
-        myState.generateJavaBeanWindows = "ctrl alt G";
-        myState.foldJavaBeanWindows = "ctrl alt F";
-        myState.generateTemplateWindows = "ctrl alt T";
-        myState.refactorAssistantWindows = "ctrl alt R";
-        myState.smartCommentWindows = "ctrl alt C";
-        myState.batchGenerateWindows = "ctrl alt B";
-        myState.codeCleanupWindows = "ctrl alt L";
-        myState.codeAnalysisWindows = "ctrl alt A";
-        myState.quickDocWindows = "ctrl alt D";
-        myState.quickFixWindows = "ctrl alt Q";
+        myState.generateJavaBeanWindows = "ctrl shift D";
+        myState.foldJavaBeanWindows = "ctrl shift F";
+        myState.generateTemplateWindows = "ctrl shift T";
+        myState.refactorAssistantWindows = "ctrl shift R";
+        myState.smartCommentWindows = "ctrl shift C";
+        myState.batchGenerateWindows = "ctrl shift B";
+        myState.codeCleanupWindows = "ctrl shift L";
+        myState.codeAnalysisWindows = "ctrl shift A";
+        myState.quickDocWindows = "ctrl shift Q";
+        myState.quickFixWindows = "ctrl shift X";
         
-        myState.generateJavaBeanMac = "cmd alt G";
-        myState.foldJavaBeanMac = "cmd alt F";
-        myState.generateTemplateMac = "cmd alt T";
-        myState.refactorAssistantMac = "cmd alt R";
-        myState.smartCommentMac = "cmd alt C";
-        myState.batchGenerateMac = "cmd alt B";
-        myState.codeCleanupMac = "cmd alt L";
-        myState.codeAnalysisMac = "cmd alt A";
-        myState.quickDocMac = "cmd alt D";
-        myState.quickFixMac = "cmd alt Q";
+        myState.generateJavaBeanMac = "meta shift D";
+        myState.foldJavaBeanMac = "meta shift F";
+        myState.generateTemplateMac = "meta shift T";
+        myState.refactorAssistantMac = "meta shift R";
+        myState.smartCommentMac = "meta shift C";
+        myState.batchGenerateMac = "meta shift B";
+        myState.codeCleanupMac = "meta shift L";
+        myState.codeAnalysisMac = "meta shift A";
+        myState.quickDocMac = "meta shift Q";
+        myState.quickFixMac = "meta shift X";
         
         myState.customKeymaps.clear();
         myState.enableShortcuts = true;

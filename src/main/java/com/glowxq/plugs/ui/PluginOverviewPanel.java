@@ -140,15 +140,17 @@ public class PluginOverviewPanel {
         String osModifier = SystemInfo.isMac ? "Cmd" : "Ctrl";
         String[][] shortcuts = {
             {"功能", "快捷键", "说明"},
-            {"智能一键生成", osModifier + "+Alt+G", "智能生成适合的方法"},
-            {"批量生成", osModifier + "+Alt+B", "批量处理多个文件"},
-            {"代码模板", osModifier + "+Alt+T", "15种设计模式模板"},
-            {"重构助手", osModifier + "+Alt+R", "10种重构操作"},
-            {"智能注释", osModifier + "+Alt+C", "自动生成注释"},
-            {"代码清理", osModifier + "+Alt+L", "清理冗余代码"},
-            {"代码分析", osModifier + "+Alt+A", "统计分析代码"},
-            {"快速文档", osModifier + "+Alt+D", "生成JavaDoc"},
-            {"折叠方法", osModifier + "+Alt+F", "折叠JavaBean方法"}
+            {"智能一键生成", osModifier + "+Shift+D", "智能生成适合的方法"},
+            {"开发工具集合", osModifier + "+Shift+U", "20种开发工具"},
+            {"数据库工具", osModifier + "+Shift+Y", "数据库代码生成"},
+            {"批量生成", osModifier + "+Shift+B", "批量处理多个文件"},
+            {"代码模板", osModifier + "+Shift+T", "15种设计模式模板"},
+            {"重构助手", osModifier + "+Shift+R", "10种重构操作"},
+            {"智能注释", osModifier + "+Shift+C", "自动生成注释"},
+            {"代码清理", osModifier + "+Shift+L", "清理冗余代码"},
+            {"代码分析", osModifier + "+Shift+A", "统计分析代码"},
+            {"快速文档", osModifier + "+Shift+Q", "生成JavaDoc"},
+            {"折叠方法", osModifier + "+Shift+F", "折叠JavaBean方法"}
         };
 
         for (int i = 0; i < shortcuts.length; i++) {

@@ -129,28 +129,32 @@ public class BatchGenerateAction extends AnAction {
     }
 
     private void collectJavaFilesFromDirectory(Project project, VirtualFile directory, List<VirtualFile> javaFiles) {
-        // 使用FileBasedIndex来高效查找Java文件
-        GlobalSearchScope scope = GlobalSearchScope.allScope(project);
-        Collection<VirtualFile> files = FileBasedIndex.getInstance()
-            .getContainingFiles(FileTypeIndex.NAME, JavaFileType.INSTANCE, scope);
-        
-        for (VirtualFile file : files) {
-            if (isUnderDirectory(file, directory)) {
-                javaFiles.add(file);
+        // 递归遍历目录查找Java文件
+        collectJavaFilesRecursively(directory, javaFiles);
+    }
+
+    private void collectJavaFilesRecursively(VirtualFile directory, List<VirtualFile> javaFiles) {
+        if (directory == null || !directory.isDirectory()) {
+            return;
+        }
+
+        VirtualFile[] children = directory.getChildren();
+        if (children == null) {
+            return;
+        }
+
+        for (VirtualFile child : children) {
+            if (child.isDirectory()) {
+                // 递归处理子目录
+                collectJavaFilesRecursively(child, javaFiles);
+            } else if (isJavaFile(child)) {
+                // 添加Java文件
+                javaFiles.add(child);
             }
         }
     }
 
-    private boolean isUnderDirectory(VirtualFile file, VirtualFile directory) {
-        VirtualFile parent = file.getParent();
-        while (parent != null) {
-            if (parent.equals(directory)) {
-                return true;
-            }
-            parent = parent.getParent();
-        }
-        return false;
-    }
+
 
     private boolean isJavaFile(VirtualFile file) {
         return file.getFileType() instanceof JavaFileType && file.getName().endsWith(".java");

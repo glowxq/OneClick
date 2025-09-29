@@ -246,7 +246,7 @@ public class JavaBeanUtils {
             }
 
             // 添加类型和字段名
-            sb.append(field.getType().getPresentableText()).append(" ");
+            sb.append(field.getType().getCanonicalText()).append(" ");
             sb.append(field.getName());
 
             // 添加初始化表达式（如果有）

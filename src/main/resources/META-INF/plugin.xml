@@ -36,15 +36,17 @@
     <h3>⌨️ 快捷键说明</h3>
     <table border="1" cellpadding="5" cellspacing="0">
         <tr><th>功能</th><th>Windows/Linux</th><th>macOS</th></tr>
-        <tr><td>智能一键生成</td><td>Ctrl+Alt+G</td><td>Cmd+Alt+G</td></tr>
-        <tr><td>批量生成</td><td>Ctrl+Alt+B</td><td>Cmd+Alt+B</td></tr>
-        <tr><td>代码模板</td><td>Ctrl+Alt+T</td><td>Cmd+Alt+T</td></tr>
-        <tr><td>重构助手</td><td>Ctrl+Alt+R</td><td>Cmd+Alt+R</td></tr>
-        <tr><td>智能注释</td><td>Ctrl+Alt+C</td><td>Cmd+Alt+C</td></tr>
-        <tr><td>代码清理</td><td>Ctrl+Alt+L</td><td>Cmd+Alt+L</td></tr>
-        <tr><td>代码分析</td><td>Ctrl+Alt+A</td><td>Cmd+Alt+A</td></tr>
-        <tr><td>快速文档</td><td>Ctrl+Alt+D</td><td>Cmd+Alt+D</td></tr>
-        <tr><td>折叠方法</td><td>Ctrl+Alt+F</td><td>Cmd+Alt+F</td></tr>
+        <tr><td>智能一键生成</td><td>Ctrl+Shift+D</td><td>Cmd+Shift+D</td></tr>
+        <tr><td>开发工具集合</td><td>Ctrl+Shift+U</td><td>Cmd+Shift+U</td></tr>
+        <tr><td>数据库工具</td><td>Ctrl+Shift+Y</td><td>Cmd+Shift+Y</td></tr>
+        <tr><td>批量生成</td><td>Ctrl+Shift+B</td><td>Cmd+Shift+B</td></tr>
+        <tr><td>代码模板</td><td>Ctrl+Shift+T</td><td>Cmd+Shift+T</td></tr>
+        <tr><td>重构助手</td><td>Ctrl+Shift+R</td><td>Cmd+Shift+R</td></tr>
+        <tr><td>智能注释</td><td>Ctrl+Shift+C</td><td>Cmd+Shift+C</td></tr>
+        <tr><td>代码清理</td><td>Ctrl+Shift+L</td><td>Cmd+Shift+L</td></tr>
+        <tr><td>代码分析</td><td>Ctrl+Shift+A</td><td>Cmd+Shift+A</td></tr>
+        <tr><td>快速文档</td><td>Ctrl+Shift+Q</td><td>Cmd+Shift+Q</td></tr>
+        <tr><td>折叠方法</td><td>Ctrl+Shift+F</td><td>Cmd+Shift+F</td></tr>
     </table>
 
     <h3>🚀 使用方法</h3>

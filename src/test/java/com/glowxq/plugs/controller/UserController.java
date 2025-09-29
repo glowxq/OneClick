@@ -20,22 +20,23 @@ import org.slf4j.LoggerFactory;
 // @RequestMapping("/api/users")
 public class UserController {
 
-    private static final String USER = "User";
-
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
-    // 这里应该生成日志字段（LOGGER）
-    // 使用 Ctrl+Alt+G 测试生成功能
+    private  static final String USER = "User";
 
-    TestFieldSortingBean testFieldSortingBean;
+
+    UserEntity userEntity;
 
     UserService userService;
 
     TestJavaBean testJavaBean;
 
-    UserEntity userEntity;
-
     TestInnerClassBean testInnerClassBean;
+
+    TestFieldSortingBean testFieldSortingBean;
+
+    // 这里应该生成日志字段（LOGGER）
+    // 使用 Ctrl+Alt+G 测试生成功能
 
     // @GetMapping("/{id}")
     public String getUser(Long id) {
