@@ -402,13 +402,24 @@ public class JavaBeanUtils {
         if (anchor != null) {
             try {
                 PsiElementFactory factory = JavaPsiFacade.getElementFactory(psiClass.getProject());
-                PsiElement newLineBefore = factory.createStatementFromText(";\n", psiClass);
-                PsiElement whitespace = newLineBefore.getFirstChild(); // 获取换行符
-                if (whitespace != null) {
-                    psiClass.addBefore(whitespace, inserted);
+                // 创建一个包含换行的代码块来提取换行符
+                PsiMethod dummyMethod = factory.createMethodFromText("void dummy() {\n\n    // comment\n}", psiClass);
+                PsiCodeBlock codeBlock = dummyMethod.getBody();
+                if (codeBlock != null) {
+                    // 查找代码块中的空白字符
+                    PsiElement[] children = codeBlock.getChildren();
+                    for (PsiElement child : children) {
+                        if (child instanceof PsiWhiteSpace && child.getText().contains("\n\n")) {
+                            // 复制这个空白字符并插入到注释前
+                            PsiElement newLine = child.copy();
+                            psiClass.addBefore(newLine, inserted);
+                            break;
+                        }
+                    }
                 }
             } catch (Exception e) {
                 // 忽略换行添加失败
+                System.out.println("Failed to add newline before comment: " + e.getMessage());
             }
         }
 
