@@ -1,5 +1,6 @@
 package com.glowxq.plugs.settings;
 
+import com.glowxq.plugs.utils.I18nUtils;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.util.NlsContexts;
@@ -10,6 +11,7 @@ import javax.swing.*;
 
 /**
  * OneClick插件设置面板
+ * 支持中英双语
  */
 public class OneClickSettingsConfigurable implements Configurable {
 
@@ -18,7 +20,7 @@ public class OneClickSettingsConfigurable implements Configurable {
     @Nls(capitalization = Nls.Capitalization.Title)
     @Override
     public @NlsContexts.ConfigurableName String getDisplayName() {
-        return "OneClick Code Generator";
+        return I18nUtils.getSettingsTitle();
     }
 
     @Override
@@ -43,7 +45,8 @@ public class OneClickSettingsConfigurable implements Configurable {
                mySettingsComponent.isGenerateSerialVersionUID() != settings.isGenerateSerialVersionUID() ||
                mySettingsComponent.isUseBuilderPattern() != settings.isUseBuilderPattern() ||
                mySettingsComponent.isGenerateFluentSetters() != settings.isGenerateFluentSetters() ||
-               !mySettingsComponent.getToStringStyle().equals(settings.getToStringStyle());
+               !mySettingsComponent.getToStringStyle().equals(settings.getToStringStyle()) ||
+               mySettingsComponent.isUseEnglish() != settings.isUseEnglish();
     }
 
     @Override
@@ -63,6 +66,7 @@ public class OneClickSettingsConfigurable implements Configurable {
         settings.setUseBuilderPattern(mySettingsComponent.isUseBuilderPattern());
         settings.setGenerateFluentSetters(mySettingsComponent.isGenerateFluentSetters());
         settings.setToStringStyle(mySettingsComponent.getToStringStyle());
+        settings.setUseEnglish(mySettingsComponent.isUseEnglish());
     }
 
     @Override
@@ -82,6 +86,7 @@ public class OneClickSettingsConfigurable implements Configurable {
         mySettingsComponent.setUseBuilderPattern(settings.isUseBuilderPattern());
         mySettingsComponent.setGenerateFluentSetters(settings.isGenerateFluentSetters());
         mySettingsComponent.setToStringStyle(settings.getToStringStyle());
+        mySettingsComponent.setUseEnglish(settings.isUseEnglish());
     }
 
     @Override

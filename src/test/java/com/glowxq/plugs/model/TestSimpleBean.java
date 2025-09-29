@@ -1,10 +1,11 @@
-package com.glowxq.plugs;
+package com.glowxq.plugs.model;
 
 import java.util.Date;
 
 /**
  * 测试用的简单JavaBean类（无业务方法）
  * 用于验证插件在没有业务方法时的正确插入位置
+ * 包名包含model，应该被识别为JavaBean类型
  *
  * @author glowxq
  */

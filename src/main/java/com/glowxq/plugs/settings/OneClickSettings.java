@@ -59,6 +59,9 @@ public final class OneClickSettings implements PersistentStateComponent<OneClick
         public boolean useBuilderPattern = false;
         public boolean generateFluentSetters = false;
         public String toStringStyle = "json"; // json, simple, apache
+
+        // 语言设置
+        public boolean useEnglish = false; // 默认使用中文
     }
 
     // Getter方法
@@ -173,5 +176,13 @@ public final class OneClickSettings implements PersistentStateComponent<OneClick
 
     public void setToStringStyle(String toStringStyle) {
         myState.toStringStyle = toStringStyle;
+    }
+
+    public boolean isUseEnglish() {
+        return myState.useEnglish;
+    }
+
+    public void setUseEnglish(boolean useEnglish) {
+        myState.useEnglish = useEnglish;
     }
 }

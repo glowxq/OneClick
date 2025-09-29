@@ -1,0 +1,36 @@
+package com.glowxq.plugs.pojo;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+
+/**
+ * 字段顺序测试POJO类
+ * 用于验证插件按字段声明顺序生成getter/setter方法
+ * 包名包含pojo，应该被识别为JavaBean类型
+ *
+ * @author glowxq
+ */
+public class FieldOrderTestPOJO {
+
+    // 字段按特定顺序声明，验证生成的方法是否保持相同顺序
+    private String firstName;      // 第1个字段
+    private String lastName;       // 第2个字段
+    private int age;              // 第3个字段
+    private Date birthDate;       // 第4个字段
+    private String email;         // 第5个字段
+    private String phoneNumber;   // 第6个字段
+    private boolean active;       // 第7个字段
+    private BigDecimal salary;    // 第8个字段
+    private List<String> skills;  // 第9个字段
+
+    // 在这里使用插件生成getter/setter/toString方法
+    // 预期结果：
+    // 1. getter方法按字段声明顺序生成：
+    //    getFirstName(), getLastName(), getAge(), getBirthDate(), 
+    //    getEmail(), getPhoneNumber(), isActive(), getSalary(), getSkills()
+    // 2. setter方法按相同顺序生成：
+    //    setFirstName(), setLastName(), setAge(), setBirthDate(),
+    //    setEmail(), setPhoneNumber(), setActive(), setSalary(), setSkills()
+    // 3. toString方法包含所有字段，按声明顺序排列
+}

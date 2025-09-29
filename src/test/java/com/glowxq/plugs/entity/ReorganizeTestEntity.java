@@ -1,13 +1,14 @@
-package com.glowxq.plugs;
+package com.glowxq.plugs.entity;
 
 import java.util.List;
 
 /**
- * 方法重新整理测试类
+ * 方法重新整理测试实体类
  * 用于验证插件能够重新整理现有的getter/setter/toString方法
+ * 包名包含entity，应该被识别为JavaBean类型
  * @author glowxq
  */
-public class ReorganizeTestBean {
+public class ReorganizeTestEntity {
 
     private String name;
     private int age;
@@ -33,15 +34,15 @@ public class ReorganizeTestBean {
         System.out.println("Business logic method 4");
     }
 
-    public ReorganizeTestBean() {
+    public ReorganizeTestEntity() {
         this.active = true;
         this.age = 18;
         this.name = "John Doe";
     }
 
     public static void main(String[] args) {
-        ReorganizeTestBean bean = new ReorganizeTestBean();
-        System.out.println(bean);
+        ReorganizeTestEntity entity = new ReorganizeTestEntity();
+        System.out.println(entity);
     }
 
     // ================================ JavaBean Methods ================================

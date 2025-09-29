@@ -1,4 +1,4 @@
-# OneClick Code Generator
+# OneClick
 
 一个智能的IntelliJ IDEA插件，支持JavaBean和业务类的一键代码生成。
 
@@ -43,7 +43,7 @@
 1. 打开 IntelliJ IDEA 设置
    - **Windows/Linux**: `File` → `Settings`
    - **macOS**: `IntelliJ IDEA` → `Preferences`
-2. 导航到 `Tools` → `OneClick Code Generator`
+2. 导航到 `Tools` → `OneClick`
 3. 配置各种生成选项
 
 > 💡 **设置入口位置**: 在IDE主菜单中找到设置选项，然后在左侧导航树中展开 `Tools` 节点，即可看到 `OneClick Code Generator` 选项。

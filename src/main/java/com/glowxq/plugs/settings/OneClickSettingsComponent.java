@@ -1,5 +1,6 @@
 package com.glowxq.plugs.settings;
 
+import com.glowxq.plugs.utils.I18nUtils;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBTextField;
@@ -8,37 +9,46 @@ import com.intellij.util.ui.JBUI;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * OneClick插件设置UI组件
+ * 支持中英双语切换
  */
 public class OneClickSettingsComponent {
 
     private final JPanel myMainPanel;
+
+    // 语言设置
+    private final JBCheckBox useEnglish = new JBCheckBox();
     
     // JavaBean相关设置
-    private final JBCheckBox generateSeparatorComment = new JBCheckBox("Generate separator comment");
-    private final JBCheckBox generateGetterSetter = new JBCheckBox("Generate getter/setter methods");
-    private final JBCheckBox generateToString = new JBCheckBox("Generate toString method");
-    private final JBCheckBox generateEquals = new JBCheckBox("Generate equals method");
-    private final JBCheckBox generateHashCode = new JBCheckBox("Generate hashCode method");
+    private final JBCheckBox generateSeparatorComment = new JBCheckBox();
+    private final JBCheckBox generateGetterSetter = new JBCheckBox();
+    private final JBCheckBox generateToString = new JBCheckBox();
+    private final JBCheckBox generateEquals = new JBCheckBox();
+    private final JBCheckBox generateHashCode = new JBCheckBox();
     
     // 业务类相关设置
-    private final JBCheckBox generateLogger = new JBCheckBox("Generate logger field for business classes");
+    private final JBCheckBox generateLogger = new JBCheckBox();
     private final JBTextField loggerFieldName = new JBTextField();
     private final JComboBox<String> loggerType = new JComboBox<>(new String[]{"slf4j", "log4j", "jul"});
-    
+
     // 通用设置
-    private final JBCheckBox autoDetectClassType = new JBCheckBox("Auto detect class type (JavaBean vs Business)");
-    private final JBCheckBox useFieldComments = new JBCheckBox("Use field comments in generated methods");
-    private final JBCheckBox generateSerialVersionUID = new JBCheckBox("Generate serialVersionUID for Serializable classes");
-    
+    private final JBCheckBox autoDetectClassType = new JBCheckBox();
+    private final JBCheckBox useFieldComments = new JBCheckBox();
+    private final JBCheckBox generateSerialVersionUID = new JBCheckBox();
+
     // 代码风格设置
-    private final JBCheckBox useBuilderPattern = new JBCheckBox("Generate Builder pattern");
-    private final JBCheckBox generateFluentSetters = new JBCheckBox("Generate fluent setters (return this)");
+    private final JBCheckBox useBuilderPattern = new JBCheckBox();
+    private final JBCheckBox generateFluentSetters = new JBCheckBox();
     private final JComboBox<String> toStringStyle = new JComboBox<>(new String[]{"json", "simple", "apache"});
 
     public OneClickSettingsComponent() {
+        // 初始化文本
+        updateTexts();
+
         // 设置默认值
         generateSeparatorComment.setSelected(true);
         generateGetterSetter.setSelected(true);
@@ -49,17 +59,87 @@ public class OneClickSettingsComponent {
         autoDetectClassType.setSelected(true);
         toStringStyle.setSelectedItem("json");
 
+        // 添加语言切换监听器
+        useEnglish.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // 更新设置
+                OneClickSettings.getInstance().setUseEnglish(useEnglish.isSelected());
+                // 刷新语言
+                I18nUtils.refreshLanguage();
+                // 更新界面文本
+                updateTexts();
+            }
+        });
+
         // 创建面板布局
-        myMainPanel = FormBuilder.createFormBuilder()
-                .addComponent(createTitledPanel("JavaBean Generation Settings", createJavaBeanPanel()))
+        myMainPanel = createMainPanel();
+    }
+
+    /**
+     * 更新界面文本（支持国际化）
+     */
+    private void updateTexts() {
+        // 语言设置
+        useEnglish.setText(I18nUtils.message("settings.language.english"));
+
+        // JavaBean设置
+        generateSeparatorComment.setText(I18nUtils.message("settings.javabean.separator.comment"));
+        generateGetterSetter.setText(I18nUtils.message("settings.javabean.getter.setter"));
+        generateToString.setText(I18nUtils.message("settings.javabean.tostring"));
+        generateEquals.setText(I18nUtils.message("settings.javabean.equals"));
+        generateHashCode.setText(I18nUtils.message("settings.javabean.hashcode"));
+
+        // 业务类设置
+        generateLogger.setText(I18nUtils.message("settings.business.logger"));
+
+        // 通用设置
+        autoDetectClassType.setText(I18nUtils.message("settings.general.auto.detect"));
+        useFieldComments.setText(I18nUtils.message("settings.general.field.comments"));
+        generateSerialVersionUID.setText(I18nUtils.message("settings.general.serial.version"));
+
+        // 代码风格设置
+        useBuilderPattern.setText(I18nUtils.message("settings.style.builder.pattern"));
+        generateFluentSetters.setText(I18nUtils.message("settings.style.fluent.setters"));
+    }
+
+    /**
+     * 创建主面板
+     */
+    private JPanel createMainPanel() {
+        return FormBuilder.createFormBuilder()
+                .addComponent(createLanguagePanel())
                 .addVerticalGap(10)
-                .addComponent(createTitledPanel("Business Class Settings", createBusinessClassPanel()))
+                .addComponent(createTitledPanel(I18nUtils.getJavaBeanSettingsTitle(), createJavaBeanPanel()))
                 .addVerticalGap(10)
-                .addComponent(createTitledPanel("General Settings", createGeneralPanel()))
+                .addComponent(createTitledPanel(I18nUtils.getBusinessSettingsTitle(), createBusinessClassPanel()))
                 .addVerticalGap(10)
-                .addComponent(createTitledPanel("Code Style Settings", createCodeStylePanel()))
+                .addComponent(createTitledPanel(I18nUtils.getGeneralSettingsTitle(), createGeneralPanel()))
+                .addVerticalGap(10)
+                .addComponent(createTitledPanel(I18nUtils.getStyleSettingsTitle(), createCodeStylePanel()))
                 .addComponentFillVertically(new JPanel(), 0)
                 .getPanel();
+    }
+
+    /**
+     * 创建语言设置面板
+     */
+    private JPanel createLanguagePanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(JBUI.Borders.compound(
+                JBUI.Borders.customLine(Color.GRAY, 1, 0, 0, 0),
+                JBUI.Borders.empty(10)
+        ));
+
+        JBLabel titleLabel = new JBLabel(I18nUtils.message("settings.language"));
+        titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD));
+        panel.add(titleLabel, BorderLayout.NORTH);
+
+        JPanel contentPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        contentPanel.add(useEnglish);
+        panel.add(contentPanel, BorderLayout.CENTER);
+
+        return panel;
     }
 
     private JPanel createTitledPanel(String title, JPanel content) {
@@ -231,5 +311,13 @@ public class OneClickSettingsComponent {
 
     public void setToStringStyle(String style) {
         toStringStyle.setSelectedItem(style);
+    }
+
+    public boolean isUseEnglish() {
+        return useEnglish.isSelected();
+    }
+
+    public void setUseEnglish(boolean selected) {
+        useEnglish.setSelected(selected);
     }
 }

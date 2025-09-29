@@ -32,7 +32,7 @@
             parentId="tools"
             instance="com.glowxq.plugs.settings.OneClickSettingsConfigurable"
             id="OneClickSettings"
-            displayName="OneClick Code Generator"/>
+            displayName="OneClick"/>
 
         <!-- 注册设置服务 -->
         <applicationService serviceImplementation="com.glowxq.plugs.settings.OneClickSettings"/>
