@@ -116,6 +116,10 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
     private String generateJavaBeanMethods(Project project, PsiClass psiClass) {
         OneClickSettings settings = OneClickSettings.getInstance();
         PsiElementFactory factory = JavaPsiFacade.getElementFactory(project);
+
+        // 首先重新排列字段的物理位置（仅对业务类生效）
+        JavaBeanUtils.rearrangeFieldsPhysically(psiClass);
+
         List<PsiField> fields = JavaBeanUtils.getInstanceFields(psiClass);
 
         if (fields.isEmpty()) {

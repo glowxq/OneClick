@@ -2,6 +2,7 @@ package com.glowxq.plugs.settings;
 
 import com.glowxq.plugs.utils.I18nUtils;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.util.SystemInfo;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBTextField;
@@ -42,6 +43,7 @@ public class KeymapSettingsComponent {
         myMainPanel = createMainPanel();
         setupEventListeners();
         updateOSInfo();
+        addSmartShortcutDescription();
     }
 
     private void initializeTexts() {
@@ -218,20 +220,24 @@ public class KeymapSettingsComponent {
 
     private JPanel createButtonPanel() {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        
+
+        JButton presetButton = new JButton("快捷键预设");
+        presetButton.addActionListener(e -> showPresetDialog());
+
         JButton resetButton = new JButton(I18nUtils.message("settings.keymap.reset"));
         resetButton.addActionListener(e -> resetToDefaults());
-        
+
         JButton validateButton = new JButton(I18nUtils.message("settings.keymap.validate"));
         validateButton.addActionListener(e -> validateShortcuts());
-        
+
         JButton helpButton = new JButton(I18nUtils.message("settings.keymap.help"));
         helpButton.addActionListener(e -> showHelp());
-        
+
+        panel.add(presetButton);
         panel.add(resetButton);
         panel.add(validateButton);
         panel.add(helpButton);
-        
+
         return panel;
     }
 
@@ -248,15 +254,20 @@ public class KeymapSettingsComponent {
 
     private void updateOSInfo() {
         String osName = KeymapSettings.getOSName();
-        String osInfo = I18nUtils.message("settings.keymap.current.os", osName);
-        
+        String modifier = SystemInfo.isMac ? "Cmd" : "Ctrl";
+        String altKey = SystemInfo.isMac ? "Option" : "Alt";
+
+        String osInfo = "<b>当前操作系统</b>: " + osName + "<br>";
+        osInfo += "<b>修饰键</b>: " + modifier + " (主要修饰键)<br>";
+        osInfo += "<b>Alt键</b>: " + altKey + " (辅助修饰键)<br><br>";
+
         if (osName.equals("macOS")) {
-            osInfo += "\n" + I18nUtils.message("settings.keymap.mac.note");
+            osInfo += "<i>💡 macOS提示: Cmd相当于Windows的Ctrl，Option相当于Windows的Alt</i>";
         } else {
-            osInfo += "\n" + I18nUtils.message("settings.keymap.windows.note");
+            osInfo += "<i>💡 Windows/Linux提示: 使用Ctrl作为主修饰键，Alt作为辅助修饰键</i>";
         }
-        
-        osInfoLabel.setText("<html>" + osInfo.replace("\n", "<br>") + "</html>");
+
+        osInfoLabel.setText("<html><div style='width: 400px;'>" + osInfo + "</div></html>");
     }
 
     private void resetToDefaults() {
@@ -359,5 +370,127 @@ public class KeymapSettingsComponent {
         }
         
         return false;
+    }
+
+    /**
+     * 添加智能快捷键说明
+     */
+    private void addSmartShortcutDescription() {
+        // 创建说明面板
+        JPanel descPanel = new JPanel();
+        descPanel.setLayout(new BoxLayout(descPanel, BoxLayout.Y_AXIS));
+        descPanel.setBorder(JBUI.Borders.compound(
+                JBUI.Borders.customLine(new Color(200, 200, 200), 1),
+                JBUI.Borders.empty(10)
+        ));
+
+        String osModifier = SystemInfo.isMac ? "Cmd" : "Ctrl";
+
+        JBLabel titleLabel = new JBLabel("<html><h3>🎯 智能快捷键说明</h3></html>");
+        titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD));
+        titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        JBLabel descLabel = new JBLabel("<html><div style='width: 450px;'>" +
+            "<b>" + osModifier + "+Alt+G</b> 是智能一键快捷键，不仅仅是生成JavaBean方法。<br>" +
+            "它会根据类的类型智能选择合适的生成操作：<br><br>" +
+            "• <b>JavaBean类</b>：生成getter/setter/toString/equals/hashCode方法<br>" +
+            "• <b>业务类</b>：生成Logger字段、serialVersionUID等<br><br>" +
+            "<i>其他快捷键可以在下方进行自定义配置</i>" +
+            "</div></html>");
+        descLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        descPanel.add(titleLabel);
+        descPanel.add(Box.createVerticalStrut(5));
+        descPanel.add(descLabel);
+
+        // 将说明面板插入到主面板的顶部
+        myMainPanel.add(descPanel, 0);
+    }
+
+    /**
+     * 显示快捷键预设对话框
+     */
+    private void showPresetDialog() {
+        String[] presets = {
+            "默认预设 (推荐)",
+            "VS Code 风格",
+            "Eclipse 风格",
+            "自定义预设"
+        };
+
+        int selectedIndex = Messages.showChooseDialog(
+            "选择快捷键预设方案：",
+            "快捷键预设",
+            presets,
+            presets[0],
+            Messages.getQuestionIcon()
+        );
+
+        String selected = selectedIndex >= 0 ? presets[selectedIndex] : null;
+
+        if (selected != null) {
+            applyPreset(selected);
+        }
+    }
+
+    /**
+     * 应用快捷键预设
+     */
+    private void applyPreset(String presetName) {
+        Map<String, String> shortcuts = new HashMap<>();
+
+        switch (presetName) {
+            case "默认预设 (推荐)":
+                shortcuts.put("generateJavaBean", SystemInfo.isMac ? "meta alt G" : "ctrl alt G");
+                shortcuts.put("foldJavaBean", SystemInfo.isMac ? "meta alt F" : "ctrl alt F");
+                shortcuts.put("batchGenerate", SystemInfo.isMac ? "meta alt B" : "ctrl alt B");
+                shortcuts.put("codeTemplate", SystemInfo.isMac ? "meta alt T" : "ctrl alt T");
+                shortcuts.put("refactorAssistant", SystemInfo.isMac ? "meta alt R" : "ctrl alt R");
+                shortcuts.put("smartComment", SystemInfo.isMac ? "meta alt C" : "ctrl alt C");
+                shortcuts.put("codeCleanup", SystemInfo.isMac ? "meta alt L" : "ctrl alt L");
+                shortcuts.put("codeAnalysis", SystemInfo.isMac ? "meta alt A" : "ctrl alt A");
+                shortcuts.put("quickDoc", SystemInfo.isMac ? "meta alt D" : "ctrl alt D");
+                break;
+
+            case "VS Code 风格":
+                shortcuts.put("generateJavaBean", SystemInfo.isMac ? "meta shift P" : "ctrl shift P");
+                shortcuts.put("foldJavaBean", SystemInfo.isMac ? "meta K meta 0" : "ctrl K ctrl 0");
+                shortcuts.put("batchGenerate", SystemInfo.isMac ? "meta shift B" : "ctrl shift B");
+                shortcuts.put("codeTemplate", SystemInfo.isMac ? "meta shift T" : "ctrl shift T");
+                shortcuts.put("refactorAssistant", SystemInfo.isMac ? "meta shift R" : "ctrl shift R");
+                shortcuts.put("smartComment", SystemInfo.isMac ? "meta SLASH" : "ctrl SLASH");
+                shortcuts.put("codeCleanup", SystemInfo.isMac ? "meta shift L" : "ctrl shift L");
+                shortcuts.put("codeAnalysis", SystemInfo.isMac ? "meta shift A" : "ctrl shift A");
+                shortcuts.put("quickDoc", SystemInfo.isMac ? "meta shift D" : "ctrl shift D");
+                break;
+
+            case "Eclipse 风格":
+                shortcuts.put("generateJavaBean", SystemInfo.isMac ? "meta alt S" : "alt shift S");
+                shortcuts.put("foldJavaBean", SystemInfo.isMac ? "meta MINUS" : "ctrl MINUS");
+                shortcuts.put("batchGenerate", SystemInfo.isMac ? "meta alt B" : "alt shift B");
+                shortcuts.put("codeTemplate", SystemInfo.isMac ? "meta alt T" : "alt shift T");
+                shortcuts.put("refactorAssistant", SystemInfo.isMac ? "meta alt R" : "alt shift R");
+                shortcuts.put("smartComment", SystemInfo.isMac ? "meta alt C" : "alt shift C");
+                shortcuts.put("codeCleanup", SystemInfo.isMac ? "meta alt L" : "alt shift L");
+                shortcuts.put("codeAnalysis", SystemInfo.isMac ? "meta alt A" : "alt shift A");
+                shortcuts.put("quickDoc", SystemInfo.isMac ? "meta alt D" : "alt shift D");
+                break;
+
+            default:
+                return; // 自定义预设不做任何操作
+        }
+
+        // 应用快捷键设置
+        for (Map.Entry<String, String> entry : shortcuts.entrySet()) {
+            JBTextField field = shortcutFields.get(entry.getKey());
+            if (field != null) {
+                field.setText(entry.getValue());
+            }
+        }
+
+        Messages.showInfoMessage(
+            "快捷键预设 \"" + presetName + "\" 已应用！\n请点击 Apply 保存设置。",
+            "预设应用成功"
+        );
     }
 }

@@ -1,13 +1,119 @@
-# OneClick JavaBean Generator 使用指南
+# OneClick 插件使用指南
 
-## 插件功能概述
+## 🎯 智能一键功能
 
-这个IDEA插件提供了两个主要功能：
+### 1. 智能一键生成 (核心功能)
+- **快捷键**: `Ctrl+Alt+G` (Windows/Linux) / `Cmd+Alt+G` (macOS)
+- **智能特性**: 根据类类型自动选择合适的生成操作
+  - **JavaBean类**: 生成 getter、setter、toString、equals、hashCode 方法
+  - **业务类**: 生成 Logger 字段、serialVersionUID 等
+- **使用方法**: 在 Java 类中按快捷键，插件会智能识别类类型并提供相应选项
 
-1. **一键生成JavaBean方法**
-   - Windows/Linux: `Ctrl+Alt+G`
-   - macOS: `Cmd+Option+G`
-   - 右键菜单: JavaBean Tools → Generate JavaBean Methods
+## 🛠️ 开发工具集合
+
+### 2. 开发工具 (Ctrl+Alt+U)
+提供各种实用的开发辅助功能：
+
+- **🔧 生成UUID**: 生成随机UUID字符串
+- **📅 插入时间戳**: 插入当前时间戳
+- **🔍 生成序列化ID**: 生成serialVersionUID
+- **📝 生成TODO注释**: 生成带时间和作者的TODO注释
+- **🎯 生成测试方法**: 生成单元测试方法模板
+- **🔒 生成常量**: 将选中文本转换为常量定义
+- **📊 生成枚举**: 生成枚举类模板
+- **🌐 生成JSON模板**: 生成JSON数据模板
+- **🔄 转换命名风格**: 转换驼峰/下划线命名
+- **📋 生成Builder模式**: 为当前类生成Builder模式
+
+### 3. 数据库工具 (Ctrl+Alt+Y)
+提供数据库相关的代码生成功能：
+
+- **🗃️ 生成Entity注解**: 为实体类添加JPA注解
+- **📝 生成SQL建表语句**: 根据实体类生成CREATE TABLE语句
+- **🔍 生成Repository接口**: 生成Spring Data JPA Repository
+- **📊 生成MyBatis Mapper**: 生成MyBatis Mapper接口和XML
+- **🔄 生成数据转换器**: 生成Entity与DTO转换器
+- **📋 生成CRUD Service**: 生成完整的CRUD Service类
+- **🌐 生成REST Controller**: 生成RESTful API控制器
+- **🔧 生成数据库配置**: 生成数据源配置类
+
+## 📋 其他功能
+
+### 4. 批量生成 (Ctrl+Alt+B)
+- **功能**: 批量处理多个Java文件或包
+- **使用方法**: 在项目视图中选中文件或包，右键选择"批量生成"
+
+### 5. 代码模板 (Ctrl+Alt+T)
+- **功能**: 提供15种设计模式和架构模板
+- **包含**: 单例模式、工厂模式、观察者模式、Spring配置等
+
+### 6. 重构助手 (Ctrl+Alt+R)
+- **功能**: 代码重构和优化建议
+- **特性**: 智能分析代码结构，提供改进建议
+
+### 7. 智能注释 (Ctrl+Alt+C)
+- **功能**: 生成智能注释和文档
+- **特性**: 根据方法签名自动生成JavaDoc
+
+### 8. 代码清理 (Ctrl+Alt+L)
+- **功能**: 清理无用代码和导入
+- **特性**: 自动移除未使用的导入和变量
+
+### 9. 代码分析 (Ctrl+Alt+A)
+- **功能**: 代码质量分析
+- **特性**: 检测潜在问题和性能优化点
+
+### 10. 快速文档 (Ctrl+Alt+D)
+- **功能**: 快速生成文档
+- **特性**: 生成README、API文档等
+
+## ⚙️ 设置配置
+
+### 快捷键设置
+1. 打开 `File` → `Settings` → `Tools` → `OneClick Settings`
+2. 选择 `Keymap Settings` 子页面
+3. 可以查看和修改所有快捷键设置
+4. 支持快捷键预设方案：
+   - 默认预设 (推荐)
+   - VS Code 风格
+   - Eclipse 风格
+   - 自定义预设
+
+### 功能设置
+1. **JavaBean设置**: 配置生成方法的样式和选项
+2. **业务类设置**: 配置Logger类型、字段排序等
+3. **包规则设置**: 自定义包名检测规则
+4. **字段排序**: 支持按名称、长度、类型排序
+
+## 🚀 使用技巧
+
+### 智能快捷键使用
+- `Ctrl+Alt+G` 是智能快捷键，会根据当前类的类型自动选择合适的功能
+- 在JavaBean类中：优先生成getter/setter等方法
+- 在业务类中：优先生成Logger字段等
+
+### 操作系统适配
+- **Windows/Linux**: 使用 `Ctrl` 作为主修饰键
+- **macOS**: 使用 `Cmd` 作为主修饰键，`Option` 相当于 `Alt`
+- 插件会自动检测操作系统并显示相应的快捷键格式
+
+### 批量操作
+- 在项目视图中可以选中多个文件或整个包进行批量处理
+- 支持进度显示和错误统计
+- 可以同时处理多种类型的Java文件
+
+### 设置同步
+- 所有设置都会实时保存
+- 支持导入/导出设置配置
+- 可以在不同项目间共享设置
+
+## 📞 获取帮助
+
+- **插件概览**: `Tools` → `OneClick Settings` → `OneClick Overview`
+- **在线帮助**: 右键菜单中的"OneClick Help"
+- **快捷键列表**: 设置面板中的完整快捷键对照表
+
+通过这些功能，OneClick插件可以大大提升Java开发效率，让代码生成变得更加智能和便捷！
 
 2. **一键折叠JavaBean方法**
    - Windows/Linux: `Ctrl+Alt+F`

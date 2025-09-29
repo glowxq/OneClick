@@ -244,5 +244,27 @@
             <add-to-group group-id="JavaBeanToolsGroup" anchor="last"/>
             <add-to-group group-id="HelpMenu" anchor="after" relative-to-action="HelpTopics"/>
         </action>
+
+        <!-- 开发工具集合 -->
+        <action id="com.glowxq.plugs.DevToolsAction"
+                class="com.glowxq.plugs.actions.DevToolsAction"
+                text="Developer Tools"
+                description="Various development utilities">
+            <add-to-group group-id="JavaBeanToolsGroup" anchor="last"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt U"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt U"/>
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt U"/>
+        </action>
+
+        <!-- 数据库工具集合 -->
+        <action id="com.glowxq.plugs.DatabaseToolsAction"
+                class="com.glowxq.plugs.actions.DatabaseToolsAction"
+                text="Database Tools"
+                description="Database related code generation utilities">
+            <add-to-group group-id="JavaBeanToolsGroup" anchor="last"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt Y"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt Y"/>
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt Y"/>
+        </action>
     </actions>
 </idea-plugin>

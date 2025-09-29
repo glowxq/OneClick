@@ -69,6 +69,134 @@ public class JavaBeanUtils {
     }
 
     /**
+     * 重新排列类中字段的物理位置（包括注解）
+     * 仅对业务类生效
+     */
+    public static void rearrangeFieldsPhysically(PsiClass psiClass) {
+        OneClickSettings settings = OneClickSettings.getInstance();
+
+        // 只有业务类才启用字段排序
+        if (!settings.isEnableFieldSorting() || ClassTypeDetector.detectClassType(psiClass) != ClassTypeDetector.ClassType.BUSINESS_CLASS) {
+            return;
+        }
+
+        List<PsiField> allFields = Arrays.stream(psiClass.getFields())
+                .filter(field -> !field.hasModifierProperty(PsiModifier.STATIC))
+                .filter(field -> !field.hasModifierProperty(PsiModifier.FINAL))
+                .collect(Collectors.toList());
+
+        if (allFields.size() <= 1) {
+            return; // 没有需要排序的字段
+        }
+
+        // 获取排序后的字段列表
+        List<PsiField> sortedFields = sortFields(allFields, psiClass);
+
+        // 检查是否需要重新排列
+        boolean needsRearrangement = false;
+        for (int i = 0; i < allFields.size(); i++) {
+            if (!allFields.get(i).equals(sortedFields.get(i))) {
+                needsRearrangement = true;
+                break;
+            }
+        }
+
+        if (!needsRearrangement) {
+            return; // 字段已经是正确的顺序
+        }
+
+        // 收集字段的完整信息（包括注解、修饰符、注释等）
+        List<FieldInfo> fieldInfos = new ArrayList<>();
+        for (PsiField field : sortedFields) {
+            fieldInfos.add(new FieldInfo(field));
+        }
+
+        // 删除原有字段
+        for (PsiField field : allFields) {
+            field.delete();
+        }
+
+        // 按新顺序重新添加字段
+        PsiElementFactory factory = JavaPsiFacade.getElementFactory(psiClass.getProject());
+        PsiElement insertionPoint = findFieldInsertionPoint(psiClass);
+
+        for (FieldInfo fieldInfo : fieldInfos) {
+            PsiField newField = factory.createFieldFromText(fieldInfo.getFullFieldText(), psiClass);
+            if (insertionPoint != null) {
+                psiClass.addAfter(newField, insertionPoint);
+                insertionPoint = newField;
+            } else {
+                psiClass.add(newField);
+                insertionPoint = newField;
+            }
+        }
+    }
+
+    /**
+     * 找到字段插入的最佳位置
+     */
+    private static PsiElement findFieldInsertionPoint(PsiClass psiClass) {
+        // 查找类中的第一个方法或内部类
+        PsiElement[] children = psiClass.getChildren();
+        for (PsiElement child : children) {
+            if (child instanceof PsiMethod || child instanceof PsiClass) {
+                return child.getPrevSibling();
+            }
+        }
+
+        // 如果没有方法或内部类，插入到类的开始位置
+        PsiElement lBrace = psiClass.getLBrace();
+        return lBrace != null ? lBrace : null;
+    }
+
+    /**
+     * 字段信息类，用于保存字段的完整信息
+     */
+    private static class FieldInfo {
+        private final String fullFieldText;
+
+        public FieldInfo(PsiField field) {
+            StringBuilder sb = new StringBuilder();
+
+            // 添加注解
+            PsiAnnotation[] annotations = field.getAnnotations();
+            for (PsiAnnotation annotation : annotations) {
+                sb.append(annotation.getText()).append("\n    ");
+            }
+
+            // 添加修饰符（只添加可见性修饰符）
+            PsiModifierList modifierList = field.getModifierList();
+            if (modifierList != null) {
+                if (modifierList.hasModifierProperty(PsiModifier.PUBLIC)) {
+                    sb.append("public ");
+                } else if (modifierList.hasModifierProperty(PsiModifier.PROTECTED)) {
+                    sb.append("protected ");
+                } else if (modifierList.hasModifierProperty(PsiModifier.PRIVATE)) {
+                    sb.append("private ");
+                }
+            }
+
+            // 添加类型和字段名
+            sb.append(field.getType().getPresentableText()).append(" ");
+            sb.append(field.getName());
+
+            // 添加初始化表达式（如果有）
+            PsiExpression initializer = field.getInitializer();
+            if (initializer != null) {
+                sb.append(" = ").append(initializer.getText());
+            }
+
+            sb.append(";");
+
+            this.fullFieldText = sb.toString();
+        }
+
+        public String getFullFieldText() {
+            return fullFieldText;
+        }
+    }
+
+    /**
      * 检查是否存在指定字段的getter方法
      */
     public static boolean hasGetter(PsiClass psiClass, PsiField field) {
