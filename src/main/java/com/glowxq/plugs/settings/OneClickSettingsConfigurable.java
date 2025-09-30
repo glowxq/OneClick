@@ -49,7 +49,17 @@ public class OneClickSettingsConfigurable implements Configurable {
                mySettingsComponent.isUseEnglish() != settings.isUseEnglish() ||
                mySettingsComponent.isProcessInnerClasses() != settings.isProcessInnerClasses() ||
                mySettingsComponent.isGenerateInnerClassSeparator() != settings.isGenerateInnerClassSeparator() ||
-               mySettingsComponent.getMaxInnerClassDepth() != settings.getMaxInnerClassDepth();
+               mySettingsComponent.getMaxInnerClassDepth() != settings.getMaxInnerClassDepth() ||
+               // 包规则设置
+               mySettingsComponent.isEnablePackageDetection() != settings.isEnablePackageDetection() ||
+               !mySettingsComponent.getJavaBeanPackagePatterns().equals(settings.getJavaBeanPackagePatterns()) ||
+               !mySettingsComponent.getBusinessClassPackagePatterns().equals(settings.getBusinessClassPackagePatterns()) ||
+               // 字段排序设置
+               mySettingsComponent.isEnableFieldSorting() != settings.isEnableFieldSorting() ||
+               !mySettingsComponent.getFieldSortType().equals(settings.getFieldSortType()) ||
+               mySettingsComponent.isSortAscending() != settings.isSortAscending() ||
+               mySettingsComponent.isEnableModifierSorting() != settings.isEnableModifierSorting() ||
+               !mySettingsComponent.getModifierSortOrder().equals(settings.getModifierSortOrder());
     }
 
     @Override
@@ -83,6 +93,8 @@ public class OneClickSettingsConfigurable implements Configurable {
         settings.setEnableFieldSorting(mySettingsComponent.isEnableFieldSorting());
         settings.setFieldSortType(mySettingsComponent.getFieldSortType());
         settings.setSortAscending(mySettingsComponent.isSortAscending());
+        settings.setEnableModifierSorting(mySettingsComponent.isEnableModifierSorting());
+        settings.setModifierSortOrder(mySettingsComponent.getModifierSortOrder());
     }
 
     @Override
@@ -116,6 +128,8 @@ public class OneClickSettingsConfigurable implements Configurable {
         mySettingsComponent.setEnableFieldSorting(settings.isEnableFieldSorting());
         mySettingsComponent.setFieldSortType(settings.getFieldSortType());
         mySettingsComponent.setSortAscending(settings.isSortAscending());
+        mySettingsComponent.setEnableModifierSorting(settings.isEnableModifierSorting());
+        mySettingsComponent.setModifierSortOrder(settings.getModifierSortOrder());
     }
 
     @Override

@@ -18,7 +18,9 @@ import com.intellij.psi.*;
 import com.intellij.psi.util.PsiTreeUtil;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 生成JavaBean方法的Action
@@ -556,8 +558,16 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
         String newClassName = sourceClassName + suffix;
         String newFileName = newClassName + ".java";
 
+        // 确定目标目录：在源目录下创建dto或vo子目录
+        String subDirName = suffix.toLowerCase(); // "DTO" -> "dto", "VO" -> "vo"
+        VirtualFile targetDir = sourceDir.findChild(subDirName);
+        if (targetDir == null) {
+            // 创建子目录
+            targetDir = sourceDir.createChildDirectory(this, subDirName);
+        }
+
         // 检查文件是否已存在
-        VirtualFile existingFile = sourceDir.findChild(newFileName);
+        VirtualFile existingFile = targetDir.findChild(newFileName);
         if (existingFile != null) {
             int choice = Messages.showYesNoDialog(
                 project,
@@ -571,7 +581,7 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
         }
 
         // 生成类内容
-        String classContent = generateDtoVoClassContent(sourceClass, newClassName, suffix);
+        String classContent = generateDtoVoClassContent(sourceClass, newClassName, suffix, subDirName);
 
         // 创建或覆盖文件
         if (existingFile != null) {
@@ -579,7 +589,7 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
             existingFile.setBinaryContent(classContent.getBytes("UTF-8"));
         } else {
             // 创建新文件
-            existingFile = sourceDir.createChildData(this, newFileName);
+            existingFile = targetDir.createChildData(this, newFileName);
             existingFile.setBinaryContent(classContent.getBytes("UTF-8"));
         }
 
@@ -592,25 +602,68 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
     /**
      * 生成DTO/VO类的内容
      */
-    private String generateDtoVoClassContent(PsiClass sourceClass, String newClassName, String suffix) {
+    private String generateDtoVoClassContent(PsiClass sourceClass, String newClassName, String suffix, String subDirName) {
         StringBuilder sb = new StringBuilder();
 
         // 获取包名
         PsiFile sourceFile = sourceClass.getContainingFile();
         String packageName = "";
+        String sourceClassFullName = "";
         if (sourceFile instanceof PsiJavaFile) {
-            packageName = ((PsiJavaFile) sourceFile).getPackageName();
+            PsiJavaFile javaFile = (PsiJavaFile) sourceFile;
+            packageName = javaFile.getPackageName();
+            sourceClassFullName = packageName.isEmpty() ? sourceClass.getName() : packageName + "." + sourceClass.getName();
         }
 
-        // 包声明
+        // 包声明 - 添加子包
         if (!packageName.isEmpty()) {
-            sb.append("package ").append(packageName).append(";\n\n");
+            sb.append("package ").append(packageName).append(".").append(subDirName).append(";\n\n");
+        } else {
+            sb.append("package ").append(subDirName).append(";\n\n");
         }
 
-        // 导入语句
-        sb.append("import java.io.Serializable;\n");
-        sb.append("import java.util.Date;\n");
-        sb.append("import java.util.List;\n\n");
+        // 收集需要导入的类型
+        Set<String> imports = new LinkedHashSet<>();
+        imports.add("java.io.Serializable");
+
+        // 添加源类的导入
+        if (!packageName.isEmpty()) {
+            imports.add(sourceClassFullName);
+        }
+
+        // 收集字段类型的导入
+        List<PsiField> fields = JavaBeanUtils.getInstanceFields(sourceClass);
+        for (PsiField field : fields) {
+            String fieldType = field.getType().getCanonicalText();
+            // 收集需要导入的类型
+            collectImportsFromType(fieldType, imports, packageName + "." + subDirName);
+        }
+
+        // 从源文件收集导入语句
+        if (sourceFile instanceof PsiJavaFile) {
+            PsiJavaFile javaFile = (PsiJavaFile) sourceFile;
+            PsiImportList importList = javaFile.getImportList();
+            if (importList != null) {
+                for (PsiImportStatement importStatement : importList.getImportStatements()) {
+                    String importText = importStatement.getQualifiedName();
+                    if (importText != null && !importText.isEmpty()) {
+                        // 检查是否是字段类型需要的导入
+                        for (PsiField field : fields) {
+                            String fieldType = field.getType().getCanonicalText();
+                            if (fieldType.contains(importText.substring(importText.lastIndexOf('.') + 1))) {
+                                imports.add(importText);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // 输出导入语句
+        for (String importStr : imports) {
+            sb.append("import ").append(importStr).append(";\n");
+        }
+        sb.append("\n");
 
         // 类注释
         sb.append("/**\n");
@@ -627,10 +680,7 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
         // serialVersionUID
         sb.append("    private static final long serialVersionUID = 1L;\n\n");
 
-        // 获取源类的所有实例字段
-        List<PsiField> fields = JavaBeanUtils.getInstanceFields(sourceClass);
-
-        // 生成字段
+        // 生成字段（使用之前已经获取的fields变量）
         for (PsiField field : fields) {
             String fieldType = field.getType().getCanonicalText();
             String fieldName = field.getName();
@@ -919,6 +969,52 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
             return (PsiField) psiClass.addAfter(serialVersionUID, lBrace);
         }
         return null;
+    }
+
+    /**
+     * 从类型字符串中收集需要导入的包
+     */
+    private void collectImportsFromType(String typeStr, Set<String> imports, String currentPackage) {
+        // 移除泛型参数
+        String baseType = typeStr;
+        if (typeStr.contains("<")) {
+            baseType = typeStr.substring(0, typeStr.indexOf("<"));
+            // 处理泛型参数
+            String genericPart = typeStr.substring(typeStr.indexOf("<") + 1, typeStr.lastIndexOf(">"));
+            String[] genericTypes = genericPart.split(",");
+            for (String genericType : genericTypes) {
+                collectImportsFromType(genericType.trim(), imports, currentPackage);
+            }
+        }
+
+        // 移除数组标记
+        baseType = baseType.replace("[]", "").trim();
+
+        // 跳过基本类型和java.lang包中的类
+        if (isPrimitiveOrJavaLang(baseType)) {
+            return;
+        }
+
+        // 如果包含包名，直接添加
+        if (baseType.contains(".")) {
+            // 不导入当前包的类
+            if (!baseType.startsWith(currentPackage + ".")) {
+                imports.add(baseType);
+            }
+        }
+    }
+
+    /**
+     * 判断是否是基本类型或java.lang包中的类
+     */
+    private boolean isPrimitiveOrJavaLang(String type) {
+        return type.equals("byte") || type.equals("short") || type.equals("int") ||
+               type.equals("long") || type.equals("float") || type.equals("double") ||
+               type.equals("boolean") || type.equals("char") || type.equals("void") ||
+               type.equals("String") || type.equals("Object") || type.equals("Integer") ||
+               type.equals("Long") || type.equals("Double") || type.equals("Float") ||
+               type.equals("Boolean") || type.equals("Character") || type.equals("Byte") ||
+               type.equals("Short");
     }
 
     @Override

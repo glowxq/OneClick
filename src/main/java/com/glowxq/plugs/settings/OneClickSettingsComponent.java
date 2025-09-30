@@ -59,6 +59,8 @@ public class OneClickSettingsComponent {
     private final JBCheckBox enableFieldSorting = new JBCheckBox();
     private final JComboBox<String> fieldSortType = new JComboBox<>(new String[]{"NAME", "LENGTH", "TYPE"});
     private final JBCheckBox sortAscending = new JBCheckBox();
+    private final JBCheckBox enableModifierSorting = new JBCheckBox();
+    private final JBTextField modifierSortOrder = new JBTextField();
 
     public OneClickSettingsComponent() {
         // 初始化文本
@@ -137,6 +139,8 @@ public class OneClickSettingsComponent {
         // 字段排序设置（仅对业务类生效）
         enableFieldSorting.setText(I18nUtils.message("settings.field.sorting.enable.business"));
         sortAscending.setText(I18nUtils.message("settings.field.sorting.ascending"));
+        enableModifierSorting.setText(I18nUtils.message("settings.field.sorting.modifier.enable"));
+        modifierSortOrder.setToolTipText(I18nUtils.message("settings.field.sorting.modifier.order.tooltip"));
     }
 
     /**
@@ -216,6 +220,8 @@ public class OneClickSettingsComponent {
                 .addComponent(enableFieldSorting)
                 .addLabeledComponent(new JBLabel(I18nUtils.message("settings.field.sorting.type")), fieldSortType)
                 .addComponent(sortAscending)
+                .addComponent(enableModifierSorting)
+                .addLabeledComponent(new JBLabel(I18nUtils.message("settings.field.sorting.modifier.order")), modifierSortOrder)
                 .getPanel();
     }
 
@@ -459,5 +465,21 @@ public class OneClickSettingsComponent {
 
     public void setSortAscending(boolean selected) {
         sortAscending.setSelected(selected);
+    }
+
+    public boolean isEnableModifierSorting() {
+        return enableModifierSorting.isSelected();
+    }
+
+    public void setEnableModifierSorting(boolean selected) {
+        enableModifierSorting.setSelected(selected);
+    }
+
+    public String getModifierSortOrder() {
+        return modifierSortOrder.getText();
+    }
+
+    public void setModifierSortOrder(String order) {
+        modifierSortOrder.setText(order);
     }
 }
