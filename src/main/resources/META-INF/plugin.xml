@@ -6,9 +6,9 @@
 
 
     <description><![CDATA[
-    <h2>OneClick - 智能代码生成器 🚀</h2>
-    <p><strong>中文</strong>: 功能强大的 IntelliJ IDEA 插件，专为 Java 开发者设计，提供全方位的智能代码生成、分析和管理功能。</p>
-    <p><strong>English</strong>: Powerful IntelliJ IDEA plugin designed for Java developers, providing comprehensive intelligent code generation, analysis and management features.</p>
+    <h2>OneClick - Smart Code Generator 🚀</h2>
+    <p>A powerful IntelliJ IDEA plugin designed for Java developers, providing comprehensive intelligent code generation, analysis and management features.</p>
+    <p><strong>中文简介</strong>: 功能强大的 IntelliJ IDEA 插件，专为 Java 开发者设计，提供全方位的智能代码生成、分析和管理功能。</p>
 
     <h3>🎯 核心功能 / Core Features</h3>
     <ul>
