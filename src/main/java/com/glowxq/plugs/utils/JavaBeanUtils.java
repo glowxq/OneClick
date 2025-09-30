@@ -2,6 +2,7 @@ package com.glowxq.plugs.utils;
 
 import com.glowxq.plugs.settings.OneClickSettings;
 import com.intellij.psi.*;
+import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.psi.util.PsiUtil;
 import com.intellij.openapi.project.Project;
 
@@ -181,14 +182,18 @@ public class JavaBeanUtils {
 
         // 只有业务类才启用字段排序
         if (!settings.isEnableFieldSorting() || classType != ClassTypeDetector.ClassType.BUSINESS_CLASS) {
+            System.out.println("字段排序未启用或不是业务类，跳过排序。启用状态: " + settings.isEnableFieldSorting() + ", 类类型: " + classType);
             return;
         }
 
         // 获取所有字段并按类型分组
         List<PsiField> allFields = Arrays.asList(psiClass.getFields());
         if (allFields.size() <= 1) {
+            System.out.println("字段数量 <= 1，无需排序");
             return; // 没有需要排序的字段
         }
+
+        System.out.println("开始字段排序，共 " + allFields.size() + " 个字段");
 
         // 按字段类型分组
         List<PsiField> staticFinalFields = new ArrayList<>();  // static final 字段
@@ -228,42 +233,104 @@ public class JavaBeanUtils {
         }
 
         if (!needsRearrangement) {
+            System.out.println("字段顺序已正确，无需重新排列");
             return; // 字段已经是正确的顺序
         }
 
-        // 收集字段的完整信息（包括注解、修饰符、注释等）
-        List<FieldInfo> fieldInfos = new ArrayList<>();
+        System.out.println("需要重新排列字段");
+
+        // 找到第一个字段的位置作为插入起点
+        PsiField firstField = allFields.get(0);
+        PsiElement anchor = firstField;
+
+        // 收集字段的完整文本（包括注释和注解）
+        Map<PsiField, String> fieldTexts = new LinkedHashMap<>();
         for (PsiField field : finalOrder) {
-            fieldInfos.add(new FieldInfo(field));
+            String fullText = collectFieldWithComments(field);
+            fieldTexts.put(field, fullText);
+            System.out.println("收集字段: " + field.getName() + " -> " + fullText.substring(0, Math.min(50, fullText.length())));
         }
 
-        // 删除所有字段
+        // 删除所有字段及其注释
         for (PsiField field : allFields) {
+            // 删除字段前的注释
+            PsiElement prev = field.getPrevSibling();
+            while (prev != null && (prev instanceof PsiWhiteSpace || prev instanceof PsiComment)) {
+                PsiElement toDelete = prev;
+                prev = prev.getPrevSibling();
+                toDelete.delete();
+            }
+            // 删除字段
             field.delete();
         }
 
         // 按新顺序重新添加字段
         PsiElementFactory factory = JavaPsiFacade.getElementFactory(psiClass.getProject());
+        int successCount = 0;
+        int failCount = 0;
 
-        // 找到类的左大括号作为插入起点
-        PsiElement lBrace = psiClass.getLBrace();
-        if (lBrace == null) {
-            return;
-        }
-
-        PsiElement insertionPoint = lBrace;
-        for (FieldInfo fieldInfo : fieldInfos) {
+        for (Map.Entry<PsiField, String> entry : fieldTexts.entrySet()) {
             try {
-                PsiField newField = factory.createFieldFromText(fieldInfo.getFullFieldText(), psiClass);
-                // 在insertionPoint之后插入
-                PsiElement inserted = psiClass.addAfter(newField, insertionPoint);
-                insertionPoint = inserted;
+                String fullText = entry.getValue();
+
+                // 创建字段（包含注释和注解）
+                PsiField newField = factory.createFieldFromText(fullText, psiClass);
+
+                // 在anchor之前插入
+                psiClass.addBefore(newField, anchor);
+
+                successCount++;
+                System.out.println("字段创建成功: " + newField.getName());
             } catch (Exception e) {
-                // 静默处理错误
+                failCount++;
+                System.err.println("字段创建失败: " + e.getMessage());
+                e.printStackTrace();
             }
         }
 
-        System.out.println("字段重新排列完成！按顺序：static final -> static -> final -> 实例字段");
+        // 格式化代码
+        try {
+            CodeStyleManager.getInstance(psiClass.getProject()).reformat(psiClass);
+        } catch (Exception e) {
+            System.err.println("代码格式化失败: " + e.getMessage());
+        }
+
+        System.out.println("字段重新排列完成！成功: " + successCount + ", 失败: " + failCount);
+    }
+
+    /**
+     * 收集字段及其注释的完整文本
+     */
+    private static String collectFieldWithComments(PsiField field) {
+        StringBuilder sb = new StringBuilder();
+
+        // 收集字段前的注释
+        List<PsiElement> comments = new ArrayList<>();
+        PsiElement prev = field.getPrevSibling();
+
+        while (prev != null) {
+            if (prev instanceof PsiComment) {
+                comments.add(0, prev);
+            } else if (prev instanceof PsiWhiteSpace) {
+                String text = prev.getText();
+                if (text.contains("\n\n")) {
+                    break; // 遇到空行停止
+                }
+            } else if (!(prev instanceof PsiAnnotation)) {
+                break; // 遇到非注释、非空白、非注解元素停止
+            }
+            prev = prev.getPrevSibling();
+        }
+
+        // 添加注释
+        for (PsiElement comment : comments) {
+            sb.append(comment.getText()).append("\n");
+        }
+
+        // 添加字段声明（包括注解）
+        sb.append(field.getText());
+
+        return sb.toString();
     }
 
     /**
@@ -305,12 +372,12 @@ public class JavaBeanUtils {
      * 字段信息类，用于保存字段的完整信息（包括注释）
      */
     private static class FieldInfo {
-        private final String fullFieldText;
+        private final String commentText;
+        private final String fieldDeclaration;
 
         public FieldInfo(PsiField field) {
-            StringBuilder sb = new StringBuilder();
-
-            // 添加字段前的注释（JavaDoc和行注释）
+            // 收集注释
+            StringBuilder commentSb = new StringBuilder();
             PsiElement prevElement = field.getPrevSibling();
             List<String> comments = new ArrayList<>();
 
@@ -331,68 +398,73 @@ public class JavaBeanUtils {
                 prevElement = prevElement.getPrevSibling();
             }
 
-            // 添加收集到的注释
+            // 构建注释文本
             for (String comment : comments) {
-                sb.append("    ").append(comment).append("\n");
+                commentSb.append(comment).append("\n");
             }
+            this.commentText = commentSb.toString().trim();
+
+            // 构建字段声明
+            StringBuilder fieldSb = new StringBuilder();
 
             // 添加注解
             PsiAnnotation[] annotations = field.getAnnotations();
             for (PsiAnnotation annotation : annotations) {
-                sb.append("    ").append(annotation.getText()).append("\n");
+                fieldSb.append(annotation.getText()).append(" ");
             }
-
-            // 添加字段声明（带正确缩进）
-            sb.append("    ");
 
             // 添加所有修饰符
             PsiModifierList modifierList = field.getModifierList();
             if (modifierList != null) {
                 // 可见性修饰符
                 if (modifierList.hasModifierProperty(PsiModifier.PUBLIC)) {
-                    sb.append("public ");
+                    fieldSb.append("public ");
                 } else if (modifierList.hasModifierProperty(PsiModifier.PROTECTED)) {
-                    sb.append("protected ");
+                    fieldSb.append("protected ");
                 } else if (modifierList.hasModifierProperty(PsiModifier.PRIVATE)) {
-                    sb.append("private ");
+                    fieldSb.append("private ");
                 }
 
                 // static修饰符
                 if (modifierList.hasModifierProperty(PsiModifier.STATIC)) {
-                    sb.append("static ");
+                    fieldSb.append("static ");
                 }
 
                 // final修饰符
                 if (modifierList.hasModifierProperty(PsiModifier.FINAL)) {
-                    sb.append("final ");
+                    fieldSb.append("final ");
                 }
 
                 // 其他修饰符
                 if (modifierList.hasModifierProperty(PsiModifier.TRANSIENT)) {
-                    sb.append("transient ");
+                    fieldSb.append("transient ");
                 }
                 if (modifierList.hasModifierProperty(PsiModifier.VOLATILE)) {
-                    sb.append("volatile ");
+                    fieldSb.append("volatile ");
                 }
             }
 
             // 添加类型和字段名
-            sb.append(field.getType().getCanonicalText()).append(" ");
-            sb.append(field.getName());
+            fieldSb.append(field.getType().getCanonicalText()).append(" ");
+            fieldSb.append(field.getName());
 
             // 添加初始化表达式（如果有）
             PsiExpression initializer = field.getInitializer();
             if (initializer != null) {
-                sb.append(" = ").append(initializer.getText());
+                fieldSb.append(" = ").append(initializer.getText());
             }
 
-            sb.append(";");
+            fieldSb.append(";");
 
-            this.fullFieldText = sb.toString();
+            this.fieldDeclaration = fieldSb.toString();
         }
 
-        public String getFullFieldText() {
-            return fullFieldText;
+        public String getCommentText() {
+            return commentText;
+        }
+
+        public String getFieldDeclaration() {
+            return fieldDeclaration;
         }
     }
 

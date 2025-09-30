@@ -33,10 +33,153 @@ public class TestFieldSortingBean {
     private String delta;
     private String epsilon;
 
-    // 在这里使用插件生成getter/setter/toString方法
-    // 可以在设置中启用字段排序功能，测试不同的排序方式：
-    // 1. 按名称排序（字母顺序）
-    // 2. 按长度排序（字段名长度）
-    // 3. 按类型排序（数据类型）
-    // 4. 升序/降序排列
+    public String getA() {
+        return a;
+    }
+
+    public void setA(String a) {
+        this.a = a;
+    }
+
+    public String getBb() {
+        return bb;
+    }
+
+    public void setBb(String bb) {
+        this.bb = bb;
+    }
+
+    public String getCcc() {
+        return ccc;
+    }
+
+    public void setCcc(String ccc) {
+        this.ccc = ccc;
+    }
+
+    public String getDddd() {
+        return dddd;
+    }
+
+    public void setDddd(String dddd) {
+        this.dddd = dddd;
+    }
+
+    public String getEeeee() {
+        return eeeee;
+    }
+
+    public void setEeeee(String eeeee) {
+        this.eeeee = eeeee;
+    }
+
+    public boolean isFlag() {
+        return flag;
+    }
+
+    public void setFlag(boolean flag) {
+        this.flag = flag;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public LocalDateTime getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(LocalDateTime createTime) {
+        this.createTime = createTime;
+    }
+
+    public List<String> getItems() {
+        return items;
+    }
+
+    public void setItems(List<String> items) {
+        this.items = items;
+    }
+
+    public String getAlpha() {
+        return alpha;
+    }
+
+    public void setAlpha(String alpha) {
+        this.alpha = alpha;
+    }
+
+    public String getBeta() {
+        return beta;
+    }
+
+    public void setBeta(String beta) {
+        this.beta = beta;
+    }
+
+    public String getGamma() {
+        return gamma;
+    }
+
+    public void setGamma(String gamma) {
+        this.gamma = gamma;
+    }
+
+    public String getDelta() {
+        return delta;
+    }
+
+    public void setDelta(String delta) {
+        this.delta = delta;
+    }
+
+    public String getEpsilon() {
+        return epsilon;
+    }
+
+    public void setEpsilon(String epsilon) {
+        this.epsilon = epsilon;
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "\"a\":\"" + a + "\"" + "," +
+                "\"bb\":\"" + bb + "\"" + "," +
+                "\"ccc\":\"" + ccc + "\"" + "," +
+                "\"dddd\":\"" + dddd + "\"" + "," +
+                "\"eeeee\":\"" + eeeee + "\"" + "," +
+                "\"flag\":" + flag + "," +
+                "\"count\":" + count + "," +
+                "\"timestamp\":" + timestamp + "," +
+                "\"name\":\"" + name + "\"" + "," +
+                "\"createTime\":" + createTime + "," +
+                "\"items\":" + items + "," +
+                "\"alpha\":\"" + alpha + "\"" + "," +
+                "\"beta\":\"" + beta + "\"" + "," +
+                "\"gamma\":\"" + gamma + "\"" + "," +
+                "\"delta\":\"" + delta + "\"" + "," +
+                "\"epsilon\":\"" + epsilon + "\"" +
+                "}";
+    }
 }

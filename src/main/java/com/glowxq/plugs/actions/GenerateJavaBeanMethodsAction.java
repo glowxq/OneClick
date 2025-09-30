@@ -17,6 +17,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
 import com.intellij.psi.util.PsiTreeUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -40,9 +41,15 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
             // 如果没有PSI文件，尝试从虚拟文件获取
             if (psiFile == null) {
                 VirtualFile virtualFile = e.getData(CommonDataKeys.VIRTUAL_FILE);
-                if (virtualFile != null && virtualFile.getName().endsWith(".java")) {
-                    PsiManager psiManager = PsiManager.getInstance(project);
-                    psiFile = psiManager.findFile(virtualFile);
+                if (virtualFile != null) {
+                    if (virtualFile.isDirectory()) {
+                        // 选中的是目录，使用批量生成逻辑
+                        handleDirectorySelection(project, virtualFile);
+                        return;
+                    } else if (virtualFile.getName().endsWith(".java")) {
+                        PsiManager psiManager = PsiManager.getInstance(project);
+                        psiFile = psiManager.findFile(virtualFile);
+                    }
                 }
             }
 
@@ -113,6 +120,97 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
             Messages.showErrorDialog("智能一键生成时发生错误: " + ex.getMessage(), "错误");
             ex.printStackTrace();
         }
+    }
+
+    /**
+     * 处理目录选择 - 批量生成
+     */
+    private void handleDirectorySelection(Project project, VirtualFile directory) {
+        try {
+            // 收集目录下的所有Java文件
+            List<VirtualFile> javaFiles = new ArrayList<>();
+            collectJavaFilesRecursively(directory, javaFiles);
+
+            if (javaFiles.isEmpty()) {
+                Messages.showInfoMessage(project, "所选目录中没有找到Java文件", "提示");
+                return;
+            }
+
+            // 显示确认对话框
+            int result = Messages.showYesNoDialog(project,
+                "找到 " + javaFiles.size() + " 个Java文件，是否对所有文件执行智能一键生成？",
+                "批量生成确认",
+                Messages.getQuestionIcon());
+
+            if (result != Messages.YES) {
+                return;
+            }
+
+            // 执行批量生成
+            performBatchGeneration(project, javaFiles);
+
+        } catch (Exception ex) {
+            Messages.showErrorDialog(project, "处理目录时发生错误: " + ex.getMessage(), "错误");
+            ex.printStackTrace();
+        }
+    }
+
+    /**
+     * 递归收集Java文件
+     */
+    private void collectJavaFilesRecursively(VirtualFile directory, List<VirtualFile> javaFiles) {
+        if (!directory.isDirectory()) {
+            return;
+        }
+
+        VirtualFile[] children = directory.getChildren();
+        for (VirtualFile child : children) {
+            if (child.isDirectory()) {
+                collectJavaFilesRecursively(child, javaFiles);
+            } else if (child.getName().endsWith(".java")) {
+                javaFiles.add(child);
+            }
+        }
+    }
+
+    /**
+     * 执行批量生成
+     */
+    private void performBatchGeneration(Project project, List<VirtualFile> javaFiles) {
+        PsiManager psiManager = PsiManager.getInstance(project);
+        int successCount = 0;
+        int failCount = 0;
+        StringBuilder errorMessages = new StringBuilder();
+
+        for (VirtualFile virtualFile : javaFiles) {
+            try {
+                PsiFile psiFile = psiManager.findFile(virtualFile);
+                if (psiFile instanceof PsiJavaFile) {
+                    PsiJavaFile javaFile = (PsiJavaFile) psiFile;
+                    PsiClass[] classes = javaFile.getClasses();
+
+                    for (PsiClass psiClass : classes) {
+                        if (psiClass != null && !psiClass.isInterface() && !psiClass.isEnum()) {
+                            WriteCommandAction.runWriteCommandAction(project, () -> {
+                                performSmartGeneration(project, psiClass);
+                            });
+                            successCount++;
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                failCount++;
+                errorMessages.append(virtualFile.getName()).append(": ").append(e.getMessage()).append("\n");
+                System.err.println("处理文件失败: " + virtualFile.getName() + " - " + e.getMessage());
+            }
+        }
+
+        // 显示结果
+        String message = "批量生成完成！\n成功: " + successCount + " 个类\n失败: " + failCount + " 个类";
+        if (failCount > 0) {
+            message += "\n\n失败详情:\n" + errorMessages.toString();
+        }
+        Messages.showInfoMessage(project, message, "批量生成结果");
     }
 
     /**
