@@ -5,7 +5,7 @@ OneClick 是一个功能强大的 IntelliJ IDEA 插件，专为 Java 开发者�
 ![Plugin Version](https://img.shields.io/badge/version-1.0.0-blue)
 ![IntelliJ Platform](https://img.shields.io/badge/platform-IntelliJ%20IDEA-orange)
 ![Java](https://img.shields.io/badge/java-8%2B-green)
-![License](https://img.shields.io/badge/license-MIT-brightgreen)
+![License](https://img.shields.io/badge/license-Apache%202.0-brightgreen)
 
 ## 🌟 核心特性
 
@@ -614,7 +614,7 @@ OneClick/
 
 ## 📄 许可证
 
-本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情。
+本项目采用 Apache License 2.0 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情。
 
 ## 🐛 问题反馈
 
