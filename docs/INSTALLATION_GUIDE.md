@@ -26,10 +26,10 @@
 5. **重启 IDEA**
 
 ### 步骤2: 安装新版本
-1. 下载插件文件：`build/distributions/OneClick-1.0-SNAPSHOT.zip`
+1. 下载插件文件：`build/distributions/OneClick-1.1-SNAPSHOT.zip`
 2. 打开 IDEA：`File → Settings → Plugins`
 3. 点击齿轮图标 ⚙️ → `Install Plugin from Disk...`
-4. 选择 `OneClick-1.0-SNAPSHOT.zip` 文件
+4. 选择 `OneClick-1.1-SNAPSHOT.zip` 文件
 5. 点击 **OK**
 6. **重启 IDEA**
 
