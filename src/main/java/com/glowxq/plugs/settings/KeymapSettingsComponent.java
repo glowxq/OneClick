@@ -386,11 +386,12 @@ public class KeymapSettingsComponent {
 
         String osModifier = SystemInfo.isMac ? "Cmd" : "Ctrl";
 
-        JBLabel titleLabel = new JBLabel("<html><h3>🚀 智能快捷键</h3></html>");
+        JBLabel titleLabel = new JBLabel("<html><h3>🚀 " + I18nUtils.message("settings.keymap.smart.title") + "</h3></html>");
         titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD));
         titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JBLabel descLabel = new JBLabel("<html><div style='width: 450px;'><b>%s+Shift+D</b> - 智能一键生成<br><br>• 选中文本：切换命名风格 / 生成常量<br>• 类级别：根据类类型智能生成代码<br>• 字段排序：业务类自动排序字段<br><br><b>其他快捷键：</b><br>• %s+Shift+U - 开发工具集合<br>• %s+Shift+Y - 数据库工具<br>• %s+Shift+B - 批量生成<br><br><i>💡 所有快捷键统一使用 %s+Shift 开头</i></div></html>".formatted(osModifier, osModifier, osModifier, osModifier, osModifier));
+        String descText = I18nUtils.message("settings.keymap.smart.description", osModifier, osModifier, osModifier, osModifier, osModifier);
+        JBLabel descLabel = new JBLabel("<html><div style='width: 450px;'>" + descText + "</div></html>");
         descLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         descPanel.add(titleLabel);
@@ -406,15 +407,15 @@ public class KeymapSettingsComponent {
      */
     private void showPresetDialog() {
         String[] presets = {
-            "默认预设 (推荐)",
-            "VS Code 风格",
-            "Eclipse 风格",
-            "自定义预设"
+            I18nUtils.message("settings.keymap.preset.default"),
+            I18nUtils.message("settings.keymap.preset.vscode"),
+            I18nUtils.message("settings.keymap.preset.eclipse"),
+            I18nUtils.message("settings.keymap.preset.custom")
         };
 
         int selectedIndex = Messages.showChooseDialog(
-            "选择快捷键预设方案：",
-            "快捷键预设",
+            I18nUtils.message("settings.keymap.preset.choose"),
+            I18nUtils.message("settings.keymap.preset.title"),
             presets,
             presets[0],
             Messages.getQuestionIcon()
@@ -433,8 +434,11 @@ public class KeymapSettingsComponent {
     private void applyPreset(String presetName) {
         Map<String, String> shortcuts = new HashMap<>();
 
-        switch (presetName) {
-            case "默认预设 (推荐)":
+        String defaultPreset = I18nUtils.message("settings.keymap.preset.default");
+        String vscodePreset = I18nUtils.message("settings.keymap.preset.vscode");
+        String eclipsePreset = I18nUtils.message("settings.keymap.preset.eclipse");
+
+        if (presetName.equals(defaultPreset)) {
                 shortcuts.put("generateJavaBean", SystemInfo.isMac ? "meta shift D" : "ctrl shift D");
                 shortcuts.put("foldJavaBean", SystemInfo.isMac ? "meta shift F" : "ctrl shift F");
                 shortcuts.put("batchGenerate", SystemInfo.isMac ? "meta shift B" : "ctrl shift B");
@@ -444,9 +448,7 @@ public class KeymapSettingsComponent {
                 shortcuts.put("codeCleanup", SystemInfo.isMac ? "meta shift L" : "ctrl shift L");
                 shortcuts.put("codeAnalysis", SystemInfo.isMac ? "meta shift A" : "ctrl shift A");
                 shortcuts.put("quickDoc", SystemInfo.isMac ? "meta shift Q" : "ctrl shift Q");
-                break;
-
-            case "VS Code 风格":
+        } else if (presetName.equals(vscodePreset)) {
                 shortcuts.put("generateJavaBean", SystemInfo.isMac ? "meta shift D" : "ctrl shift D");
                 shortcuts.put("foldJavaBean", SystemInfo.isMac ? "meta K meta 0" : "ctrl K ctrl 0");
                 shortcuts.put("batchGenerate", SystemInfo.isMac ? "meta shift B" : "ctrl shift B");
@@ -456,9 +458,7 @@ public class KeymapSettingsComponent {
                 shortcuts.put("codeCleanup", SystemInfo.isMac ? "meta shift L" : "ctrl shift L");
                 shortcuts.put("codeAnalysis", SystemInfo.isMac ? "meta shift A" : "ctrl shift A");
                 shortcuts.put("quickDoc", SystemInfo.isMac ? "meta shift Q" : "ctrl shift Q");
-                break;
-
-            case "Eclipse 风格":
+        } else if (presetName.equals(eclipsePreset)) {
                 shortcuts.put("generateJavaBean", SystemInfo.isMac ? "meta shift D" : "ctrl shift D");
                 shortcuts.put("foldJavaBean", SystemInfo.isMac ? "meta MINUS" : "ctrl MINUS");
                 shortcuts.put("batchGenerate", SystemInfo.isMac ? "meta shift B" : "ctrl shift B");
@@ -468,10 +468,8 @@ public class KeymapSettingsComponent {
                 shortcuts.put("codeCleanup", SystemInfo.isMac ? "meta shift L" : "ctrl shift L");
                 shortcuts.put("codeAnalysis", SystemInfo.isMac ? "meta shift A" : "ctrl shift A");
                 shortcuts.put("quickDoc", SystemInfo.isMac ? "meta shift Q" : "ctrl shift Q");
-                break;
-
-            default:
-                return; // 自定义预设不做任何操作
+        } else {
+            return; // 自定义预设不做任何操作
         }
 
         // 应用快捷键设置
@@ -483,8 +481,8 @@ public class KeymapSettingsComponent {
         }
 
         Messages.showInfoMessage(
-            "快捷键预设 \"" + presetName + "\" 已应用！\n请点击 Apply 保存设置。",
-            "预设应用成功"
+            I18nUtils.message("settings.keymap.preset.applied", presetName),
+            I18nUtils.message("settings.keymap.preset.success")
         );
     }
 }

@@ -7,54 +7,55 @@
 
     <description><![CDATA[
     <h2>OneClick - 智能代码生成器 🚀</h2>
-    <p>功能强大的 IntelliJ IDEA 插件，专为 Java 开发者设计，提供全方位的智能代码生成、分析和管理功能。</p>
+    <p><strong>中文</strong>: 功能强大的 IntelliJ IDEA 插件，专为 Java 开发者设计，提供全方位的智能代码生成、分析和管理功能。</p>
+    <p><strong>English</strong>: Powerful IntelliJ IDEA plugin designed for Java developers, providing comprehensive intelligent code generation, analysis and management features.</p>
 
-    <h3>🎯 核心功能</h3>
+    <h3>🎯 核心功能 / Core Features</h3>
     <ul>
-        <li><strong>JavaBean 方法生成</strong> - getter/setter/toString/equals/hashCode</li>
-        <li><strong>代码模板生成器</strong> - 15种设计模式和架构模板</li>
-        <li><strong>批量生成功能</strong> - 支持选中包或多个文件进行批量处理</li>
-        <li><strong>内部类支持</strong> - 递归处理嵌套内部类，可配置处理深度</li>
-        <li><strong>代码重构助手</strong> - 10种重构操作</li>
-        <li><strong>智能注释生成</strong> - 根据代码上下文自动生成中文注释</li>
-        <li><strong>代码清理助手</strong> - 移除未使用导入、空行、调试代码等</li>
-        <li><strong>代码分析工具</strong> - 详细统计分析和质量检测</li>
-        <li><strong>快速文档生成</strong> - 自动生成标准JavaDoc文档</li>
+        <li><strong>JavaBean 方法生成 / JavaBean Method Generation</strong> - getter/setter/toString/equals/hashCode</li>
+        <li><strong>代码模板生成器 / Code Template Generator</strong> - 15种设计模式和架构模板 / 15 design patterns and architecture templates</li>
+        <li><strong>批量生成功能 / Batch Generation</strong> - 支持选中包或多个文件进行批量处理 / Support batch processing for selected packages or files</li>
+        <li><strong>内部类支持 / Inner Class Support</strong> - 递归处理嵌套内部类 / Recursively process nested inner classes</li>
+        <li><strong>代码重构助手 / Refactor Assistant</strong> - 10种重构操作 / 10 refactoring operations</li>
+        <li><strong>智能注释生成 / Smart Comment Generation</strong> - 根据代码上下文自动生成注释 / Auto generate comments based on code context</li>
+        <li><strong>代码清理助手 / Code Cleanup</strong> - 移除未使用导入、空行等 / Remove unused imports, empty lines, etc.</li>
+        <li><strong>代码分析工具 / Code Analysis</strong> - 详细统计分析和质量检测 / Detailed statistical analysis and quality detection</li>
+        <li><strong>快速文档生成 / Quick Documentation</strong> - 自动生成标准JavaDoc文档 / Auto generate standard JavaDoc</li>
     </ul>
 
-    <h3>⚙️ 高级特性</h3>
+    <h3>⚙️ 高级特性 / Advanced Features</h3>
     <ul>
-        <li><strong>智能类型检测</strong> - 自动识别JavaBean vs 业务类</li>
-        <li><strong>可配置包规则</strong> - 自定义JavaBean和业务类包名模式</li>
-        <li><strong>字段排序功能</strong> - 支持按名称、长度、类型排序</li>
-        <li><strong>快捷键自定义</strong> - 支持不同操作系统的快捷键配置</li>
-        <li><strong>多语言支持</strong> - 完整的中英双语界面</li>
-        <li><strong>多种toString风格</strong> - JSON、简单、Apache Commons</li>
-        <li><strong>Fluent Setter</strong> - 支持链式调用风格</li>
+        <li><strong>智能类型检测 / Smart Type Detection</strong> - 自动识别JavaBean vs 业务类 / Auto detect JavaBean vs business classes</li>
+        <li><strong>可配置包规则 / Configurable Package Rules</strong> - 自定义包名模式 / Custom package name patterns</li>
+        <li><strong>字段排序功能 / Field Sorting</strong> - 支持按名称、长度、类型排序 / Sort by name, length, type</li>
+        <li><strong>快捷键自定义 / Customizable Shortcuts</strong> - 支持不同操作系统配置 / Support different OS configurations</li>
+        <li><strong>多语言支持 / Multi-language Support</strong> - 完整的中英双语界面 / Complete Chinese-English bilingual interface</li>
+        <li><strong>多种toString风格 / Multiple toString Styles</strong> - JSON、简单、Apache Commons / JSON, Simple, Apache Commons</li>
+        <li><strong>Fluent Setter</strong> - 支持链式调用风格 / Support method chaining style</li>
     </ul>
 
-    <h3>⌨️ 快捷键说明</h3>
+    <h3>⌨️ 快捷键说明 / Keyboard Shortcuts</h3>
     <table border="1" cellpadding="5" cellspacing="0">
-        <tr><th>功能</th><th>Windows/Linux</th><th>macOS</th></tr>
-        <tr><td>智能一键生成</td><td>Ctrl+Shift+D</td><td>Cmd+Shift+D</td></tr>
-        <tr><td>开发工具集合</td><td>Ctrl+Shift+U</td><td>Cmd+Shift+U</td></tr>
-        <tr><td>数据库工具</td><td>Ctrl+Shift+Y</td><td>Cmd+Shift+Y</td></tr>
-        <tr><td>批量生成</td><td>Ctrl+Shift+B</td><td>Cmd+Shift+B</td></tr>
-        <tr><td>代码模板</td><td>Ctrl+Shift+T</td><td>Cmd+Shift+T</td></tr>
-        <tr><td>重构助手</td><td>Ctrl+Shift+R</td><td>Cmd+Shift+R</td></tr>
-        <tr><td>智能注释</td><td>Ctrl+Shift+C</td><td>Cmd+Shift+C</td></tr>
-        <tr><td>代码清理</td><td>Ctrl+Shift+L</td><td>Cmd+Shift+L</td></tr>
-        <tr><td>代码分析</td><td>Ctrl+Shift+A</td><td>Cmd+Shift+A</td></tr>
-        <tr><td>快速文档</td><td>Ctrl+Shift+Q</td><td>Cmd+Shift+Q</td></tr>
-        <tr><td>折叠方法</td><td>Ctrl+Shift+F</td><td>Cmd+Shift+F</td></tr>
+        <tr><th>功能 / Function</th><th>Windows/Linux</th><th>macOS</th></tr>
+        <tr><td>智能一键生成 / Smart One-Click Generate</td><td>Ctrl+Shift+D</td><td>Cmd+Shift+D</td></tr>
+        <tr><td>开发工具集合 / Developer Tools</td><td>Ctrl+Shift+U</td><td>Cmd+Shift+U</td></tr>
+        <tr><td>数据库工具 / Database Tools</td><td>Ctrl+Shift+Y</td><td>Cmd+Shift+Y</td></tr>
+        <tr><td>批量生成 / Batch Generate</td><td>Ctrl+Shift+B</td><td>Cmd+Shift+B</td></tr>
+        <tr><td>代码模板 / Code Templates</td><td>Ctrl+Shift+T</td><td>Cmd+Shift+T</td></tr>
+        <tr><td>重构助手 / Refactor Assistant</td><td>Ctrl+Shift+R</td><td>Cmd+Shift+R</td></tr>
+        <tr><td>智能注释 / Smart Comment</td><td>Ctrl+Shift+C</td><td>Cmd+Shift+C</td></tr>
+        <tr><td>代码清理 / Code Cleanup</td><td>Ctrl+Shift+L</td><td>Cmd+Shift+L</td></tr>
+        <tr><td>代码分析 / Code Analysis</td><td>Ctrl+Shift+A</td><td>Cmd+Shift+A</td></tr>
+        <tr><td>快速文档 / Quick Documentation</td><td>Ctrl+Shift+Q</td><td>Cmd+Shift+Q</td></tr>
+        <tr><td>折叠方法 / Fold Methods</td><td>Ctrl+Shift+F</td><td>Cmd+Shift+F</td></tr>
     </table>
 
-    <h3>🚀 使用方法</h3>
+    <h3>🚀 使用方法 / Usage</h3>
     <ul>
-        <li><strong>右键菜单</strong> - 在Java类中右键选择 "JavaBean Tools"</li>
-        <li><strong>项目视图</strong> - 选中包或文件右键选择 "Batch Generate"</li>
-        <li><strong>设置面板</strong> - File → Settings → Tools → OneClick</li>
-        <li><strong>快捷键</strong> - 使用上述快捷键快速访问功能</li>
+        <li><strong>右键菜单 / Context Menu</strong> - 在Java类中右键选择 "JavaBean Tools" / Right-click in Java class and select "JavaBean Tools"</li>
+        <li><strong>项目视图 / Project View</strong> - 选中包或文件右键选择 "Batch Generate" / Select packages or files and right-click "Batch Generate"</li>
+        <li><strong>设置面板 / Settings Panel</strong> - File → Settings → Tools → OneClick</li>
+        <li><strong>快捷键 / Shortcuts</strong> - 使用上述快捷键快速访问功能 / Use above shortcuts for quick access</li>
     </ul>
 
     <h3>📋 代码模板库</h3>
@@ -125,8 +126,8 @@
         <!-- 智能一键生成Action -->
         <action id="com.glowxq.plugs.SmartOneClickAction"
                 class="com.glowxq.plugs.actions.GenerateJavaBeanMethodsAction"
-                text="🚀 智能一键生成"
-                description="智能快捷键：根据选中内容或类类型智能执行相应操作">
+                text="🚀 Smart One-Click Generate"
+                description="Smart shortcut: intelligently execute operations based on selected content or class type">
             <!-- 添加到Generate菜单 -->
             <add-to-group group-id="GenerateGroup" anchor="first"/>
             <!-- 添加到OneClick工具组 - 最重要，放在第一位 -->

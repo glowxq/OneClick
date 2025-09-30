@@ -72,8 +72,10 @@ public final class OneClickSettings implements PersistentStateComponent<OneClick
 
         // 字段排序设置（仅对业务类生效）
         public boolean enableFieldSorting = true; // 默认启用
-        public String fieldSortType = "NAME"; // NAME, LENGTH, TYPE
+        public String fieldSortType = "NAME"; // NAME, LENGTH, TYPE, MODIFIER
         public boolean sortAscending = true;
+        public boolean enableModifierSorting = true; // 权限修饰符排序（优先级最高）
+        public String modifierSortOrder = "public,protected,package,private"; // 权限修饰符排序顺序
 
         // 语言设置
         public boolean useEnglish = false; // 默认使用中文
@@ -274,5 +276,21 @@ public final class OneClickSettings implements PersistentStateComponent<OneClick
 
     public void setSortAscending(boolean sortAscending) {
         myState.sortAscending = sortAscending;
+    }
+
+    public boolean isEnableModifierSorting() {
+        return myState.enableModifierSorting;
+    }
+
+    public void setEnableModifierSorting(boolean enableModifierSorting) {
+        myState.enableModifierSorting = enableModifierSorting;
+    }
+
+    public String getModifierSortOrder() {
+        return myState.modifierSortOrder;
+    }
+
+    public void setModifierSortOrder(String modifierSortOrder) {
+        myState.modifierSortOrder = modifierSortOrder;
     }
 }

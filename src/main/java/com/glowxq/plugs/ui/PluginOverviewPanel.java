@@ -139,18 +139,18 @@ public class PluginOverviewPanel {
 
         String osModifier = SystemInfo.isMac ? "Cmd" : "Ctrl";
         String[][] shortcuts = {
-            {"功能", "快捷键", "说明"},
-            {"智能一键生成", osModifier + "+Shift+D", "智能生成适合的方法"},
-            {"开发工具集合", osModifier + "+Shift+U", "20种开发工具"},
-            {"数据库工具", osModifier + "+Shift+Y", "数据库代码生成"},
-            {"批量生成", osModifier + "+Shift+B", "批量处理多个文件"},
-            {"代码模板", osModifier + "+Shift+T", "15种设计模式模板"},
-            {"重构助手", osModifier + "+Shift+R", "10种重构操作"},
-            {"智能注释", osModifier + "+Shift+C", "自动生成注释"},
-            {"代码清理", osModifier + "+Shift+L", "清理冗余代码"},
-            {"代码分析", osModifier + "+Shift+A", "统计分析代码"},
-            {"快速文档", osModifier + "+Shift+Q", "生成JavaDoc"},
-            {"折叠方法", osModifier + "+Shift+F", "折叠JavaBean方法"}
+            {I18nUtils.message("overview.shortcuts.function"), I18nUtils.message("overview.shortcuts.key"), I18nUtils.message("overview.shortcuts.description")},
+            {I18nUtils.message("overview.shortcuts.smart"), osModifier + "+Shift+D", I18nUtils.message("overview.shortcuts.smart.desc")},
+            {I18nUtils.message("overview.shortcuts.devtools"), osModifier + "+Shift+U", I18nUtils.message("overview.shortcuts.devtools.desc")},
+            {I18nUtils.message("overview.shortcuts.database"), osModifier + "+Shift+Y", I18nUtils.message("overview.shortcuts.database.desc")},
+            {I18nUtils.message("overview.shortcuts.batch"), osModifier + "+Shift+B", I18nUtils.message("overview.shortcuts.batch.desc")},
+            {I18nUtils.message("overview.shortcuts.template"), osModifier + "+Shift+T", I18nUtils.message("overview.shortcuts.template.desc")},
+            {I18nUtils.message("overview.shortcuts.refactor"), osModifier + "+Shift+R", I18nUtils.message("overview.shortcuts.refactor.desc")},
+            {I18nUtils.message("overview.shortcuts.comment"), osModifier + "+Shift+C", I18nUtils.message("overview.shortcuts.comment.desc")},
+            {I18nUtils.message("overview.shortcuts.cleanup"), osModifier + "+Shift+L", I18nUtils.message("overview.shortcuts.cleanup.desc")},
+            {I18nUtils.message("overview.shortcuts.analysis"), osModifier + "+Shift+A", I18nUtils.message("overview.shortcuts.analysis.desc")},
+            {I18nUtils.message("overview.shortcuts.quickdoc"), osModifier + "+Shift+Q", I18nUtils.message("overview.shortcuts.quickdoc.desc")},
+            {I18nUtils.message("overview.shortcuts.fold"), osModifier + "+Shift+F", I18nUtils.message("overview.shortcuts.fold.desc")}
         };
 
         for (int i = 0; i < shortcuts.length; i++) {

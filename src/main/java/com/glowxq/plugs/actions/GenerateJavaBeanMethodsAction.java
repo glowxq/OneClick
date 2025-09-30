@@ -2,6 +2,7 @@ package com.glowxq.plugs.actions;
 
 import com.glowxq.plugs.settings.OneClickSettings;
 import com.glowxq.plugs.utils.ClassTypeDetector;
+import com.glowxq.plugs.utils.I18nUtils;
 import com.glowxq.plugs.utils.JavaBeanUtils;
 import com.glowxq.plugs.utils.LoggerGenerator;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -9,11 +10,12 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
 import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.openapi.ui.Messages;
 
 import java.util.List;
 
@@ -30,8 +32,22 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
             Editor editor = e.getData(CommonDataKeys.EDITOR);
             PsiFile psiFile = e.getData(CommonDataKeys.PSI_FILE);
 
-            if (project == null || editor == null || psiFile == null) {
+            if (project == null) {
                 Messages.showErrorDialog("无法获取项目信息", "错误");
+                return;
+            }
+
+            // 如果没有PSI文件，尝试从虚拟文件获取
+            if (psiFile == null) {
+                VirtualFile virtualFile = e.getData(CommonDataKeys.VIRTUAL_FILE);
+                if (virtualFile != null && virtualFile.getName().endsWith(".java")) {
+                    PsiManager psiManager = PsiManager.getInstance(project);
+                    psiFile = psiManager.findFile(virtualFile);
+                }
+            }
+
+            if (psiFile == null) {
+                Messages.showErrorDialog("无法获取文件信息，请确保在Java文件中执行此操作", "错误");
                 return;
             }
 
@@ -47,33 +63,121 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
                 return;
             }
 
-            // 检查是否有选中的文本
-            String selectedText = editor.getSelectionModel().getSelectedText();
-            if (selectedText != null && !selectedText.trim().isEmpty()) {
-                // 有选中文本，执行智能操作
-                handleSelectedText(project, editor, psiFile, selectedText);
-                return;
+            // 检查是否有选中的文本（只有在编辑器中才检查）
+            if (editor != null) {
+                String selectedText = editor.getSelectionModel().getSelectedText();
+                if (selectedText != null && !selectedText.trim().isEmpty()) {
+                    // 检查是否选中了类名
+                    if (isClassNameSelected(editor, psiFile, selectedText)) {
+                        // 选中了类名，生成DTO/VO类
+                        handleClassSelection(project, editor, psiFile, selectedText);
+                        return;
+                    } else {
+                        // 有选中文本，执行智能操作
+                        handleSelectedText(project, editor, psiFile, selectedText);
+                        return;
+                    }
+                }
             }
 
-            // 没有选中文本，执行原有的类级别操作
-            // 获取当前光标位置的类
-            PsiElement element = psiFile.findElementAt(editor.getCaretModel().getOffset());
-            PsiClass psiClass = PsiTreeUtil.getParentOfType(element, PsiClass.class);
+            // 没有选中文本或没有编辑器，执行类级别操作
+            PsiClass psiClass = null;
+
+            if (editor != null) {
+                // 从编辑器获取当前光标位置的类
+                PsiElement element = psiFile.findElementAt(editor.getCaretModel().getOffset());
+                psiClass = PsiTreeUtil.getParentOfType(element, PsiClass.class);
+            } else {
+                // 从文件获取第一个类
+                PsiJavaFile javaFile = (PsiJavaFile) psiFile;
+                PsiClass[] classes = javaFile.getClasses();
+                if (classes.length > 0) {
+                    psiClass = classes[0];
+                }
+            }
 
             if (psiClass == null) {
-                Messages.showErrorDialog(project, "请将光标放在类定义内", "错误");
+                Messages.showErrorDialog(project, "未找到可处理的类", "错误");
                 return;
             }
 
             // 执行生成操作
+            final PsiClass finalPsiClass = psiClass; // 创建final引用
             String[] result = new String[1]; // 用于存储结果消息
             WriteCommandAction.runWriteCommandAction(project, () -> {
-                result[0] = performSmartGeneration(project, psiClass);
+                result[0] = performSmartGeneration(project, finalPsiClass);
             });
 
             Messages.showInfoMessage(project, result[0], "成功");
         } catch (Exception ex) {
             Messages.showErrorDialog("智能一键生成时发生错误: " + ex.getMessage(), "错误");
+            ex.printStackTrace();
+        }
+    }
+
+    /**
+     * 检查是否选中了类名
+     */
+    private boolean isClassNameSelected(Editor editor, PsiFile psiFile, String selectedText) {
+        int startOffset = editor.getSelectionModel().getSelectionStart();
+        PsiElement elementAtStart = psiFile.findElementAt(startOffset);
+
+        if (elementAtStart == null) {
+            return false;
+        }
+
+        // 检查是否在类声明中
+        PsiClass psiClass = PsiTreeUtil.getParentOfType(elementAtStart, PsiClass.class);
+        if (psiClass == null) {
+            return false;
+        }
+
+        // 检查选中的文本是否是类名
+        return selectedText.trim().equals(psiClass.getName());
+    }
+
+    /**
+     * 处理类选择 - 生成DTO/VO类
+     */
+    private void handleClassSelection(Project project, Editor editor, PsiFile psiFile, String className) {
+        try {
+            // 获取当前类
+            int startOffset = editor.getSelectionModel().getSelectionStart();
+            PsiElement elementAtStart = psiFile.findElementAt(startOffset);
+            PsiClass sourceClass = PsiTreeUtil.getParentOfType(elementAtStart, PsiClass.class);
+
+            if (sourceClass == null) {
+                Messages.showErrorDialog(project, "无法找到源类", "错误");
+                return;
+            }
+
+            // 显示选择对话框：DTO还是VO
+            String[] options = {"DTO", "VO", "取消"};
+            int choice = Messages.showChooseDialog(
+                "选择要生成的类型：",
+                "生成数据传输对象",
+                options,
+                options[0],
+                Messages.getQuestionIcon()
+            );
+
+            if (choice == 2 || choice == -1) { // 取消
+                return;
+            }
+
+            String suffix = options[choice];
+
+            WriteCommandAction.runWriteCommandAction(project, () -> {
+                try {
+                    String result = generateDtoVoClass(project, sourceClass, suffix);
+                    Messages.showInfoMessage(project, result, "生成成功");
+                } catch (Exception e) {
+                    Messages.showErrorDialog(project, "生成失败: " + e.getMessage(), "错误");
+                }
+            });
+
+        } catch (Exception ex) {
+            Messages.showErrorDialog(project, "处理类选择时发生错误: " + ex.getMessage(), "错误");
             ex.printStackTrace();
         }
     }
@@ -341,6 +445,168 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
     }
 
     /**
+     * 生成DTO/VO类
+     */
+    private String generateDtoVoClass(Project project, PsiClass sourceClass, String suffix) throws Exception {
+        // 获取源文件信息
+        PsiFile sourceFile = sourceClass.getContainingFile();
+        VirtualFile sourceVirtualFile = sourceFile.getVirtualFile();
+        VirtualFile sourceDir = sourceVirtualFile.getParent();
+
+        // 生成新类名
+        String sourceClassName = sourceClass.getName();
+        String newClassName = sourceClassName + suffix;
+        String newFileName = newClassName + ".java";
+
+        // 检查文件是否已存在
+        VirtualFile existingFile = sourceDir.findChild(newFileName);
+        if (existingFile != null) {
+            int choice = Messages.showYesNoDialog(
+                project,
+                "文件 " + newFileName + " 已存在，是否覆盖？",
+                "文件已存在",
+                Messages.getQuestionIcon()
+            );
+            if (choice != Messages.YES) {
+                return "操作已取消";
+            }
+        }
+
+        // 生成类内容
+        String classContent = generateDtoVoClassContent(sourceClass, newClassName, suffix);
+
+        // 创建或覆盖文件
+        if (existingFile != null) {
+            // 覆盖现有文件
+            existingFile.setBinaryContent(classContent.getBytes("UTF-8"));
+        } else {
+            // 创建新文件
+            existingFile = sourceDir.createChildData(this, newFileName);
+            existingFile.setBinaryContent(classContent.getBytes("UTF-8"));
+        }
+
+        // 打开新创建的文件
+        FileEditorManager.getInstance(project).openFile(existingFile, true);
+
+        return "成功生成 " + suffix + " 类：" + newClassName + "\n文件位置：" + existingFile.getPath();
+    }
+
+    /**
+     * 生成DTO/VO类的内容
+     */
+    private String generateDtoVoClassContent(PsiClass sourceClass, String newClassName, String suffix) {
+        StringBuilder sb = new StringBuilder();
+
+        // 获取包名
+        PsiFile sourceFile = sourceClass.getContainingFile();
+        String packageName = "";
+        if (sourceFile instanceof PsiJavaFile) {
+            packageName = ((PsiJavaFile) sourceFile).getPackageName();
+        }
+
+        // 包声明
+        if (!packageName.isEmpty()) {
+            sb.append("package ").append(packageName).append(";\n\n");
+        }
+
+        // 导入语句
+        sb.append("import java.io.Serializable;\n");
+        sb.append("import java.util.Date;\n");
+        sb.append("import java.util.List;\n\n");
+
+        // 类注释
+        sb.append("/**\n");
+        sb.append(" * ").append(sourceClass.getName()).append(" ").append(suffix).append(" 类\n");
+        sb.append(" * 自动生成的数据传输对象\n");
+        sb.append(" * \n");
+        sb.append(" * @author OneClick Plugin\n");
+        sb.append(" * @date ").append(new java.text.SimpleDateFormat("yyyy/MM/dd").format(new java.util.Date())).append("\n");
+        sb.append(" */\n");
+
+        // 类声明
+        sb.append("public class ").append(newClassName).append(" implements Serializable {\n\n");
+
+        // serialVersionUID
+        sb.append("    private static final long serialVersionUID = 1L;\n\n");
+
+        // 获取源类的所有实例字段
+        List<PsiField> fields = JavaBeanUtils.getInstanceFields(sourceClass);
+
+        // 生成字段
+        for (PsiField field : fields) {
+            String fieldType = field.getType().getCanonicalText();
+            String fieldName = field.getName();
+
+            sb.append("    private ").append(fieldType).append(" ").append(fieldName).append(";\n");
+        }
+
+        if (!fields.isEmpty()) {
+            sb.append("\n");
+        }
+
+        // 生成构造方法
+        sb.append("    public ").append(newClassName).append("() {\n");
+        sb.append("    }\n\n");
+
+        // 生成getter和setter方法
+        for (PsiField field : fields) {
+            String fieldType = field.getType().getCanonicalText();
+            String fieldName = field.getName();
+            String capitalizedName = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+
+            // Getter
+            sb.append("    public ").append(fieldType).append(" get").append(capitalizedName).append("() {\n");
+            sb.append("        return ").append(fieldName).append(";\n");
+            sb.append("    }\n\n");
+
+            // Setter
+            sb.append("    public void set").append(capitalizedName).append("(").append(fieldType).append(" ").append(fieldName).append(") {\n");
+            sb.append("        this.").append(fieldName).append(" = ").append(fieldName).append(";\n");
+            sb.append("    }\n\n");
+        }
+
+        // 生成转换方法
+        String sourceClassName = sourceClass.getName();
+        sb.append("    /**\n");
+        sb.append("     * 转换为实体类\n");
+        sb.append("     */\n");
+        sb.append("    public ").append(sourceClassName).append(" toEntity() {\n");
+        sb.append("        ").append(sourceClassName).append(" entity = new ").append(sourceClassName).append("();\n");
+
+        for (PsiField field : fields) {
+            String fieldName = field.getName();
+            String capitalizedName = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+            sb.append("        entity.set").append(capitalizedName).append("(this.").append(fieldName).append(");\n");
+        }
+
+        sb.append("        return entity;\n");
+        sb.append("    }\n\n");
+
+        // 生成从实体类转换的静态方法
+        sb.append("    /**\n");
+        sb.append("     * 从实体类转换\n");
+        sb.append("     */\n");
+        sb.append("    public static ").append(newClassName).append(" fromEntity(").append(sourceClassName).append(" entity) {\n");
+        sb.append("        if (entity == null) {\n");
+        sb.append("            return null;\n");
+        sb.append("        }\n");
+        sb.append("        ").append(newClassName).append(" ").append(suffix.toLowerCase()).append(" = new ").append(newClassName).append("();\n");
+
+        for (PsiField field : fields) {
+            String fieldName = field.getName();
+            String capitalizedName = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+            sb.append("        ").append(suffix.toLowerCase()).append(".set").append(capitalizedName).append("(entity.get").append(capitalizedName).append("());\n");
+        }
+
+        sb.append("        return ").append(suffix.toLowerCase()).append(";\n");
+        sb.append("    }\n");
+
+        sb.append("}\n");
+
+        return sb.toString();
+    }
+
+    /**
      * 生成JavaBean方法
      * @return 生成结果消息
      */
@@ -559,6 +825,10 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
 
     @Override
     public void update(AnActionEvent e) {
+        // 动态设置国际化文本
+        e.getPresentation().setText("🚀 " + I18nUtils.message("action.smart.oneclick.text"));
+        e.getPresentation().setDescription(I18nUtils.message("action.smart.oneclick.description"));
+
         // 简化逻辑：始终启用，让actionPerformed方法处理具体检查
         e.getPresentation().setEnabled(true);
         e.getPresentation().setVisible(true);

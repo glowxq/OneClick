@@ -40,9 +40,15 @@ public class JavaBeanUtils {
 
         String sortType = settings.getFieldSortType();
         boolean ascending = settings.isSortAscending();
+        boolean enableModifierSorting = settings.isEnableModifierSorting();
 
+        // 如果启用权限修饰符排序，先按修饰符分组，然后在每个组内排序
+        if (enableModifierSorting) {
+            return sortFieldsByModifierGroups(fields, sortType, ascending, settings.getModifierSortOrder());
+        }
+
+        // 不启用修饰符排序时，按原有逻辑
         Comparator<PsiField> comparator;
-
         switch (sortType) {
             case "LENGTH":
                 comparator = Comparator.comparing(field -> field.getName().length());
@@ -52,6 +58,9 @@ public class JavaBeanUtils {
                     PsiType type = field.getType();
                     return type.getPresentableText();
                 });
+                break;
+            case "MODIFIER":
+                comparator = createModifierComparator(settings.getModifierSortOrder());
                 break;
             case "NAME":
             default:
@@ -66,6 +75,99 @@ public class JavaBeanUtils {
         return fields.stream()
                 .sorted(comparator)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * 按权限修饰符分组排序字段
+     */
+    private static List<PsiField> sortFieldsByModifierGroups(List<PsiField> fields, String sortType, boolean ascending, String modifierOrder) {
+        // 按修饰符分组
+        String[] modifiers = modifierOrder.split(",");
+        Map<String, List<PsiField>> groupedFields = new LinkedHashMap<>();
+
+        // 初始化分组
+        for (String modifier : modifiers) {
+            groupedFields.put(modifier.trim(), new ArrayList<>());
+        }
+
+        // 将字段分配到对应的组
+        for (PsiField field : fields) {
+            String modifier = getFieldModifier(field);
+            List<PsiField> group = groupedFields.get(modifier);
+            if (group != null) {
+                group.add(field);
+            }
+        }
+
+        // 在每个组内排序
+        Comparator<PsiField> innerComparator = createInnerComparator(sortType);
+        if (!ascending) {
+            innerComparator = innerComparator.reversed();
+        }
+
+        for (List<PsiField> group : groupedFields.values()) {
+            if (!group.isEmpty()) {
+                group.sort(innerComparator);
+            }
+        }
+
+        // 合并所有组
+        List<PsiField> result = new ArrayList<>();
+        for (List<PsiField> group : groupedFields.values()) {
+            result.addAll(group);
+        }
+
+        return result;
+    }
+
+    /**
+     * 创建组内排序比较器
+     */
+    private static Comparator<PsiField> createInnerComparator(String sortType) {
+        switch (sortType) {
+            case "LENGTH":
+                return Comparator.comparing(field -> field.getName().length());
+            case "TYPE":
+                return Comparator.comparing(field -> field.getType().getPresentableText());
+            case "MODIFIER":
+                // 修饰符排序时，组内不需要额外排序
+                return (f1, f2) -> 0;
+            case "NAME":
+            default:
+                return Comparator.comparing(PsiField::getName);
+        }
+    }
+
+    /**
+     * 创建权限修饰符比较器
+     */
+    private static Comparator<PsiField> createModifierComparator(String modifierOrder) {
+        String[] modifiers = modifierOrder.split(",");
+        Map<String, Integer> modifierPriority = new HashMap<>();
+
+        for (int i = 0; i < modifiers.length; i++) {
+            modifierPriority.put(modifiers[i].trim(), i);
+        }
+
+        return Comparator.comparing(field -> {
+            String modifier = getFieldModifier(field);
+            return modifierPriority.getOrDefault(modifier, 999); // 未知修饰符排在最后
+        });
+    }
+
+    /**
+     * 获取字段的权限修饰符
+     */
+    private static String getFieldModifier(PsiField field) {
+        if (field.hasModifierProperty(PsiModifier.PUBLIC)) {
+            return "public";
+        } else if (field.hasModifierProperty(PsiModifier.PROTECTED)) {
+            return "protected";
+        } else if (field.hasModifierProperty(PsiModifier.PRIVATE)) {
+            return "private";
+        } else {
+            return "package"; // 包级别访问权限
+        }
     }
 
     /**
@@ -200,7 +302,7 @@ public class JavaBeanUtils {
     }
 
     /**
-     * 字段信息类，用于保存字段的完整信息
+     * 字段信息类，用于保存字段的完整信息（包括注释）
      */
     private static class FieldInfo {
         private final String fullFieldText;
@@ -208,11 +310,40 @@ public class JavaBeanUtils {
         public FieldInfo(PsiField field) {
             StringBuilder sb = new StringBuilder();
 
+            // 添加字段前的注释（JavaDoc和行注释）
+            PsiElement prevElement = field.getPrevSibling();
+            List<String> comments = new ArrayList<>();
+
+            // 收集字段前的所有注释
+            while (prevElement != null) {
+                if (prevElement instanceof PsiComment) {
+                    comments.add(0, prevElement.getText()); // 插入到开头保持顺序
+                } else if (prevElement instanceof PsiWhiteSpace) {
+                    String text = prevElement.getText();
+                    if (text.contains("\n\n")) {
+                        // 遇到空行，停止收集注释
+                        break;
+                    }
+                } else if (!(prevElement instanceof PsiAnnotation)) {
+                    // 遇到非注释、非空白、非注解的元素，停止收集
+                    break;
+                }
+                prevElement = prevElement.getPrevSibling();
+            }
+
+            // 添加收集到的注释
+            for (String comment : comments) {
+                sb.append("    ").append(comment).append("\n");
+            }
+
             // 添加注解
             PsiAnnotation[] annotations = field.getAnnotations();
             for (PsiAnnotation annotation : annotations) {
-                sb.append(annotation.getText()).append("\n    ");
+                sb.append("    ").append(annotation.getText()).append("\n");
             }
+
+            // 添加字段声明（带正确缩进）
+            sb.append("    ");
 
             // 添加所有修饰符
             PsiModifierList modifierList = field.getModifierList();
