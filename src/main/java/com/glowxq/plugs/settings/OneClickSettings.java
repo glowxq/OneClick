@@ -71,7 +71,7 @@ public final class OneClickSettings implements PersistentStateComponent<OneClick
         public boolean enablePackageDetection = true;
 
         // 字段排序设置（仅对业务类生效）
-        public boolean enableFieldSorting = true; // 默认启用
+        public boolean enableFieldSorting = false; // 默认禁用，避免出现问题
         public String fieldSortType = "NAME"; // NAME, LENGTH, TYPE, MODIFIER
         public boolean sortAscending = true;
         public boolean enableModifierSorting = true; // 权限修饰符排序（优先级最高）

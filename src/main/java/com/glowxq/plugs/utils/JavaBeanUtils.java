@@ -239,9 +239,23 @@ public class JavaBeanUtils {
 
         System.out.println("需要重新排列字段");
 
-        // 找到第一个字段的位置作为插入起点
-        PsiField firstField = allFields.get(0);
-        PsiElement anchor = firstField;
+        // 找到一个稳定的锚点 - 使用类的第一个方法或右大括号
+        PsiElement anchor = null;
+        PsiMethod[] methods = psiClass.getMethods();
+        if (methods.length > 0) {
+            // 如果有方法，在第一个方法之前插入
+            anchor = methods[0];
+            System.out.println("使用第一个方法作为锚点: " + methods[0].getName());
+        } else {
+            // 如果没有方法，在右大括号之前插入
+            anchor = psiClass.getRBrace();
+            System.out.println("使用右大括号作为锚点");
+        }
+
+        if (anchor == null) {
+            System.err.println("无法找到插入锚点");
+            return;
+        }
 
         // 收集字段的完整文本（包括注释和注解）
         Map<PsiField, String> fieldTexts = new LinkedHashMap<>();
