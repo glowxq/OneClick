@@ -24,7 +24,7 @@
    - 重启IDEA
 
 2. **安装新版本**:
-   - 下载：`build/distributions/OneClick-1.1-SNAPSHOT.zip`
+   - 下载：`build/distributions/OneClick-1.2-SNAPSHOT.zip`
    - File → Settings → Plugins → Install Plugin from Disk
    - 选择zip文件并安装
    - 重启IDEA

@@ -30,7 +30,7 @@
 
 ### 步骤1: 安装新版本
 1. 卸载旧版本插件
-2. 安装新构建的插件：`build/distributions/OneClick-1.1-SNAPSHOT.zip`
+2. 安装新构建的插件：`build/distributions/OneClick-1.2-SNAPSHOT.zip`
 3. 重启IDEA
 
 ### 步骤2: 使用重新整理测试类

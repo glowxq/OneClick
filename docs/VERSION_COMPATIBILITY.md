@@ -5,7 +5,7 @@
 ### 问题描述
 原始错误信息：
 ```
-插件 'OneClick JavaBean Generator' (版本 '1.1-SNAPSHOT')与当前版本的 IDE 不兼容，
+插件 'OneClick JavaBean Generator' (版本 '1.2-SNAPSHOT')与当前版本的 IDE 不兼容，
 因为它需要内部版本号 242.* 或更老的版本，但当前的内部版本号是 IU-252.25557.131
 ```
 
@@ -54,7 +54,7 @@ patchPluginXml {
 ## 🚀 安装说明
 
 ### 如果您的IDEA版本兼容
-1. 下载最新的插件文件：`OneClick-1.1-SNAPSHOT.zip`
+1. 下载最新的插件文件：`OneClick-1.2-SNAPSHOT.zip`
 2. 在IDEA中安装：
    - File → Settings → Plugins
    - 点击齿轮图标 → Install Plugin from Disk
@@ -99,8 +99,8 @@ tasks {
 
 | 日期 | 版本 | 变更 |
 |------|------|------|
-| 2025-09-28 | 1.1-SNAPSHOT | 修复版本兼容性，支持到2025.3 |
-| 2025-09-28 | 1.1-SNAPSHOT | 初始版本，支持到2024.2 |
+| 2025-09-28 | 1.2-SNAPSHOT | 修复版本兼容性，支持到2025.3 |
+| 2025-09-28 | 1.2-SNAPSHOT | 初始版本，支持到2024.2 |
 
 ## 📞 支持
 
