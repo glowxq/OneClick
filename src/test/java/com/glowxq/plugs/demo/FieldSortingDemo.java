@@ -1,5 +1,8 @@
 package com.glowxq.plugs.demo;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * 字段排序演示类
  * 这是一个业务类（包名包含demo），应该启用字段排序功能
@@ -22,6 +25,8 @@ package com.glowxq.plugs.demo;
  * - zLastField
  */
 public class FieldSortingDemo {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(FieldSortingDemo.class);
 
     // 这些字段故意按非字母顺序排列，用于测试排序功能
     

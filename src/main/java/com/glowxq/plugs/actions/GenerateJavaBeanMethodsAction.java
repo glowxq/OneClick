@@ -251,8 +251,8 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
                 return;
             }
 
-            // 显示选择对话框：DTO还是VO
-            String[] options = {"DTO", "VO", "取消"};
+            // 显示选择对话框：DTO、VO还是BO
+            String[] options = {"DTO", "VO", "BO", "取消"};
             int choice = Messages.showChooseDialog(
                 "选择要生成的类型：",
                 "生成数据传输对象",
@@ -261,7 +261,7 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
                 Messages.getQuestionIcon()
             );
 
-            if (choice == 2 || choice == -1) { // 取消
+            if (choice == 3 || choice == -1) { // 取消
                 return;
             }
 
@@ -682,7 +682,7 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
 
         // 生成字段（使用之前已经获取的fields变量）
         for (PsiField field : fields) {
-            String fieldType = field.getType().getCanonicalText();
+            String fieldType = getSimpleTypeName(field.getType().getCanonicalText());
             String fieldName = field.getName();
 
             sb.append("    private ").append(fieldType).append(" ").append(fieldName).append(";\n");
@@ -698,7 +698,7 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
 
         // 生成getter和setter方法
         for (PsiField field : fields) {
-            String fieldType = field.getType().getCanonicalText();
+            String fieldType = getSimpleTypeName(field.getType().getCanonicalText());
             String fieldName = field.getName();
             String capitalizedName = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
 
@@ -969,6 +969,54 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
             return (PsiField) psiClass.addAfter(serialVersionUID, lBrace);
         }
         return null;
+    }
+
+    /**
+     * 获取简单类型名称（去除包名）
+     */
+    private String getSimpleTypeName(String fullTypeName) {
+        if (fullTypeName == null || fullTypeName.isEmpty()) {
+            return fullTypeName;
+        }
+
+        // 处理泛型类型
+        if (fullTypeName.contains("<")) {
+            int genericStart = fullTypeName.indexOf("<");
+            int genericEnd = fullTypeName.lastIndexOf(">");
+
+            String baseType = fullTypeName.substring(0, genericStart);
+            String genericPart = fullTypeName.substring(genericStart + 1, genericEnd);
+
+            // 递归处理泛型参数
+            String[] genericTypes = genericPart.split(",");
+            StringBuilder simplifiedGeneric = new StringBuilder();
+            for (int i = 0; i < genericTypes.length; i++) {
+                if (i > 0) {
+                    simplifiedGeneric.append(", ");
+                }
+                simplifiedGeneric.append(getSimpleTypeName(genericTypes[i].trim()));
+            }
+
+            return getSimpleClassName(baseType) + "<" + simplifiedGeneric.toString() + ">";
+        }
+
+        // 处理数组类型
+        if (fullTypeName.endsWith("[]")) {
+            String baseType = fullTypeName.substring(0, fullTypeName.length() - 2);
+            return getSimpleTypeName(baseType) + "[]";
+        }
+
+        return getSimpleClassName(fullTypeName);
+    }
+
+    /**
+     * 获取简单类名（去除包名）
+     */
+    private String getSimpleClassName(String fullClassName) {
+        if (fullClassName == null || !fullClassName.contains(".")) {
+            return fullClassName;
+        }
+        return fullClassName.substring(fullClassName.lastIndexOf(".") + 1);
     }
 
     /**
