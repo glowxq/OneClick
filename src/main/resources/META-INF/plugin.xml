@@ -6,35 +6,29 @@
 
 
     <description><![CDATA[
-OneClick is a powerful IntelliJ IDEA plugin designed for Java developers, providing comprehensive intelligent code generation, analysis and management features.
+A powerful IntelliJ IDEA plugin for Java developers with intelligent code generation.
+功能强大的 IntelliJ IDEA 插件，为 Java 开发者提供智能代码生成功能。
 
-Core Features:
-- Smart One-Click Generate: Intelligently execute operations based on selected content or class type
-- JavaBean Method Generation: Auto-generate getter/setter/toString/equals/hashCode methods
-- DTO/VO/BO Generation: Generate data transfer objects with conversion methods
-- Code Template Generator: 15 design patterns and architecture templates
-- Batch Generation: Support batch processing for selected packages or files
-- Refactor Assistant: 10 common refactoring operations
-- Smart Comment Generation: Auto-generate comments based on code context
-- Code Cleanup: Remove unused imports, empty lines, debug code, etc.
-- Code Analysis: Detailed statistical analysis and quality detection
-- Database Tools: Generate Entity annotations, SQL statements, Repository interfaces
+Core Features / 核心功能:
 
-Advanced Features:
-- Smart Type Detection: Auto detect JavaBean vs business classes
-- Configurable Package Rules: Custom package name patterns
-- Field Sorting: Sort by name, length, type with modifier priority
-- Customizable Shortcuts: Support different OS configurations
-- Multi-language Support: Complete Chinese-English bilingual interface
-- Multiple toString Styles: JSON, Simple, Apache Commons
-- Fluent Setter: Support method chaining style
+• JSON toString - Generate modern JSON-formatted toString methods
+  JSON格式toString - 生成现代化的JSON格式toString方法
 
-Quick Start:
-1. Right-click in Java class and select "OneClick" menu
-2. Use keyboard shortcuts (Ctrl+Shift+D / Cmd+Shift+D for smart generation)
-3. Configure settings in File -> Settings -> Tools -> OneClick
+• Smart One-Click - Intelligently detect and execute operations (Ctrl+Shift+D)
+  智能一键生成 - 智能识别并执行操作 (Ctrl+Shift+D)
 
-For more information, please visit the project documentation.
+• DTO/VO/BO Generator - Auto-create data transfer objects with conversions
+  DTO/VO/BO生成器 - 自动创建数据传输对象及转换方法
+
+• JavaBean Methods - Auto-generate getter/setter/equals/hashCode
+  JavaBean方法 - 自动生成getter/setter/equals/hashCode
+
+• Batch Processing - Process multiple files or packages at once
+  批量处理 - 一次处理多个文件或包
+
+Quick Start / 快速开始:
+Right-click in Java class -> OneClick menu
+在Java类中右键 -> OneClick菜单
     ]]></description>
 
     <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html

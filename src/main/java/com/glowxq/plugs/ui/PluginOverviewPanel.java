@@ -33,7 +33,7 @@ public class PluginOverviewPanel {
         panel.setBorder(JBUI.Borders.empty(10));
 
         // 创建标题
-        JBLabel titleLabel = new JBLabel("<html><h1>OneClick - 智能代码生成器 🚀</h1></html>");
+        JBLabel titleLabel = new JBLabel("<html><h1>OneClick - Smart Code Generator 🚀</h1></html>");
         titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, 16f));
         panel.add(titleLabel, BorderLayout.NORTH);
 
@@ -50,28 +50,18 @@ public class PluginOverviewPanel {
         FormBuilder builder = FormBuilder.createFormBuilder();
 
         // 插件介绍
-        builder.addComponent(createSectionLabel("功能概览"));
+        builder.addComponent(createSectionLabel("Core Features / 核心功能"));
         builder.addComponent(createFeatureList());
         builder.addVerticalGap(15);
 
-        // 智能快捷键说明
-        builder.addComponent(createSectionLabel("智能快捷键说明"));
-        builder.addComponent(createSmartShortcutDescription());
-        builder.addVerticalGap(10);
-
         // 完整快捷键列表
-        builder.addComponent(createSectionLabel("完整快捷键列表"));
+        builder.addComponent(createSectionLabel("Keyboard Shortcuts / 快捷键列表"));
         builder.addComponent(createShortcutTable());
         builder.addVerticalGap(15);
 
         // 使用方法
-        builder.addComponent(createSectionLabel("使用方法"));
+        builder.addComponent(createSectionLabel("Quick Start / 快速开始"));
         builder.addComponent(createUsageInstructions());
-        builder.addVerticalGap(15);
-
-        // 代码模板
-        builder.addComponent(createSectionLabel("代码模板库"));
-        builder.addComponent(createTemplateList());
 
         return builder.getPanel();
     }
@@ -84,22 +74,22 @@ public class PluginOverviewPanel {
 
     private JPanel createFeatureList() {
         String[] features = {
-            "🎯 JavaBean 方法生成<br>&nbsp;&nbsp;&nbsp;&nbsp;getter/setter/toString/equals/hashCode",
-            "🔧 代码模板生成器<br>&nbsp;&nbsp;&nbsp;&nbsp;15种设计模式和架构模板",
-            "📦 批量生成功能<br>&nbsp;&nbsp;&nbsp;&nbsp;支持选中包或多个文件进行批量处理",
-            "🔄 代码重构助手<br>&nbsp;&nbsp;&nbsp;&nbsp;10种重构操作",
-            "💬 智能注释生成<br>&nbsp;&nbsp;&nbsp;&nbsp;根据代码上下文自动生成注释",
-            "🧹 代码清理助手<br>&nbsp;&nbsp;&nbsp;&nbsp;移除未使用导入、空行、调试代码等",
-            "📊 代码分析工具<br>&nbsp;&nbsp;&nbsp;&nbsp;详细统计分析和质量检测",
-            "📝 快速文档生成<br>&nbsp;&nbsp;&nbsp;&nbsp;自动生成标准JavaDoc文档",
-            "⚙️ 高度可定制<br>&nbsp;&nbsp;&nbsp;&nbsp;快捷键自定义、多语言支持、灵活配置"
+            "🎯 Smart One-Click Generate / 智能一键生成",
+            "📦 JavaBean Methods / JavaBean方法生成",
+            "🏗️ DTO/VO/BO Generator / 数据对象生成",
+            "🛠️ Developer Tools / 开发工具集",
+            "🗄️ Database Tools / 数据库工具",
+            "📝 Code Templates / 代码模板",
+            "🔄 Refactor Assistant / 重构助手",
+            "🧹 Code Cleanup / 代码清理",
+            "📊 Code Analysis / 代码分析"
         };
 
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
         for (String feature : features) {
-            JBLabel label = new JBLabel("<html><div style='width: 400px;'>• " + feature + "</div></html>");
+            JBLabel label = new JBLabel("<html><div style='width: 500px;'>• " + feature + "</div></html>");
             label.setBorder(JBUI.Borders.empty(3, 10));
             panel.add(label);
         }
@@ -107,29 +97,7 @@ public class PluginOverviewPanel {
         return panel;
     }
 
-    private JPanel createSmartShortcutDescription() {
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-        String osModifier = SystemInfo.isMac ? "Cmd" : "Ctrl";
-
-        // 主要说明
-        JBLabel mainDesc = new JBLabel("<html><div style='width: 500px;'><b>%s+Alt+G</b> 是智能一键快捷键。它会根据类的类型智能选择合适的生成操作：</div></html>".formatted(osModifier));
-        mainDesc.setBorder(JBUI.Borders.empty(5, 10));
-        panel.add(mainDesc);
-
-        // JavaBean类说明
-        JBLabel javaBeanDesc = new JBLabel("<html><div style='width: 500px;'>• <b>对于JavaBean类</b>：生成getter/setter/toString/equals/hashCode方法</div></html>".formatted());
-        javaBeanDesc.setBorder(JBUI.Borders.empty(2, 20));
-        panel.add(javaBeanDesc);
-
-        // 业务类说明
-        JBLabel businessDesc = new JBLabel("<html><div style='width: 500px;'>• <b>对于业务类</b>：生成Logger字段、serialVersionUID等</div></html>".formatted());
-        businessDesc.setBorder(JBUI.Borders.empty(2, 20));
-        panel.add(businessDesc);
-
-        return panel;
-    }
 
     private JPanel createShortcutTable() {
         JPanel panel = new JPanel(new GridBagLayout());
@@ -176,17 +144,16 @@ public class PluginOverviewPanel {
 
     private JPanel createUsageInstructions() {
         String[] instructions = {
-            "1. 右键菜单 - 在Java类中右键选择 \"JavaBean Tools\"",
-            "2. 项目视图 - 选中包或文件右键选择 \"Batch Generate\"",
-            "3. 设置面板 - File → Settings → Tools → OneClick",
-            "4. 快捷键 - 使用上述快捷键快速访问功能"
+            "1. Right-click in Java class → \"OneClick\" menu / 在Java类中右键 → \"OneClick\"菜单",
+            "2. Use keyboard shortcuts for quick access / 使用快捷键快速访问功能",
+            "3. Settings: File → Settings → Tools → OneClick / 设置面板配置"
         };
 
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        
+
         for (String instruction : instructions) {
-            JBLabel label = new JBLabel("<html>" + instruction + "</html>");
+            JBLabel label = new JBLabel("<html><div style='width: 600px;'>" + instruction + "</div></html>");
             label.setBorder(JBUI.Borders.empty(2, 10));
             panel.add(label);
         }
@@ -194,22 +161,5 @@ public class PluginOverviewPanel {
         return panel;
     }
 
-    private JPanel createTemplateList() {
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-        String[] categories = {
-            "<b>设计模式:</b> Singleton, Builder, Factory, Observer, Strategy",
-            "<b>架构层:</b> REST Controller, Service Layer, Repository Layer, Exception Handler",
-            "<b>工具类:</b> Validation Utils, Date Utils, String Utils, File Utils, JSON Utils, Test Class"
-        };
-
-        for (String category : categories) {
-            JBLabel label = new JBLabel("<html>• " + category + "</html>");
-            label.setBorder(JBUI.Borders.empty(2, 10));
-            panel.add(label);
-        }
-
-        return panel;
-    }
 }
