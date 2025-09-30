@@ -626,15 +626,19 @@ public class JavaBeanUtils {
 
     /**
      * 生成getter方法名
+     * 注意：boolean（基本类型）使用isXxx()，Boolean（包装类型）使用getXxx()
      */
     public static String getGetterName(PsiField field) {
         String fieldName = field.getName();
         PsiType fieldType = field.getType();
-        
-        if (PsiType.BOOLEAN.equals(fieldType) && fieldName.startsWith("is")) {
-            return fieldName;
-        } else if (PsiType.BOOLEAN.equals(fieldType)) {
-            return "is" + capitalize(fieldName);
+
+        // 只有基本类型boolean才使用isXxx()，包装类型Boolean使用getXxx()
+        if (PsiType.BOOLEAN.equals(fieldType)) {
+            if (fieldName.startsWith("is")) {
+                return fieldName;
+            } else {
+                return "is" + capitalize(fieldName);
+            }
         } else {
             return "get" + capitalize(fieldName);
         }

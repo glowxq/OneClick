@@ -5,6 +5,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
@@ -13,6 +14,7 @@ import com.intellij.openapi.ui.popup.PopupStep;
 import com.intellij.openapi.ui.popup.util.BaseListPopupStep;
 import com.intellij.psi.*;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.testFramework.LightVirtualFile;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -95,38 +97,63 @@ public class DatabaseToolsAction extends AnAction {
         }
     }
 
-    // 生成SQL建表语句
+    // 生成SQL建表语句（符合阿里巴巴规范）
     private static void generateCreateTableSql(AnActionEvent e) {
         PsiClass psiClass = getCurrentClass(e);
         if (psiClass == null) return;
 
+        Project project = e.getProject();
+        if (project == null) return;
+
         StringBuilder sql = new StringBuilder();
         String tableName = camelToSnake(psiClass.getName());
-        
-        sql.append("CREATE TABLE ").append(tableName).append(" (\n");
-        
-        // 添加ID字段
-        sql.append("    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '主键ID',\n");
-        
+
+        // 阿里巴巴规范：表名使用小写，单词间用下划线分隔
+        sql.append("-- ").append(psiClass.getName()).append("表\n");
+        sql.append("-- 符合阿里巴巴Java开发手册数据库规范\n");
+        sql.append("CREATE TABLE `").append(tableName).append("` (\n");
+
+        // 阿里巴巴规范：主键字段名为id，类型为BIGINT UNSIGNED
+        sql.append("    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键ID',\n");
+
         // 处理类字段
         for (PsiField field : psiClass.getFields()) {
-            if (!field.hasModifierProperty(PsiModifier.STATIC) && 
-                !field.hasModifierProperty(PsiModifier.FINAL)) {
+            if (!field.hasModifierProperty(PsiModifier.STATIC) &&
+                !field.hasModifierProperty(PsiModifier.FINAL) &&
+                !"id".equals(field.getName())) {  // 跳过id字段，避免重复
                 String fieldName = camelToSnake(field.getName());
                 String fieldType = mapJavaTypeToSql(field.getType().getPresentableText());
-                sql.append("    ").append(fieldName).append(" ").append(fieldType)
-                   .append(" COMMENT '").append(field.getName()).append("',\n");
+
+                // 阿里巴巴规范：字段名使用反引号包裹
+                sql.append("    `").append(fieldName).append("` ").append(fieldType);
+
+                // 阿里巴巴规范：字符串类型字段必须指定是否允许为NULL
+                if (fieldType.startsWith("VARCHAR") || fieldType.startsWith("TEXT")) {
+                    sql.append(" DEFAULT NULL");
+                }
+
+                sql.append(" COMMENT '").append(field.getName()).append("',\n");
             }
         }
-        
-        // 添加通用字段
-        sql.append("    create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',\n");
-        sql.append("    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',\n");
-        sql.append("    deleted TINYINT DEFAULT 0 COMMENT '删除标记'\n");
-        sql.append(") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='").append(psiClass.getName()).append("表';");
-        
-        insertTextAtCursor(e, sql.toString());
-        Messages.showInfoMessage("SQL建表语句已生成", "生成完成");
+
+        // 阿里巴巴规范：添加通用字段（创建时间、更新时间、逻辑删除标记）
+        sql.append("    `gmt_create` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',\n");
+        sql.append("    `gmt_modified` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',\n");
+        sql.append("    `is_deleted` TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '逻辑删除标记(0-未删除,1-已删除)',\n");
+
+        // 阿里巴巴规范：主键定义
+        sql.append("    PRIMARY KEY (`id`),\n");
+
+        // 阿里巴巴规范：添加逻辑删除字段的索引
+        sql.append("    KEY `idx_is_deleted` (`is_deleted`)\n");
+
+        // 阿里巴巴规范：引擎使用InnoDB，字符集使用utf8mb4
+        sql.append(") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='")
+           .append(psiClass.getName()).append("表';");
+
+        // 在新的编辑器标签页中打开SQL
+        openInNewEditor(project, sql.toString(), tableName + "_create.sql");
+        Messages.showInfoMessage("SQL建表语句已在新标签页中打开", "生成完成");
     }
 
     // 生成Repository接口
@@ -480,19 +507,37 @@ public class DatabaseToolsAction extends AnAction {
     }
 
     private static String mapJavaTypeToSql(String javaType) {
+        // 符合阿里巴巴规范的SQL类型映射
         switch (javaType) {
             case "String": return "VARCHAR(255)";
             case "Integer": case "int": return "INT";
             case "Long": case "long": return "BIGINT";
             case "Double": case "double": return "DOUBLE";
             case "Float": case "float": return "FLOAT";
-            case "Boolean": case "boolean": return "TINYINT(1)";
+            case "Boolean": case "boolean": return "TINYINT UNSIGNED";  // 阿里巴巴规范：使用UNSIGNED
             case "Date": case "LocalDateTime": return "DATETIME";
             case "LocalDate": return "DATE";
             case "LocalTime": return "TIME";
-            case "BigDecimal": return "DECIMAL(10,2)";
+            case "BigDecimal": return "DECIMAL(19,4)";  // 阿里巴巴规范：金额类型使用DECIMAL(19,4)
             default: return "VARCHAR(255)";
         }
+    }
+
+    /**
+     * 在新的编辑器标签页中打开内容
+     */
+    private static void openInNewEditor(Project project, String content, String fileName) {
+        WriteCommandAction.runWriteCommandAction(project, () -> {
+            try {
+                // 创建一个轻量级虚拟文件
+                LightVirtualFile virtualFile = new LightVirtualFile(fileName, content);
+
+                // 在新的编辑器标签页中打开
+                FileEditorManager.getInstance(project).openFile(virtualFile, true);
+            } catch (Exception ex) {
+                Messages.showErrorDialog(project, "打开编辑器失败: " + ex.getMessage(), "错误");
+            }
+        });
     }
 
     // 内部类定义数据库工具

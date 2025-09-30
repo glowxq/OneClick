@@ -14,10 +14,12 @@ import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.ui.popup.ListPopup;
 import com.intellij.openapi.ui.popup.PopupStep;
 import com.intellij.openapi.ui.popup.util.BaseListPopupStep;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.file.PsiJavaDirectoryImpl;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.ide.fileTemplates.JavaTemplateUtil;
+import com.intellij.testFramework.LightVirtualFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -194,8 +196,8 @@ public class DevToolsAction extends AnAction {
             "        \"item2\"\n" +
             "    ]\n" +
             "}";
-        insertTextAtCursor(e, jsonTemplate);
-        showNotification("JSON模板已生成");
+        openInNewEditor(e, jsonTemplate, "template.json");
+        showNotification("JSON模板已在新标签页中打开");
     }
 
     // 转换命名风格
@@ -437,6 +439,26 @@ public class DevToolsAction extends AnAction {
     private static void showNotification(String message) {
         // 这里可以使用IntelliJ的通知系统
         // 暂时使用简单的消息框
+    }
+
+    /**
+     * 在新的编辑器标签页中打开内容
+     */
+    private static void openInNewEditor(AnActionEvent e, String content, String fileName) {
+        Project project = e.getProject();
+        if (project == null) return;
+
+        WriteCommandAction.runWriteCommandAction(project, () -> {
+            try {
+                // 创建一个轻量级虚拟文件
+                LightVirtualFile virtualFile = new LightVirtualFile(fileName, content);
+
+                // 在新的编辑器标签页中打开
+                FileEditorManager.getInstance(project).openFile(virtualFile, true);
+            } catch (Exception ex) {
+                showNotification("打开编辑器失败: " + ex.getMessage());
+            }
+        });
     }
 
     // 内部类定义开发工具

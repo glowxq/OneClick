@@ -799,8 +799,10 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
             String fieldName = field.getName();
             String capitalizedName = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
 
-            // Getter
-            sb.append("    public ").append(fieldType).append(" get").append(capitalizedName).append("() {\n");
+            // Getter - 注意：boolean使用isXxx()，Boolean使用getXxx()
+            String getterName = getGetterNameForField(field);
+            String getterMethodName = getterName.startsWith("is") ? getterName : "get" + capitalizedName;
+            sb.append("    public ").append(fieldType).append(" ").append(getterMethodName).append("() {\n");
             sb.append("        return ").append(fieldName).append(";\n");
             sb.append("    }\n\n");
 
@@ -1063,13 +1065,14 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
 
     /**
      * 获取字段的getter方法名
+     * 注意：boolean（基本类型）使用isXxx()，Boolean（包装类型）使用getXxx()
      */
     private String getGetterNameForField(PsiField field) {
         String fieldName = field.getName();
         String fieldType = field.getType().getCanonicalText();
 
-        // 判断是否是boolean类型
-        if ("boolean".equals(fieldType) || "java.lang.Boolean".equals(fieldType)) {
+        // 只有基本类型boolean才使用isXxx()，包装类型Boolean使用getXxx()
+        if ("boolean".equals(fieldType)) {
             // 如果字段名已经以is开头，直接返回字段名
             if (fieldName.startsWith("is") && fieldName.length() > 2 && Character.isUpperCase(fieldName.charAt(2))) {
                 return fieldName;
@@ -1078,7 +1081,7 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
             return "is" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
         }
 
-        // 其他类型返回getXxx
+        // 其他类型（包括Boolean包装类型）返回getXxx
         return "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
     }
 

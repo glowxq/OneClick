@@ -19,7 +19,7 @@ public class TestFieldSortingBean {
     private String eeeee;                // 长度5
     
     // 不同类型的字段，用于测试按类型排序
-    private boolean flag;                // boolean类型
+    private Boolean flag;                // boolean类型
     private int count;                   // int类型
     private long timestamp;              // long类型
     private String name;                 // String类型
@@ -32,6 +32,12 @@ public class TestFieldSortingBean {
     private String gamma;
     private String delta;
     private String epsilon;
+
+    public boolean isFlag() {
+        return flag;
+    }
+
+    // ================================ JavaBean Methods ================================
 
     public String getA() {
         return a;
@@ -73,11 +79,11 @@ public class TestFieldSortingBean {
         this.eeeee = eeeee;
     }
 
-    public boolean isFlag() {
+    public Boolean getFlag() {
         return flag;
     }
 
-    public void setFlag(boolean flag) {
+    public void setFlag(Boolean flag) {
         this.flag = flag;
     }
 
