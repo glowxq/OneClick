@@ -1,18 +1,47 @@
 # OneClick 插件使用指南
 
-## 🎯 智能一键功能 (Command+Shift+D)
+## 🎯 智能一键功能 (Command+Shift+D) - 一键六用
 
-OneClick 的核心功能是智能一键生成，它会根据当前的使用场景自动选择最合适的操作。
+OneClick 的核心功能是智能一键生成，它会根据当前的使用场景自动选择最合适的操作。一个快捷键 `Cmd+Shift+D`，六大场景，智能识别，自动执行！
 
-### 📝 场景一：选中文本智能处理
+### 📝 场景1：选中变量名 - 命名风格循环切换
 
-#### 1.1 字符串常量生成
+#### 切换顺序
+**小驼峰 → 大驼峰 → 下划线小写 → 下划线大写 → 小驼峰**
+
+#### 使用示例
+```java
+// 示例1：userName
+userName → UserName → user_name → USER_NAME → userName
+
+// 示例2：emailAddress
+emailAddress → EmailAddress → email_address → EMAIL_ADDRESS → emailAddress
+
+// 示例3：createTime
+createTime → CreateTime → create_time → CREATE_TIME → createTime
+```
+
+#### 使用方法
+1. 选中变量名（如 `userName`）
+2. 按 `Cmd+Shift+D` (macOS) / `Ctrl+Shift+D` (Windows)
+3. 变量名自动切换到下一个风格
+4. 继续按快捷键可循环切换
+
+#### 特点
+- ✅ 静默执行，无弹窗干扰
+- ✅ 自动识别当前命名风格
+- ✅ 连续按快捷键循环切换
+- ✅ 保持文本选中状态
+
+### 📝 场景2：选中字符串 - 常量生成
+
+#### 使用示例
 ```java
 public class UserService {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
 
-    public void processUser() {
-        // 选中字符串 "USER_NOT_FOUND" → 按 Command+Shift+D
+    public void validateUser() {
+        // 选中字符串 "USER_NOT_FOUND" → 按 Cmd+Shift+D
         throw new RuntimeException("USER_NOT_FOUND");
 
         // 自动生成常量字段（插入到LOGGER下方）：
@@ -21,55 +50,168 @@ public class UserService {
 }
 ```
 
-#### 1.2 命名风格智能转换
-```java
-// 驼峰转下划线
-userService → user_service
-emailAddress → email_address
-createTime → create_time
+#### 智能特性
+- ✅ 有LOGGER字段：插入到LOGGER下方
+- ✅ 无LOGGER字段：插入到类顶部
+- ✅ 自动去重：避免生成重复常量
+- ✅ 命名规范：自动转换为大写下划线格式
 
-// 下划线转驼峰
-user_name → userName
-email_address → emailAddress
-create_time → createTime
+### 📝 场景3：选中类名 - 生成DTO/VO/BO
+
+#### 使用示例
+```java
+package com.example.entity;
+
+public class User {
+    private Long id;
+    private String name;
+    private boolean active;
+
+    // 选中类名 "User" → 按 Cmd+Shift+D → 选择 "DTO"
+}
 ```
 
-**使用方法**：
-1. 选中要转换的标识符
-2. 按 `Command+Shift+D` (macOS) / `Ctrl+Shift+D` (Windows)
-3. 自动静默转换，无弹窗干扰
-
-### 🏗️ 场景二：类级别智能生成
-
-#### 2.1 JavaBean类自动识别
+#### 生成的UserDTO.java
 ```java
-// 包名包含：model, entity, dto, vo, bean 等
+package com.example.entity.dto;
+
+import java.io.Serializable;
+import java.io.Serial;
+import com.example.entity.User;
+import org.springframework.beans.BeanUtils;
+
+/**
+ * User DTO 类
+ * 自动生成的数据传输对象
+ *
+ * @author OneClick Plugin
+ * @date 2025/09/30
+ */
+public class UserDTO implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    private Long id;
+    private String name;
+    private boolean active;
+
+    public UserDTO() {
+    }
+
+    /**
+     * 转换为实体类
+     */
+    public User toEntity() {
+        User entity = new User();
+        BeanUtils.copyProperties(this, entity);
+        return entity;
+    }
+
+    /**
+     * 从实体类转换
+     */
+    public static UserDTO fromEntity(User entity) {
+        if (entity == null) {
+            return null;
+        }
+        UserDTO dto = new UserDTO();
+        BeanUtils.copyProperties(entity, dto);
+        return dto;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public boolean isActive() {  // boolean字段使用isXxx()
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "\"id\":" + id + ", " +
+                "\"name\":\"" + name + "\", " +
+                "\"active\":" + active +
+                "}";
+    }
+}
+```
+
+#### 生成特性
+- ✅ 自动创建dto/vo/bo子目录
+- ✅ 包声明包含子包名
+- ✅ 添加@Serial注解
+- ✅ JSON格式toString
+- ✅ 支持BeanUtils或原生getter/setter
+- ✅ boolean字段生成isXxx()方法
+- ✅ 方法排序：toEntity → fromEntity → getter/setter → toString
+
+#### 支持的类型
+- **DTO** (Data Transfer Object) - 数据传输对象
+- **VO** (Value Object) - 值对象
+- **BO** (Business Object) - 业务对象
+
+### 🏗️ 场景4：JavaBean类 - 自动生成标准方法
+
+#### 识别规则
+包名包含：`entity, model, bean, pojo, dto, vo, domain, data, bo, record`
+
+#### 使用示例
+```java
 package com.example.model;
 
 public class User {
     private Long id;
     private String username;
     private String email;
+    private boolean active;
     private Date createTime;
 
-    // 按 Command+Shift+D 自动生成：
-    // - getter/setter 方法
-    // - toString 方法 (JSON格式)
-    // - equals/hashCode 方法
+    // 按 Cmd+Shift+D 自动生成所有JavaBean方法
 }
 ```
 
-#### 2.2 业务类智能增强
+#### 生成内容
+- ✅ getter/setter 方法
+- ✅ toString 方法 (JSON格式)
+- ✅ equals/hashCode 方法
+
+#### 智能特性
+- ✅ boolean字段生成isXxx()方法
+- ✅ 自动去重，不重复生成已存在的方法
+- ✅ toString自动包含所有字段
+- ✅ 跳过静态字段和final字段
+
+### 🏗️ 场景5：业务类 - 智能增强
+
+#### 识别规则
+包名包含：`service, controller, mapper, dao, handle, manager, handler, component, config, util, utils, debug, demo`
+
+#### 使用示例
 ```java
-// 包名包含：service, controller, manager, handler 等
 package com.example.service;
 
 @Service
 public class UserService {
-    // 按 Command+Shift+D 自动执行：
-    // 1. 生成 Logger 字段
-    // 2. 生成 serialVersionUID
-    // 3. 字段智能排序（只排序实例字段，保护常量和静态字段）
+    // 按 Cmd+Shift+D 自动执行智能增强
 
     private UserRepository userRepository;
     private EmailService emailService;
@@ -77,24 +219,73 @@ public class UserService {
 }
 ```
 
-### 🔧 智能特性详解
+#### 生成内容
+- ✅ SLF4J Logger 字段
+- ✅ serialVersionUID 字段
+- ✅ 字段智能排序（可选，默认禁用）
+
+#### 生成后的代码
+```java
+package com.example.service;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+@Service
+public class UserService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
+    private static final long serialVersionUID = 1L;
+
+    private EmailService emailService;
+    private UserRepository userRepository;
+    private ValidationService validationService;
+}
+```
 
 #### 字段排序规则
 - **只排序实例字段**：排除 static、final、常量字段
 - **保护重要字段**：LOGGER、serialVersionUID 等保持原位置
 - **智能识别常量**：全大写+下划线命名的字段不参与排序
 - **排序方式**：支持按名称、长度、类型排序
+- **默认禁用**：需要在设置中启用
 
-#### 常量生成位置
-- **有LOGGER字段**：常量插入到LOGGER下一行
-- **无LOGGER字段**：常量插入到类的最上面
-- **重复检测**：避免生成重复的常量字段
+### 📦 场景6：选中包 - 批量生成
+
+#### 使用方法
+1. 在项目视图中选中包（如 `com.example.model`）
+2. 按 `Cmd+Shift+D` (macOS) / `Ctrl+Shift+D` (Windows)
+3. 确认批量处理对话框
+4. 查看处理结果统计
+
+#### 示例
+```
+项目结构：
+src/main/java/com/example/model/
+├── User.java
+├── Order.java
+├── Product.java
+└── Category.java
+
+选中 model 包 → 按 Cmd+Shift+D
+→ 批量为所有类生成JavaBean方法
+→ 显示：成功 4 个类，失败 0 个类
+```
+
+#### 批量处理特性
+- ✅ 递归处理子包中的文件
+- ✅ 显示确认对话框，避免误操作
+- ✅ 提供详细的成功/失败统计
+- ✅ 自动跳过接口和枚举类
+- ✅ 支持选中多个包同时处理
+
+### 🔧 智能特性总结
 
 #### 类类型识别
 | 类类型 | 包名特征 | 生成内容 |
 |--------|---------|---------|
-| JavaBean | model, entity, dto, vo, bean, pojo | getter/setter/toString/equals/hashCode |
-| 业务类 | service, controller, manager, handler, component | Logger/serialVersionUID/字段排序 |
+| JavaBean | entity, model, bean, pojo, dto, vo, domain, data, bo, record | getter/setter/toString/equals/hashCode |
+| 业务类 | service, controller, mapper, dao, handle, manager, handler, component, config, util, utils, debug, demo | Logger/serialVersionUID/字段排序 |
 
 ## 🛠️ 开发工具集合 (Command+Shift+U)
 
@@ -174,6 +365,54 @@ public class UserService {
 
 ## ⚙️ 设置配置
 
+### 打开设置面板
+```
+File → Settings → Tools → OneClick
+```
+
+### JavaBean设置
+1. **包名模式**：
+   - 默认值：`entity,model,bean,pojo,dto,vo,domain,data,bo,record`
+   - 自定义：添加或删除包名模式
+2. **生成方法**：
+   - getter/setter方法
+   - toString方法（JSON格式）
+   - equals/hashCode方法
+3. **toString风格**：
+   - JSON格式（推荐）
+   - 简单格式
+   - Apache Commons格式
+
+### 业务类设置
+1. **包名模式**：
+   - 默认值：`service,controller,mapper,dao,handle,manager,handler,component,config,util,utils,debug,demo`
+   - 自定义：添加或删除包名模式
+2. **Logger类型**：
+   - SLF4J（推荐）
+   - Log4j
+   - JUL (java.util.logging)
+3. **字段排序**：
+   - 启用/禁用（默认禁用）
+   - 排序方式：名称/长度/类型
+   - 升序/降序
+4. **权限修饰符排序**：
+   - 启用/禁用
+   - 排序顺序：public → protected → package → private
+
+### DTO/VO/BO生成设置
+1. **使用BeanUtils进行属性复制**：
+   - 启用（默认）：使用BeanUtils.copyProperties()
+   - 禁用：使用原生getter/setter
+2. **BeanUtils类全限定名**：
+   - 默认：`org.springframework.beans.BeanUtils`
+   - 可自定义为其他实现（如Apache Commons BeanUtils）
+3. **生成特性**：
+   - 自动创建dto/vo/bo子目录
+   - 添加@Serial注解
+   - 生成JSON格式toString
+   - boolean字段使用isXxx()方法
+   - 方法排序：toEntity → fromEntity → getter/setter → toString
+
 ### 快捷键设置
 1. 打开 `File` → `Settings` → `Tools` → `OneClick Settings`
 2. 选择 `Keymap Settings` 子页面
@@ -184,24 +423,24 @@ public class UserService {
    - Eclipse 风格
    - 自定义预设
 
-### 功能设置
-1. **JavaBean设置**: 配置生成方法的样式和选项
-2. **业务类设置**: 配置Logger类型、字段排序等
-3. **包规则设置**: 自定义包名检测规则
-4. **字段排序**: 支持按名称、长度、类型排序
-
 ## 🚀 使用技巧
 
 ### 智能快捷键使用策略
-- **`Command+Shift+D`** 是核心智能快捷键，会根据当前上下文自动选择操作
-- **选中文本时**：优先进行文本处理（常量生成、命名转换）
-- **类级别时**：根据类类型智能生成相应代码
-- **无选中时**：分析类特征并执行相应的增强操作
+**`Cmd+Shift+D`** 是核心智能快捷键，会根据当前上下文自动选择操作：
+
+| 上下文 | 自动操作 | 示例 |
+|--------|---------|------|
+| 选中变量名 | 命名风格循环切换 | `userName` → `UserName` → `user_name` → `USER_NAME` |
+| 选中字符串 | 生成常量字段 | `"USER_NOT_FOUND"` → `private static final String USER_NOT_FOUND = ...` |
+| 选中类名 | 生成DTO/VO/BO | 选择类型 → 生成对应的数据传输对象 |
+| JavaBean类 | 生成标准方法 | getter/setter/toString/equals/hashCode |
+| 业务类 | 智能增强 | Logger/serialVersionUID/字段排序 |
+| 选中包 | 批量生成 | 批量处理包内所有Java文件 |
 
 ### 快捷键规范 (统一使用Command+Shift)
 | 功能 | Windows/Linux | macOS | 说明 |
 |------|---------------|-------|------|
-| **智能一键生成** | `Ctrl+Shift+D` | `Cmd+Shift+D` | 🎯 核心功能：智能识别场景 |
+| **智能一键生成** | `Ctrl+Shift+D` | `Cmd+Shift+D` | 🎯 **核心功能**：智能识别6大场景 |
 | 开发工具集合 | `Ctrl+Shift+U` | `Cmd+Shift+U` | 🛠️ 20种开发工具 |
 | 数据库工具 | `Ctrl+Shift+Y` | `Cmd+Shift+Y` | 🗄️ 数据库代码生成 |
 | 批量生成 | `Ctrl+Shift+B` | `Cmd+Shift+B` | 📦 批量处理文件/包 |

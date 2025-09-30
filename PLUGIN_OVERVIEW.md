@@ -2,39 +2,219 @@
 
 ## 🎯 智能一键生成 (Command+Shift+D) - 核心功能
 
-OneClick 插件的核心是智能一键生成功能，它会根据不同的使用场景自动选择最合适的操作。
+OneClick 插件的核心是智能一键生成功能，它会根据不同的使用场景自动选择最合适的操作。一个快捷键，六大场景，智能识别，自动执行！
 
-### 📝 场景识别与智能处理
+### 📝 六大智能场景详解
 
-#### 场景一：选中文本智能处理
-| 选中内容类型 | 自动操作 | 示例 |
-|-------------|---------|------|
-| 字符串字面量 | 生成常量字段 | `"USER_NOT_FOUND"` → `private static final String USER_NOT_FOUND = "USER_NOT_FOUND";` |
-| 驼峰命名标识符 | 转为下划线命名 | `userService` → `user_service` |
-| 下划线命名标识符 | 转为驼峰命名 | `user_name` → `userName` |
+#### 场景1：选中变量名 - 命名风格循环切换 🔄
+**操作**：选中变量名 → 按 `Cmd+Shift+D`
 
-#### 场景二：类级别智能生成
-| 类类型 | 识别规则 | 自动操作 |
-|--------|---------|---------|
-| JavaBean类 | 包名包含：model, entity, dto, vo, bean | 生成getter/setter/toString/equals/hashCode |
-| 业务类 | 包名包含：service, controller, manager, handler | 生成Logger、serialVersionUID、字段排序 |
+**切换顺序**：小驼峰 → 大驼峰 → 下划线小写 → 下划线大写 → 小驼峰
 
-### 🔧 智能特性详解
+| 当前风格 | 按一次 | 按两次 | 按三次 | 按四次 |
+|---------|--------|--------|--------|--------|
+| `userName` | `UserName` | `user_name` | `USER_NAME` | `userName` |
+| `emailAddress` | `EmailAddress` | `email_address` | `EMAIL_ADDRESS` | `emailAddress` |
+| `createTime` | `CreateTime` | `create_time` | `CREATE_TIME` | `createTime` |
 
-#### 常量生成位置智能化
-- **有LOGGER字段**：新常量插入到LOGGER下一行
-- **无LOGGER字段**：新常量插入到类的最上面
-- **重复检测**：避免生成重复的常量字段
+**特点**：
+- ✅ 静默执行，无弹窗干扰
+- ✅ 连续按快捷键循环切换
+- ✅ 自动识别当前命名风格
+- ✅ 保持文本选中状态
 
-#### 字段排序智能化
+#### 场景2：选中字符串 - 常量生成 📝
+**操作**：选中字符串字面量 → 按 `Cmd+Shift+D`
+
+**示例**：
+```java
+public class UserService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
+
+    public void validateUser() {
+        // 选中 "USER_NOT_FOUND" → 按 Cmd+Shift+D
+        throw new RuntimeException("USER_NOT_FOUND");
+
+        // 自动生成（插入到LOGGER下方）：
+        // private static final String USER_NOT_FOUND = "USER_NOT_FOUND";
+    }
+}
+```
+
+**智能特性**：
+- ✅ 有LOGGER字段：插入到LOGGER下方
+- ✅ 无LOGGER字段：插入到类顶部
+- ✅ 自动去重：避免生成重复常量
+- ✅ 命名规范：自动转换为大写下划线格式
+
+#### 场景3：选中类名 - 生成DTO/VO/BO 🏗️
+**操作**：选中类名 → 按 `Cmd+Shift+D` → 选择类型
+
+**支持类型**：
+- **DTO** (Data Transfer Object) - 数据传输对象
+- **VO** (Value Object) - 值对象
+- **BO** (Business Object) - 业务对象
+
+**生成特性**：
+- ✅ 自动创建dto/vo/bo子目录
+- ✅ 包声明包含子包名（如 `com.example.entity.dto`）
+- ✅ 添加@Serial注解到serialVersionUID
+- ✅ 生成JSON格式的toString方法
+- ✅ 支持BeanUtils或原生getter/setter
+- ✅ boolean字段生成isXxx()方法
+- ✅ 方法排序：toEntity → fromEntity → getter/setter → toString
+
+**示例**：
+```java
+// 源类：com.example.entity.User
+public class User {
+    private Long id;
+    private String name;
+    private boolean active;
+}
+
+// 选中 "User" → Cmd+Shift+D → 选择 "DTO"
+// 生成：com/example/entity/dto/UserDTO.java
+
+package com.example.entity.dto;
+
+import java.io.Serializable;
+import java.io.Serial;
+import com.example.entity.User;
+import org.springframework.beans.BeanUtils;
+
+public class UserDTO implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    private Long id;
+    private String name;
+    private boolean active;
+
+    public UserDTO() {}
+
+    // toEntity() - 使用BeanUtils
+    public User toEntity() {
+        User entity = new User();
+        BeanUtils.copyProperties(this, entity);
+        return entity;
+    }
+
+    // fromEntity() - 使用BeanUtils
+    public static UserDTO fromEntity(User entity) {
+        if (entity == null) return null;
+        UserDTO dto = new UserDTO();
+        BeanUtils.copyProperties(entity, dto);
+        return dto;
+    }
+
+    // getter/setter
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public boolean isActive() { return active; }  // boolean使用isXxx()
+    public void setActive(boolean active) { this.active = active; }
+
+    // JSON格式toString
+    @Override
+    public String toString() {
+        return "{" +
+                "\"id\":" + id + ", " +
+                "\"name\":\"" + name + "\", " +
+                "\"active\":" + active +
+                "}";
+    }
+}
+```
+
+#### 场景4：JavaBean类 - 自动生成标准方法 ☕
+**识别规则**：包名包含 `entity, model, bean, pojo, dto, vo, domain, data, bo, record`
+
+**操作**：在JavaBean类中 → 按 `Cmd+Shift+D`
+
+**生成内容**：
+- ✅ getter/setter方法
+- ✅ toString方法（JSON格式）
+- ✅ equals/hashCode方法
+
+**智能特性**：
+- ✅ boolean字段生成isXxx()方法
+- ✅ 自动去重，不重复生成已存在的方法
+- ✅ toString自动包含所有字段
+- ✅ 跳过静态字段和final字段
+
+#### 场景5：业务类 - 智能增强 💼
+**识别规则**：包名包含 `service, controller, mapper, dao, handle, manager, handler, component, config, util, utils, debug, demo`
+
+**操作**：在业务类中 → 按 `Cmd+Shift+D`
+
+**生成内容**：
+- ✅ SLF4J Logger字段
+- ✅ serialVersionUID字段
+- ✅ 字段智能排序（可选，默认禁用）
+
+**字段排序特性**：
+- 只排序实例字段，保护常量和静态字段
+- 支持按名称、长度、类型排序
+- 支持权限修饰符优先级排序
+- 可在设置中启用/禁用
+
+#### 场景6：选中包 - 批量生成 📦
+**操作**：项目视图中选中包 → 按 `Cmd+Shift+D`
+
+**功能**：
+- ✅ 递归处理包内所有Java文件
+- ✅ 显示确认对话框，避免误操作
+- ✅ 提供详细的成功/失败统计
+- ✅ 自动跳过接口和枚举类
+- ✅ 支持选中多个包同时处理
+
+**示例**：
+```
+src/main/java/com/example/model/
+├── User.java
+├── Order.java
+└── Product.java
+
+选中 model 包 → Cmd+Shift+D
+→ 批量为所有类生成JavaBean方法
+→ 显示：成功 3 个类，失败 0 个类
+```
+
+### 🔧 智能特性总结
+
+#### 命名风格转换
+- **循环切换**：小驼峰 → 大驼峰 → 下划线小写 → 下划线大写 → 小驼峰
+- **静默执行**：无弹窗干扰，操作更流畅
+- **自动识别**：智能识别当前命名风格
+- **保持选中**：转换后保持文本选中状态
+
+#### 常量生成
+- **智能插入**：有LOGGER字段时插入到LOGGER下方，否则插入到类顶部
+- **自动去重**：避免生成重复的常量字段
+- **命名规范**：自动转换为大写下划线格式
+
+#### DTO/VO/BO生成
+- **目录结构**：自动创建dto/vo/bo子目录
+- **包声明**：自动添加子包名
+- **@Serial注解**：添加到serialVersionUID
+- **JSON toString**：生成JSON格式的toString方法
+- **BeanUtils支持**：可选择使用BeanUtils或原生getter/setter
+- **boolean处理**：boolean字段生成isXxx()方法
+- **方法排序**：toEntity → fromEntity → getter/setter → toString
+
+#### 字段排序
 - **只排序实例字段**：排除static、final、常量字段
 - **保护重要字段**：LOGGER、serialVersionUID等保持原位置
 - **智能识别常量**：全大写+下划线命名的字段不参与排序
+- **可配置**：支持按名称、长度、类型排序，默认禁用
 
-#### 命名转换智能化
-- **静默执行**：无弹窗干扰，操作更流畅
-- **双向转换**：智能识别当前命名风格并转换
-- **保持选中**：转换后保持文本选中状态
+#### 批量处理
+- **递归处理**：自动处理子包中的文件
+- **确认对话框**：避免误操作
+- **详细统计**：显示成功/失败数量
+- **智能跳过**：自动跳过接口和枚举类
 
 ## 🛠️ 开发工具集合 (Command+Shift+U)
 

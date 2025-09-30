@@ -756,8 +756,9 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
             // 使用原生getter/setter
             for (PsiField field : fields) {
                 String fieldName = field.getName();
+                String getterName = getGetterNameForField(field);
                 String capitalizedName = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
-                sb.append("        entity.set").append(capitalizedName).append("(this.").append(fieldName).append(");\n");
+                sb.append("        entity.set").append(capitalizedName).append("(this.").append(getterName).append("());\n");
             }
         }
 
@@ -783,8 +784,9 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
             // 使用原生getter/setter
             for (PsiField field : fields) {
                 String fieldName = field.getName();
+                String getterName = getGetterNameForField(field);
                 String capitalizedName = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
-                sb.append("        ").append(suffix.toLowerCase()).append(".set").append(capitalizedName).append("(entity.get").append(capitalizedName).append("());\n");
+                sb.append("        ").append(suffix.toLowerCase()).append(".set").append(capitalizedName).append("(entity.").append(getterName).append("());\n");
             }
         }
 
@@ -1057,6 +1059,27 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
             return (PsiField) psiClass.addAfter(serialVersionUID, lBrace);
         }
         return null;
+    }
+
+    /**
+     * 获取字段的getter方法名
+     */
+    private String getGetterNameForField(PsiField field) {
+        String fieldName = field.getName();
+        String fieldType = field.getType().getCanonicalText();
+
+        // 判断是否是boolean类型
+        if ("boolean".equals(fieldType) || "java.lang.Boolean".equals(fieldType)) {
+            // 如果字段名已经以is开头，直接返回字段名
+            if (fieldName.startsWith("is") && fieldName.length() > 2 && Character.isUpperCase(fieldName.charAt(2))) {
+                return fieldName;
+            }
+            // 否则返回isXxx
+            return "is" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+        }
+
+        // 其他类型返回getXxx
+        return "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
     }
 
     /**
