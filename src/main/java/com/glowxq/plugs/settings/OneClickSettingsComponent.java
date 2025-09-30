@@ -62,6 +62,10 @@ public class OneClickSettingsComponent {
     private final JBCheckBox enableModifierSorting = new JBCheckBox();
     private final JBTextField modifierSortOrder = new JBTextField();
 
+    // DTO/VO/BO生成设置
+    private final JBCheckBox useBeanUtilsForConversion = new JBCheckBox();
+    private final JBTextField beanUtilsClass = new JBTextField();
+
     public OneClickSettingsComponent() {
         // 初始化文本
         updateTexts();
@@ -141,6 +145,10 @@ public class OneClickSettingsComponent {
         sortAscending.setText(I18nUtils.message("settings.field.sorting.ascending"));
         enableModifierSorting.setText(I18nUtils.message("settings.field.sorting.modifier.enable"));
         modifierSortOrder.setToolTipText(I18nUtils.message("settings.field.sorting.modifier.order.tooltip"));
+
+        // DTO/VO/BO生成设置
+        useBeanUtilsForConversion.setText(I18nUtils.message("settings.dto.use.beanutils"));
+        beanUtilsClass.setToolTipText(I18nUtils.message("settings.dto.beanutils.class.tooltip"));
     }
 
     /**
@@ -161,6 +169,8 @@ public class OneClickSettingsComponent {
                 .addComponent(createTitledPanel(I18nUtils.message("settings.inner.class.title"), createInnerClassPanel()))
                 .addVerticalGap(10)
                 .addComponent(createTitledPanel(I18nUtils.message("settings.package.rules.title"), createPackageRulesPanel()))
+                .addVerticalGap(10)
+                .addComponent(createTitledPanel(I18nUtils.message("settings.dto.generation.title"), createDtoGenerationPanel()))
                 .addComponentFillVertically(new JPanel(), 0)
                 .getPanel();
     }
@@ -260,7 +270,12 @@ public class OneClickSettingsComponent {
                 .getPanel();
     }
 
-
+    private JPanel createDtoGenerationPanel() {
+        return FormBuilder.createFormBuilder()
+                .addComponent(useBeanUtilsForConversion)
+                .addLabeledComponent(new JBLabel(I18nUtils.message("settings.dto.beanutils.class")), beanUtilsClass)
+                .getPanel();
+    }
 
     public JPanel getPanel() {
         return myMainPanel;
@@ -481,5 +496,22 @@ public class OneClickSettingsComponent {
 
     public void setModifierSortOrder(String order) {
         modifierSortOrder.setText(order);
+    }
+
+    // DTO/VO/BO生成设置的getter和setter方法
+    public boolean isUseBeanUtilsForConversion() {
+        return useBeanUtilsForConversion.isSelected();
+    }
+
+    public void setUseBeanUtilsForConversion(boolean selected) {
+        useBeanUtilsForConversion.setSelected(selected);
+    }
+
+    public String getBeanUtilsClass() {
+        return beanUtilsClass.getText();
+    }
+
+    public void setBeanUtilsClass(String className) {
+        beanUtilsClass.setText(className);
     }
 }

@@ -66,9 +66,13 @@ public final class OneClickSettings implements PersistentStateComponent<OneClick
         public int maxInnerClassDepth = 3;
 
         // JavaBean包规则设置
-        public String javaBeanPackagePatterns = "entity,model,bean,pojo,dto,vo,domain,data";
-        public String businessClassPackagePatterns = "service,controller,manager,handler,component,config,util,debug,demo";
+        public String javaBeanPackagePatterns = "entity,model,bean,pojo,dto,vo,domain,data,bo,record";
+        public String businessClassPackagePatterns = "service,controller,mapper,dao,handle,manager,handler,component,config,util,utils,debug,demo";
         public boolean enablePackageDetection = true;
+
+        // DTO/VO/BO生成设置
+        public boolean useBeanUtilsForConversion = true; // 使用BeanUtils进行属性复制
+        public String beanUtilsClass = "org.springframework.beans.BeanUtils"; // BeanUtils类的全限定名
 
         // 字段排序设置（仅对业务类生效）
         public boolean enableFieldSorting = false; // 默认禁用，避免出现问题
@@ -292,5 +296,22 @@ public final class OneClickSettings implements PersistentStateComponent<OneClick
 
     public void setModifierSortOrder(String modifierSortOrder) {
         myState.modifierSortOrder = modifierSortOrder;
+    }
+
+    // DTO/VO/BO生成设置的getter和setter方法
+    public boolean isUseBeanUtilsForConversion() {
+        return myState.useBeanUtilsForConversion;
+    }
+
+    public void setUseBeanUtilsForConversion(boolean useBeanUtilsForConversion) {
+        myState.useBeanUtilsForConversion = useBeanUtilsForConversion;
+    }
+
+    public String getBeanUtilsClass() {
+        return myState.beanUtilsClass;
+    }
+
+    public void setBeanUtilsClass(String beanUtilsClass) {
+        myState.beanUtilsClass = beanUtilsClass;
     }
 }

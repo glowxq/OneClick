@@ -59,7 +59,10 @@ public class OneClickSettingsConfigurable implements Configurable {
                !mySettingsComponent.getFieldSortType().equals(settings.getFieldSortType()) ||
                mySettingsComponent.isSortAscending() != settings.isSortAscending() ||
                mySettingsComponent.isEnableModifierSorting() != settings.isEnableModifierSorting() ||
-               !mySettingsComponent.getModifierSortOrder().equals(settings.getModifierSortOrder());
+               !mySettingsComponent.getModifierSortOrder().equals(settings.getModifierSortOrder()) ||
+               // DTO/VO/BO生成设置
+               mySettingsComponent.isUseBeanUtilsForConversion() != settings.isUseBeanUtilsForConversion() ||
+               !mySettingsComponent.getBeanUtilsClass().equals(settings.getBeanUtilsClass());
     }
 
     @Override
@@ -95,6 +98,10 @@ public class OneClickSettingsConfigurable implements Configurable {
         settings.setSortAscending(mySettingsComponent.isSortAscending());
         settings.setEnableModifierSorting(mySettingsComponent.isEnableModifierSorting());
         settings.setModifierSortOrder(mySettingsComponent.getModifierSortOrder());
+
+        // DTO/VO/BO生成设置
+        settings.setUseBeanUtilsForConversion(mySettingsComponent.isUseBeanUtilsForConversion());
+        settings.setBeanUtilsClass(mySettingsComponent.getBeanUtilsClass());
     }
 
     @Override
@@ -130,6 +137,10 @@ public class OneClickSettingsConfigurable implements Configurable {
         mySettingsComponent.setSortAscending(settings.isSortAscending());
         mySettingsComponent.setEnableModifierSorting(settings.isEnableModifierSorting());
         mySettingsComponent.setModifierSortOrder(settings.getModifierSortOrder());
+
+        // DTO/VO/BO生成设置
+        mySettingsComponent.setUseBeanUtilsForConversion(settings.isUseBeanUtilsForConversion());
+        mySettingsComponent.setBeanUtilsClass(settings.getBeanUtilsClass());
     }
 
     @Override

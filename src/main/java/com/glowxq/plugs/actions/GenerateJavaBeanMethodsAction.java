@@ -347,22 +347,11 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
     }
 
     /**
-     * 切换命名风格
+     * 切换命名风格：小驼峰 → 大驼峰 → 下划线小写 → 下划线大写 → 小驼峰
      */
     private void toggleNamingStyle(Project project, Editor editor, String selectedText, int startOffset, int endOffset) {
         WriteCommandAction.runWriteCommandAction(project, () -> {
-            String convertedText;
-
-            if (selectedText.contains("_")) {
-                // 下划线转驼峰
-                convertedText = underscoreToCamelCase(selectedText);
-            } else if (selectedText.matches(".*[a-z][A-Z].*")) {
-                // 驼峰转下划线
-                convertedText = camelCaseToUnderscore(selectedText);
-            } else {
-                // 默认转为驼峰
-                convertedText = underscoreToCamelCase(selectedText);
-            }
+            String convertedText = getNextNamingStyle(selectedText);
 
             // 替换选中的文本
             editor.getDocument().replaceString(startOffset, endOffset, convertedText);
@@ -372,11 +361,48 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
     }
 
     /**
-     * 下划线转驼峰
+     * 获取下一个命名风格
+     * 小驼峰(userName) → 大驼峰(UserName) → 下划线小写(user_name) → 下划线大写(USER_NAME) → 小驼峰
      */
-    private String underscoreToCamelCase(String text) {
+    private String getNextNamingStyle(String text) {
+        if (text == null || text.isEmpty()) {
+            return text;
+        }
+
+        // 判断当前是什么风格
+        boolean hasUnderscore = text.contains("_");
+        boolean hasUpperCase = !text.equals(text.toLowerCase());
+        boolean isAllUpperCase = text.equals(text.toUpperCase()) && hasUpperCase;
+        boolean startsWithUpperCase = Character.isUpperCase(text.charAt(0));
+
+        if (hasUnderscore) {
+            if (isAllUpperCase) {
+                // 下划线大写 → 小驼峰
+                return underscoreToCamelCase(text, false);
+            } else {
+                // 下划线小写 → 下划线大写
+                return text.toUpperCase();
+            }
+        } else {
+            if (startsWithUpperCase) {
+                // 大驼峰 → 下划线小写
+                return camelCaseToUnderscore(text).toLowerCase();
+            } else {
+                // 小驼峰 → 大驼峰
+                return Character.toUpperCase(text.charAt(0)) + text.substring(1);
+            }
+        }
+    }
+
+    /**
+     * 下划线转驼峰
+     * @param text 要转换的文本
+     * @param upperCaseFirst 首字母是否大写
+     */
+    private String underscoreToCamelCase(String text, boolean upperCaseFirst) {
         StringBuilder result = new StringBuilder();
-        boolean capitalizeNext = false;
+        boolean capitalizeNext = upperCaseFirst;
+        boolean isFirst = true;
 
         for (char c : text.toCharArray()) {
             if (c == '_') {
@@ -384,8 +410,10 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
             } else if (capitalizeNext) {
                 result.append(Character.toUpperCase(c));
                 capitalizeNext = false;
+                isFirst = false;
             } else {
                 result.append(Character.toLowerCase(c));
+                isFirst = false;
             }
         }
 
@@ -625,10 +653,22 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
         // 收集需要导入的类型
         Set<String> imports = new LinkedHashSet<>();
         imports.add("java.io.Serializable");
+        imports.add("java.io.Serial"); // 添加@Serial注解的导入
 
         // 添加源类的导入
         if (!packageName.isEmpty()) {
             imports.add(sourceClassFullName);
+        }
+
+        // 获取设置
+        OneClickSettings settings = OneClickSettings.getInstance();
+
+        // 如果使用BeanUtils，添加导入
+        if (settings.isUseBeanUtilsForConversion()) {
+            String beanUtilsClass = settings.getBeanUtilsClass();
+            if (beanUtilsClass != null && !beanUtilsClass.isEmpty()) {
+                imports.add(beanUtilsClass);
+            }
         }
 
         // 收集字段类型的导入
@@ -677,7 +717,8 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
         // 类声明
         sb.append("public class ").append(newClassName).append(" implements Serializable {\n\n");
 
-        // serialVersionUID
+        // serialVersionUID with @Serial annotation
+        sb.append("    @Serial\n");
         sb.append("    private static final long serialVersionUID = 1L;\n\n");
 
         // 生成字段（使用之前已经获取的fields变量）
@@ -696,7 +737,61 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
         sb.append("    public ").append(newClassName).append("() {\n");
         sb.append("    }\n\n");
 
-        // 生成getter和setter方法
+        // 方法排序：toEntity、fromEntity、getter/setter、toString
+
+        // 1. 生成toEntity转换方法
+        String sourceClassName = sourceClass.getName();
+        sb.append("    /**\n");
+        sb.append("     * 转换为实体类\n");
+        sb.append("     */\n");
+        sb.append("    public ").append(sourceClassName).append(" toEntity() {\n");
+        sb.append("        ").append(sourceClassName).append(" entity = new ").append(sourceClassName).append("();\n");
+
+        if (settings.isUseBeanUtilsForConversion()) {
+            // 使用BeanUtils
+            String beanUtilsClass = settings.getBeanUtilsClass();
+            String beanUtilsSimpleName = beanUtilsClass.substring(beanUtilsClass.lastIndexOf('.') + 1);
+            sb.append("        ").append(beanUtilsSimpleName).append(".copyProperties(this, entity);\n");
+        } else {
+            // 使用原生getter/setter
+            for (PsiField field : fields) {
+                String fieldName = field.getName();
+                String capitalizedName = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+                sb.append("        entity.set").append(capitalizedName).append("(this.").append(fieldName).append(");\n");
+            }
+        }
+
+        sb.append("        return entity;\n");
+        sb.append("    }\n\n");
+
+        // 2. 生成fromEntity静态方法
+        sb.append("    /**\n");
+        sb.append("     * 从实体类转换\n");
+        sb.append("     */\n");
+        sb.append("    public static ").append(newClassName).append(" fromEntity(").append(sourceClassName).append(" entity) {\n");
+        sb.append("        if (entity == null) {\n");
+        sb.append("            return null;\n");
+        sb.append("        }\n");
+        sb.append("        ").append(newClassName).append(" ").append(suffix.toLowerCase()).append(" = new ").append(newClassName).append("();\n");
+
+        if (settings.isUseBeanUtilsForConversion()) {
+            // 使用BeanUtils
+            String beanUtilsClass = settings.getBeanUtilsClass();
+            String beanUtilsSimpleName = beanUtilsClass.substring(beanUtilsClass.lastIndexOf('.') + 1);
+            sb.append("        ").append(beanUtilsSimpleName).append(".copyProperties(entity, ").append(suffix.toLowerCase()).append(");\n");
+        } else {
+            // 使用原生getter/setter
+            for (PsiField field : fields) {
+                String fieldName = field.getName();
+                String capitalizedName = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+                sb.append("        ").append(suffix.toLowerCase()).append(".set").append(capitalizedName).append("(entity.get").append(capitalizedName).append("());\n");
+            }
+        }
+
+        sb.append("        return ").append(suffix.toLowerCase()).append(";\n");
+        sb.append("    }\n\n");
+
+        // 3. 生成getter和setter方法
         for (PsiField field : fields) {
             String fieldType = getSimpleTypeName(field.getType().getCanonicalText());
             String fieldName = field.getName();
@@ -713,40 +808,33 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
             sb.append("    }\n\n");
         }
 
-        // 生成转换方法
-        String sourceClassName = sourceClass.getName();
-        sb.append("    /**\n");
-        sb.append("     * 转换为实体类\n");
-        sb.append("     */\n");
-        sb.append("    public ").append(sourceClassName).append(" toEntity() {\n");
-        sb.append("        ").append(sourceClassName).append(" entity = new ").append(sourceClassName).append("();\n");
+        // 4. 生成JSON格式的toString方法
+        sb.append("    @Override\n");
+        sb.append("    public String toString() {\n");
+        sb.append("        return \"{\" +\n");
 
-        for (PsiField field : fields) {
+        for (int i = 0; i < fields.size(); i++) {
+            PsiField field = fields.get(i);
             String fieldName = field.getName();
-            String capitalizedName = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
-            sb.append("        entity.set").append(capitalizedName).append("(this.").append(fieldName).append(");\n");
+            sb.append("                \"\\\"").append(fieldName).append("\\\":\" + ");
+
+            // 判断字段类型，字符串类型需要加引号
+            String fieldType = field.getType().getCanonicalText();
+            if (fieldType.equals("java.lang.String") || fieldType.equals("String")) {
+                sb.append("\"\\\"\" + ").append(fieldName).append(" + \"\\\"\"");
+            } else {
+                sb.append(fieldName);
+            }
+
+            if (i < fields.size() - 1) {
+                sb.append(" +\n");
+                sb.append("                \", \" +\n");
+            } else {
+                sb.append(" +\n");
+            }
         }
 
-        sb.append("        return entity;\n");
-        sb.append("    }\n\n");
-
-        // 生成从实体类转换的静态方法
-        sb.append("    /**\n");
-        sb.append("     * 从实体类转换\n");
-        sb.append("     */\n");
-        sb.append("    public static ").append(newClassName).append(" fromEntity(").append(sourceClassName).append(" entity) {\n");
-        sb.append("        if (entity == null) {\n");
-        sb.append("            return null;\n");
-        sb.append("        }\n");
-        sb.append("        ").append(newClassName).append(" ").append(suffix.toLowerCase()).append(" = new ").append(newClassName).append("();\n");
-
-        for (PsiField field : fields) {
-            String fieldName = field.getName();
-            String capitalizedName = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
-            sb.append("        ").append(suffix.toLowerCase()).append(".set").append(capitalizedName).append("(entity.get").append(capitalizedName).append("());\n");
-        }
-
-        sb.append("        return ").append(suffix.toLowerCase()).append(";\n");
+        sb.append("                \"}\";\n");
         sb.append("    }\n");
 
         sb.append("}\n");
