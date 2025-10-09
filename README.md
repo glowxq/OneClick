@@ -7,6 +7,27 @@ OneClick 是一个功能强大的 IntelliJ IDEA 插件，专为 Java 开发者�
 ![Java](https://img.shields.io/badge/java-8%2B-green)
 ![License](https://img.shields.io/badge/license-Apache%202.0-brightgreen)
 
+Plugin Home: https://plugins.jetbrains.com/plugin/28606-oneclick
+
+## 🙋解决核心问题
+- **日志打印时使用JSON工具序列号对象**
+  - 问题： 为了调试方便，碰到对象希望能将日志数据转为json格式记录方便排查，但是阿里规范明确指出禁止使用JSON格式工具转成String后打印，一方面有性能影响，因为可能抛出异常，直接影响业务流程，商城以前就曾有过这样的线上Bug案例，但是json格式的日志调试确实方便。
+    [图片]
+  - 解决方案 ：安装插件使用Command + Shift + D一键生成JSON格式的toString方法
+    [图片]
+- **DTO/VO/BO类生成**
+  - 问题：随着公司业务发展，代码分层规范也更严格起来，例如入参使用DTO，响应使用VO等，每次都要手动创建类非常麻烦，部分同学直接copy实体类并进行筛改，copy的时候又没有整理代码导致很多冗余代码出现，不同同学对DTO/VO类转换没有统一标准，或不熟悉标准导致CR被打回。
+  - 解决方案：选中类名后使用Command + Shift + D一键生成 DTO/VO/BO类，并生成DTO/Entity的转换方法
+- **复杂对象方法冗乱**
+  - 问题：一个对象经过一段时间的字段增加，函数增加导致对象很多，有时候新增了字段没有同步修改get、set、toString，甚至出现get、set方法和业务方法混在一起，导致可读性非常差。特别是对于承接第三方请求response的类中很多内部类这种情况尤为突出。
+  - 解决方案：在对应java bean中使用Command + Shift + D一键生成类（包括内部类）的get、set、toString等方法（补全并覆盖却少字段），并且按照 业务方法 → getter/setter → toString 的顺序排序
+- **代码洁癖&魔法值懒汉**
+  - 问题：业务复杂后注入的字段越来越多，但是大家都习惯在底部注入，导致注入字段参差不齐没有规律，如果你是一个代码洁癖的人会感觉很不爽（代码怎么能没有规律呢？）还有一个更难受的事情，编码的时候很顺畅，魔法值随意写后面又懒得抽离层常量导致魔法值满天飞。
+  - 解决方案：在对应业务类中使用Command + Shift + D一键排序注入字段（长度排序，模块排序都可以），选中字符串可以一键提取常量，效果如下图
+    排序前
+ 
+
+
 ## 🌟 核心特性
 
 ### 🎯 智能一键生成 (Command+Shift+D) - 核心功能
