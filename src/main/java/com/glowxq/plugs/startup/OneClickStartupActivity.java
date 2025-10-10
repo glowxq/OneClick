@@ -14,6 +14,8 @@ import com.intellij.openapi.startup.StartupActivity;
 import com.intellij.openapi.util.SystemInfo;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.Serial;
+
 /**
  * OneClick插件启动活动
  * 在项目启动时显示插件功能介绍
@@ -21,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 public class OneClickStartupActivity implements StartupActivity {
 
     private static final String NOTIFICATION_GROUP_ID = "OneClick Plugin";
+
     private static final String SHOWN_KEY = "oneclick.welcome.shown";
 
     @Override

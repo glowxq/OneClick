@@ -62,7 +62,8 @@ public class OneClickSettingsConfigurable implements Configurable {
                !mySettingsComponent.getModifierSortOrder().equals(settings.getModifierSortOrder()) ||
                // DTO/VO/BO生成设置
                mySettingsComponent.isUseBeanUtilsForConversion() != settings.isUseBeanUtilsForConversion() ||
-               !mySettingsComponent.getBeanUtilsClass().equals(settings.getBeanUtilsClass());
+               !mySettingsComponent.getBeanUtilsClass().equals(settings.getBeanUtilsClass()) ||
+               mySettingsComponent.isGenerateSerialAnnotation() != settings.isGenerateSerialAnnotation();
     }
 
     @Override
@@ -102,6 +103,7 @@ public class OneClickSettingsConfigurable implements Configurable {
         // DTO/VO/BO生成设置
         settings.setUseBeanUtilsForConversion(mySettingsComponent.isUseBeanUtilsForConversion());
         settings.setBeanUtilsClass(mySettingsComponent.getBeanUtilsClass());
+        settings.setGenerateSerialAnnotation(mySettingsComponent.isGenerateSerialAnnotation());
     }
 
     @Override
@@ -141,6 +143,7 @@ public class OneClickSettingsConfigurable implements Configurable {
         // DTO/VO/BO生成设置
         mySettingsComponent.setUseBeanUtilsForConversion(settings.isUseBeanUtilsForConversion());
         mySettingsComponent.setBeanUtilsClass(settings.getBeanUtilsClass());
+        mySettingsComponent.setGenerateSerialAnnotation(settings.isGenerateSerialAnnotation());
     }
 
     @Override

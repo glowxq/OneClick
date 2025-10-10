@@ -650,18 +650,22 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
             sb.append("package ").append(subDirName).append(";\n\n");
         }
 
+        // 获取设置
+        OneClickSettings settings = OneClickSettings.getInstance();
+
         // 收集需要导入的类型
         Set<String> imports = new LinkedHashSet<>();
         imports.add("java.io.Serializable");
-        imports.add("java.io.Serial"); // 添加@Serial注解的导入
+
+        // 根据设置决定是否添加@Serial注解的导入
+        if (settings.isGenerateSerialAnnotation()) {
+            imports.add("java.io.Serial");
+        }
 
         // 添加源类的导入
         if (!packageName.isEmpty()) {
             imports.add(sourceClassFullName);
         }
-
-        // 获取设置
-        OneClickSettings settings = OneClickSettings.getInstance();
 
         // 如果使用BeanUtils，添加导入
         if (settings.isUseBeanUtilsForConversion()) {
@@ -717,8 +721,10 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
         // 类声明
         sb.append("public class ").append(newClassName).append(" implements Serializable {\n\n");
 
-        // serialVersionUID with @Serial annotation
-        sb.append("    @Serial\n");
+        // serialVersionUID - 根据设置决定是否添加@Serial注解
+        if (settings.isGenerateSerialAnnotation()) {
+            sb.append("    @Serial\n");
+        }
         sb.append("    private static final long serialVersionUID = 1L;\n\n");
 
         // 生成字段（使用之前已经获取的fields变量）

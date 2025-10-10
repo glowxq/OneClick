@@ -73,6 +73,7 @@ public final class OneClickSettings implements PersistentStateComponent<OneClick
         // DTO/VO/BO生成设置
         public boolean useBeanUtilsForConversion = true; // 使用BeanUtils进行属性复制
         public String beanUtilsClass = "org.springframework.beans.BeanUtils"; // BeanUtils类的全限定名
+        public boolean generateSerialAnnotation = false; // 生成@Serial注解（JDK 14+），默认false兼容JDK 8
 
         // 字段排序设置（仅对业务类生效）
         public boolean enableFieldSorting = false; // 默认禁用，避免出现问题
@@ -313,5 +314,13 @@ public final class OneClickSettings implements PersistentStateComponent<OneClick
 
     public void setBeanUtilsClass(String beanUtilsClass) {
         myState.beanUtilsClass = beanUtilsClass;
+    }
+
+    public boolean isGenerateSerialAnnotation() {
+        return myState.generateSerialAnnotation;
+    }
+
+    public void setGenerateSerialAnnotation(boolean generateSerialAnnotation) {
+        myState.generateSerialAnnotation = generateSerialAnnotation;
     }
 }

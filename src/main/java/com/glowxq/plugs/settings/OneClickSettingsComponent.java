@@ -65,6 +65,7 @@ public class OneClickSettingsComponent {
     // DTO/VO/BO生成设置
     private final JBCheckBox useBeanUtilsForConversion = new JBCheckBox();
     private final JBTextField beanUtilsClass = new JBTextField();
+    private final JBCheckBox generateSerialAnnotation = new JBCheckBox();
 
     public OneClickSettingsComponent() {
         // 初始化文本
@@ -149,6 +150,7 @@ public class OneClickSettingsComponent {
         // DTO/VO/BO生成设置
         useBeanUtilsForConversion.setText(I18nUtils.message("settings.dto.use.beanutils"));
         beanUtilsClass.setToolTipText(I18nUtils.message("settings.dto.beanutils.class.tooltip"));
+        generateSerialAnnotation.setText(I18nUtils.message("settings.dto.generate.serial.annotation"));
     }
 
     /**
@@ -274,6 +276,7 @@ public class OneClickSettingsComponent {
         return FormBuilder.createFormBuilder()
                 .addComponent(useBeanUtilsForConversion)
                 .addLabeledComponent(new JBLabel(I18nUtils.message("settings.dto.beanutils.class")), beanUtilsClass)
+                .addComponent(generateSerialAnnotation)
                 .getPanel();
     }
 
@@ -513,5 +516,13 @@ public class OneClickSettingsComponent {
 
     public void setBeanUtilsClass(String className) {
         beanUtilsClass.setText(className);
+    }
+
+    public boolean isGenerateSerialAnnotation() {
+        return generateSerialAnnotation.isSelected();
+    }
+
+    public void setGenerateSerialAnnotation(boolean selected) {
+        generateSerialAnnotation.setSelected(selected);
     }
 }
