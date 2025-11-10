@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.glowxq.plugs"
-version = "1.3-SNAPSHOT"
+version = "1.4.0"
 
 repositories {
     mavenCentral()
