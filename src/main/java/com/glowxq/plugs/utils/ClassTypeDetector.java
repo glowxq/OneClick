@@ -4,7 +4,10 @@ import com.intellij.psi.*;
 
 /**
  * 类型检测工具类
- * 简化版本：所有类都识别为JavaBean
+ * 
+ * <p>简化版本：所有类都识别为JavaBean，只有枚举类识别为ENUM</p>
+ * 
+ * @author glowxq
  */
 public class ClassTypeDetector {
 
@@ -12,13 +15,19 @@ public class ClassTypeDetector {
      * 类型枚举
      */
     public enum ClassType {
-        JAVA_BEAN,      // JavaBean类
-        ENUM            // 枚举类
+        /** JavaBean类 */
+        JAVA_BEAN,
+        /** 枚举类 */
+        ENUM
     }
 
     /**
      * 检测类的类型
-     * 简化版本：所有类都识别为JavaBean，枚举类识别为ENUM
+     * 
+     * <p>简化版本：所有类都识别为JavaBean，只有枚举类识别为ENUM</p>
+     * 
+     * @param psiClass 要检测的类
+     * @return 类的类型，如果为null则返回JAVA_BEAN
      */
     public static ClassType detectClassType(PsiClass psiClass) {
         if (psiClass == null) {

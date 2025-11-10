@@ -1,6 +1,6 @@
 # OneClick - 智能代码生成器 🚀
 
-一个快捷键 `Shift+Alt+D`，智能识别场景，自动生成代码。
+一个快捷键 `Shift+Alt+D` (Windows/Linux) / `Cmd+Shift+D` (Mac)，智能识别场景，自动生成代码。
 
 ## ⭐ 核心亮点
 
@@ -47,7 +47,7 @@ LOGGER.info("User: {}", user.toString());
 - 小驼峰 → 大驼峰 → 下划线小写 → 下划线大写 → 小驼峰
 
 ```java
-// 选中 userName → 按 Shift+Alt+D
+// 选中 userName → 按 Shift+Alt+D (Windows/Linux) 或 Cmd+Shift+D (Mac)
 userName → UserName → user_name → USER_NAME → userName
 ```
 
@@ -55,7 +55,7 @@ userName → UserName → user_name → USER_NAME → userName
 选中字符串字面量后按快捷键，自动生成常量字段。
 
 ```java
-// 选中 "USER_NOT_FOUND" → 按 Shift+Alt+D
+// 选中 "USER_NOT_FOUND" → 按 Shift+Alt+D (Windows/Linux) 或 Cmd+Shift+D (Mac)
 // 自动生成：private static final String USER_NOT_FOUND = "USER_NOT_FOUND";
 ```
 
@@ -63,7 +63,7 @@ userName → UserName → user_name → USER_NAME → userName
 选中类名后按快捷键，选择类型后自动生成对应的数据传输对象类。
 
 ```java
-// 选中类名 "User" → 按 Shift+Alt+D → 选择 "DTO"
+// 选中类名 "User" → 按 Shift+Alt+D (Windows/Linux) 或 Cmd+Shift+D (Mac) → 选择 "DTO"
 // 自动生成 com/example/entity/dto/UserDTO.java
 // 包含：getter/setter、toEntity()、fromEntity()、JSON格式toString()
 ```
@@ -77,7 +77,7 @@ public class User {
     private String username;
     private boolean active;
     
-    // 按 Shift+Alt+D 自动生成：
+    // 按 Shift+Alt+D (Windows/Linux) 或 Cmd+Shift+D (Mac) 自动生成：
     // - getter/setter方法
     // - JSON格式的toString方法
 }
@@ -105,7 +105,7 @@ public enum UserStatus {
     
     private final Integer code;
     
-    // 按 Shift+Alt+D 自动生成parse方法
+    // 按 Shift+Alt+D (Windows/Linux) 或 Cmd+Shift+D (Mac) 自动生成parse方法
     public static UserStatus parse(Integer code) {
         // ...
     }
@@ -120,7 +120,7 @@ File → Settings → Plugins → 搜索 "OneClick" → Install
 ```
 
 ### 使用
-1. 在Java类中按 `Shift+Alt+D` (Mac: `Cmd+Shift+D`)
+1. 在Java类中按 `Shift+Alt+D` (Windows/Linux) 或 `Cmd+Shift+D` (Mac)
 2. 选中变量名后按快捷键：循环切换命名风格
 3. 选中字符串后按快捷键：生成常量字段
 4. 选中类名后按快捷键：生成DTO/VO/BO类
@@ -136,7 +136,7 @@ File → Settings → Tools → OneClick Settings
 - **JavaBean设置**：生成getter/setter/toString等
 - **枚举类设置**：自定义parse方法名和code字段名
 - **DTO/VO/BO生成设置**：配置BeanUtils类和转换方式
-- **快捷键设置**：自定义快捷键（默认：Shift+Alt+D）
+- **快捷键设置**：自定义快捷键（默认：Shift+Alt+D (Windows/Linux) 或 Cmd+Shift+D (Mac)）
 
 ### 快捷键自定义
 1. 打开 `File → Settings → Tools → OneClick Settings → Keymap Settings`
@@ -153,11 +153,11 @@ File → Settings → Tools → OneClick Settings
 
 | 场景 | 操作 | 结果 |
 |------|------|------|
-| 变量名转换 | 选中变量名 → Shift+Alt+D | 循环切换命名风格 |
-| 常量生成 | 选中字符串 → Shift+Alt+D | 生成常量字段 |
-| DTO/VO/BO | 选中类名 → Shift+Alt+D | 生成数据传输对象类 |
-| JavaBean方法 | 在JavaBean类中 → Shift+Alt+D | 生成getter/setter/toString（JSON格式） |
-| 枚举parse | 在枚举类中 → Shift+Alt+D | 生成parse方法 |
+| 变量名转换 | 选中变量名 → Shift+Alt+D (Windows/Linux) 或 Cmd+Shift+D (Mac) | 循环切换命名风格 |
+| 常量生成 | 选中字符串 → Shift+Alt+D (Windows/Linux) 或 Cmd+Shift+D (Mac) | 生成常量字段 |
+| DTO/VO/BO | 选中类名 → Shift+Alt+D (Windows/Linux) 或 Cmd+Shift+D (Mac) | 生成数据传输对象类 |
+| JavaBean方法 | 在JavaBean类中 → Shift+Alt+D (Windows/Linux) 或 Cmd+Shift+D (Mac) | 生成getter/setter/toString（JSON格式） |
+| 枚举parse | 在枚举类中 → Shift+Alt+D (Windows/Linux) 或 Cmd+Shift+D (Mac) | 生成parse方法 |
 
 ## 🎯 使用场景
 
@@ -171,7 +171,7 @@ LOGGER.info("User: {}", user.toString());
 
 ### DTO/VO/BO快速生成
 ```java
-// 选中类名 → Shift+Alt+D → 选择类型
+// 选中类名 → Shift+Alt+D (Windows/Linux) 或 Cmd+Shift+D (Mac) → 选择类型
 // 自动生成完整的DTO类，包含JSON格式toString
 ```
 

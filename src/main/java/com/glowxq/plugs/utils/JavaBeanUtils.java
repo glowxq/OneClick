@@ -2,21 +2,31 @@ package com.glowxq.plugs.utils;
 
 import com.glowxq.plugs.settings.OneClickSettings;
 import com.intellij.psi.*;
-import com.intellij.psi.codeStyle.CodeStyleManager;
-import com.intellij.psi.util.PsiUtil;
 import com.intellij.openapi.project.Project;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * JavaBean工具类，用于生成getter/setter/toString方法
+ * JavaBean工具类
+ * 
+ * <p>提供JavaBean方法生成相关的工具方法，包括：</p>
+ * <ul>
+ *   <li>字段获取和检查</li>
+ *   <li>getter/setter方法生成</li>
+ *   <li>toString方法生成（支持JSON、简单、Apache三种风格）</li>
+ *   <li>内部类处理方法</li>
+ * </ul>
+ * 
  * @author glowxq
  */
 public class JavaBeanUtils {
 
     /**
-     * 获取类中的所有字段（排除静态和final字段）
+     * 获取类中的所有实例字段（排除静态和final字段）
+     * 
+     * @param psiClass 要处理的类
+     * @return 实例字段列表
      */
     public static List<PsiField> getInstanceFields(PsiClass psiClass) {
         return Arrays.stream(psiClass.getFields())

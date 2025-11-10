@@ -13,20 +13,20 @@
 • 自动生成JSON格式toString，日志打印直接得到JSON格式，方便调试
 
 核心功能：
-• 智能一键生成 - 使用 Shift+Alt+D (Mac: Cmd+Shift+D) 快捷键
+• 智能一键生成 - 使用 Shift+Alt+D (Windows/Linux) 或 Cmd+Shift+D (Mac) 快捷键
 • JavaBean方法生成 - 自动生成 getter/setter/toString（JSON格式）
 • 枚举类parse方法 - 自动生成根据code字段解析枚举的方法
 • 变量名命名风格转换 - 循环切换4种命名风格
 • DTO/VO/BO类生成 - 选中类名自动生成数据传输对象类
 
 使用场景：
-• 在Java类中按 Shift+Alt+D 生成JavaBean方法（包含JSON格式toString）
-• 在枚举类中按 Shift+Alt+D 生成parse方法
+• 在Java类中按 Shift+Alt+D (Windows/Linux) 或 Cmd+Shift+D (Mac) 生成JavaBean方法（包含JSON格式toString）
+• 在枚举类中按 Shift+Alt+D (Windows/Linux) 或 Cmd+Shift+D (Mac) 生成parse方法
 • 选中变量名按快捷键循环切换命名风格
 • 选中类名按快捷键生成DTO/VO/BO类
 
 快速开始：
-在Java类或枚举类中按 Shift+Alt+D (Mac: Cmd+Shift+D)
+在Java类或枚举类中按 Shift+Alt+D (Windows/Linux) 或 Cmd+Shift+D (Mac)
     ]]></description>
 
     <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html

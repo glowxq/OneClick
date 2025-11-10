@@ -2,9 +2,7 @@ package com.glowxq.plugs.actions;
 
 import com.glowxq.plugs.settings.OneClickSettings;
 import com.glowxq.plugs.utils.ClassTypeDetector;
-import com.glowxq.plugs.utils.I18nUtils;
 import com.glowxq.plugs.utils.JavaBeanUtils;
-import com.glowxq.plugs.utils.LoggerGenerator;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
@@ -23,11 +21,34 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * 生成JavaBean方法的Action
+ * 智能一键生成Action
+ * 
+ * <p>核心功能：通过快捷键 Shift+Alt+D (Windows/Linux) 或 Cmd+Shift+D (Mac) 智能识别场景并自动生成代码</p>
+ * 
+ * <p>支持的场景：</p>
+ * <ul>
+ *   <li>选中变量名：循环切换命名风格（小驼峰→大驼峰→下划线小写→下划线大写）</li>
+ *   <li>选中字符串：自动生成常量字段</li>
+ *   <li>选中类名：生成DTO/VO/BO类</li>
+ *   <li>JavaBean类：自动生成getter/setter/toString方法（JSON格式）</li>
+ *   <li>枚举类：自动生成parse方法，根据code字段解析枚举值</li>
+ * </ul>
+ * 
  * @author glowxq
  */
 public class GenerateJavaBeanMethodsAction extends AnAction {
 
+    /**
+     * Action执行入口
+     * 
+     * <p>根据当前上下文智能识别场景并执行相应操作：</p>
+     * <ul>
+     *   <li>如果选中了文本，判断是变量名、字符串还是类名，执行相应操作</li>
+     *   <li>如果没有选中文本，判断当前类是JavaBean还是枚举，生成相应方法</li>
+     * </ul>
+     * 
+     * @param e Action事件，包含项目、编辑器、文件等信息
+     */
     @Override
     public void actionPerformed(AnActionEvent e) {
         try {
@@ -125,7 +146,10 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
     }
 
     /**
-     * 处理目录选择 - 批量生成
+     * 处理目录选择，执行批量生成
+     * 
+     * @param project 当前项目
+     * @param directory 选中的目录
      */
     private void handleDirectorySelection(Project project, VirtualFile directory) {
         try {
@@ -158,7 +182,10 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
     }
 
     /**
-     * 递归收集Java文件
+     * 递归收集目录下的所有Java文件
+     * 
+     * @param directory 目录
+     * @param javaFiles 收集到的Java文件列表
      */
     private void collectJavaFilesRecursively(VirtualFile directory, List<VirtualFile> javaFiles) {
         if (!directory.isDirectory()) {
@@ -216,7 +243,12 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
     }
 
     /**
-     * 检查是否选中了类名
+     * 检查选中的文本是否是类名
+     * 
+     * @param editor 编辑器
+     * @param psiFile PSI文件
+     * @param selectedText 选中的文本
+     * @return 如果选中的是类名返回true，否则返回false
      */
     private boolean isClassNameSelected(Editor editor, PsiFile psiFile, String selectedText) {
         int startOffset = editor.getSelectionModel().getSelectionStart();
@@ -237,7 +269,15 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
     }
 
     /**
-     * 处理类选择 - 生成DTO/VO类
+     * 处理类选择，生成DTO/VO/BO类
+     * 
+     * <p>当用户选中类名时，弹出对话框让用户选择要生成的类型（DTO/VO/BO），
+     * 然后自动生成对应的数据传输对象类，包含getter/setter、toEntity()、fromEntity()和JSON格式toString()方法</p>
+     * 
+     * @param project 当前项目
+     * @param editor 编辑器
+     * @param psiFile PSI文件
+     * @param className 选中的类名
      */
     private void handleClassSelection(Project project, Editor editor, PsiFile psiFile, String className) {
         try {
@@ -283,7 +323,18 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
     }
 
     /**
-     * 处理选中的文本
+     * 处理选中的文本，根据文本类型执行相应操作
+     * 
+     * <p>支持的文本类型：</p>
+     * <ul>
+     *   <li>变量名/标识符：循环切换命名风格</li>
+     *   <li>字符串字面量：生成常量字段</li>
+     * </ul>
+     * 
+     * @param project 当前项目
+     * @param editor 编辑器
+     * @param psiFile PSI文件
+     * @param selectedText 选中的文本
      */
     private void handleSelectedText(Project project, Editor editor, PsiFile psiFile, String selectedText) {
         try {
@@ -347,7 +398,15 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
     }
 
     /**
-     * 切换命名风格：小驼峰 → 大驼峰 → 下划线小写 → 下划线大写 → 小驼峰
+     * 切换命名风格
+     * 
+     * <p>循环切换顺序：小驼峰 → 大驼峰 → 下划线小写 → 下划线大写 → 小驼峰</p>
+     * 
+     * @param project 当前项目
+     * @param editor 编辑器
+     * @param selectedText 选中的文本
+     * @param startOffset 选中文本的起始位置
+     * @param endOffset 选中文本的结束位置
      */
     private void toggleNamingStyle(Project project, Editor editor, String selectedText, int startOffset, int endOffset) {
         WriteCommandAction.runWriteCommandAction(project, () -> {
@@ -362,7 +421,11 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
 
     /**
      * 获取下一个命名风格
-     * 小驼峰(userName) → 大驼峰(UserName) → 下划线小写(user_name) → 下划线大写(USER_NAME) → 小驼峰
+     * 
+     * <p>转换顺序：小驼峰(userName) → 大驼峰(UserName) → 下划线小写(user_name) → 下划线大写(USER_NAME) → 小驼峰</p>
+     * 
+     * @param text 当前文本
+     * @return 下一个命名风格的文本
      */
     private String getNextNamingStyle(String text) {
         if (text == null || text.isEmpty()) {
@@ -438,7 +501,17 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
     }
 
     /**
-     * 生成常量字段（不替换选中文本）
+     * 生成常量字段
+     * 
+     * <p>当用户选中字符串字面量时，自动生成常量字段。
+     * 常量字段会插入到LOGGER字段下方（如果有），否则插入到类顶部。</p>
+     * 
+     * @param project 当前项目
+     * @param editor 编辑器
+     * @param psiFile PSI文件
+     * @param selectedText 选中的字符串文本
+     * @param startOffset 选中文本的起始位置
+     * @param endOffset 选中文本的结束位置
      */
     private void generateConstantField(Project project, Editor editor, PsiFile psiFile, String selectedText, int startOffset, int endOffset) {
         // 获取当前类
@@ -829,6 +902,24 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
 
     /**
      * 生成JavaBean方法
+     * 
+     * <p>为JavaBean类生成以下方法：</p>
+     * <ul>
+     *   <li>getter方法：为每个字段生成getter方法（boolean字段使用isXxx()）</li>
+     *   <li>setter方法：为每个字段生成setter方法（支持Fluent风格）</li>
+     *   <li>toString方法：生成JSON格式的toString方法（符合阿里规范）</li>
+     * </ul>
+     * 
+     * <p>生成的toString方法格式示例：</p>
+     * <pre>{@code
+     * @Override
+     * public String toString() {
+     *     return "{\"id\":" + id + ", \"name\":\"" + name + "\"}";
+     * }
+     * }</pre>
+     * 
+     * @param project 当前项目
+     * @param psiClass 要处理的JavaBean类
      * @return 生成结果消息
      */
     private String generateJavaBeanMethods(Project project, PsiClass psiClass) {
@@ -970,6 +1061,41 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
 
     /**
      * 生成枚举类parse方法
+     * 
+     * <p>为枚举类生成parse方法，根据code字段解析对应的枚举值。</p>
+     * 
+     * <p>生成的parse方法特点：</p>
+     * <ul>
+     *   <li>方法名和code字段名可在设置中自定义（默认：parse和code）</li>
+     *   <li>支持基本类型（int、long等）和对象类型（String、Integer等）</li>
+     *   <li>基本类型使用==比较，对象类型使用equals()比较</li>
+     *   <li>未找到匹配值时返回null，不抛出异常</li>
+     *   <li>包含完整的JavaDoc注释</li>
+     * </ul>
+     * 
+     * <p>生成的parse方法示例：</p>
+     * <pre>{@code
+     * /**
+     *  * 根据code解析对应的枚举值
+     *  * 
+     *  * @param code 枚举的code值
+     *  * @return 对应的枚举值，如果未找到则返回null
+     *  *\/
+     * public static UserStatus parse(Integer code) {
+     *     if (code == null) {
+     *         return null;
+     *     }
+     *     for (UserStatus value : values()) {
+     *         if (value.code != null && value.code.equals(code)) {
+     *             return value;
+     *         }
+     *     }
+     *     return null;
+     * }
+     * }</pre>
+     * 
+     * @param project 当前项目
+     * @param psiClass 要处理的枚举类
      * @return 生成结果消息
      */
     private String generateEnumParseMethod(Project project, PsiClass psiClass) {
@@ -1231,9 +1357,9 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
 
     @Override
     public void update(AnActionEvent e) {
-        // 动态设置国际化文本
-        e.getPresentation().setText("🚀 " + I18nUtils.message("action.smart.oneclick.text"));
-        e.getPresentation().setDescription(I18nUtils.message("action.smart.oneclick.description"));
+        // 动态设置文本
+        e.getPresentation().setText("🚀 Smart One-Click Generate");
+        e.getPresentation().setDescription("智能一键生成：JavaBean方法或枚举类parse方法");
 
         // 简化逻辑：始终启用，让actionPerformed方法处理具体检查
         e.getPresentation().setEnabled(true);
