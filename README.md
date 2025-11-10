@@ -1,5 +1,7 @@
 # OneClick - 智能代码生成器 🚀
 
+[English](README_en.md) | 中文
+
 一个快捷键 `Shift+Alt+D` (Windows/Linux) / `Cmd+Shift+D` (Mac)，智能识别场景，自动生成代码。
 
 ## ⭐ 核心亮点
@@ -38,7 +40,9 @@ LOGGER.info("User: {}", user.toString());
 
 ## 🎯 核心功能
 
-### 智能一键生成 (Shift+Alt+D / Cmd+Shift+D)
+### 智能一键生成
+
+快捷键：`Shift+Alt+D` (Windows/Linux) / `Cmd+Shift+D` (Mac)
 
 一个快捷键，五大场景，智能识别，自动执行。
 
@@ -120,7 +124,7 @@ File → Settings → Plugins → 搜索 "OneClick" → Install
 ```
 
 ### 使用
-1. 在Java类中按 `Shift+Alt+D` (Windows/Linux) 或 `Cmd+Shift+D` (Mac)
+1. 在Java类中按快捷键
 2. 选中变量名后按快捷键：循环切换命名风格
 3. 选中字符串后按快捷键：生成常量字段
 4. 选中类名后按快捷键：生成DTO/VO/BO类
@@ -136,7 +140,7 @@ File → Settings → Tools → OneClick Settings
 - **JavaBean设置**：生成getter/setter/toString等
 - **枚举类设置**：自定义parse方法名和code字段名
 - **DTO/VO/BO生成设置**：配置BeanUtils类和转换方式
-- **快捷键设置**：自定义快捷键（默认：Shift+Alt+D (Windows/Linux) 或 Cmd+Shift+D (Mac)）
+- **快捷键设置**：自定义快捷键（默认：`Shift+Alt+D` / `Cmd+Shift+D`）
 
 ### 快捷键自定义
 1. 打开 `File → Settings → Tools → OneClick Settings → Keymap Settings`
@@ -144,20 +148,17 @@ File → Settings → Tools → OneClick Settings
 3. 输入后自动验证格式，格式正确显示 ✅
 4. 点击"Apply"保存
 
-**支持的格式：**
-- `Ctrl+Shift+D` (Windows/Linux)
-- `Cmd+Shift+D` (macOS)
-- `Alt+Shift+D`
+**支持的格式：** `Ctrl+Shift+D` (Windows/Linux) / `Cmd+Shift+D` (Mac) / `Alt+Shift+D`
 
 ## 📋 功能列表
 
 | 场景 | 操作 | 结果 |
 |------|------|------|
-| 变量名转换 | 选中变量名 → Shift+Alt+D (Windows/Linux) 或 Cmd+Shift+D (Mac) | 循环切换命名风格 |
-| 常量生成 | 选中字符串 → Shift+Alt+D (Windows/Linux) 或 Cmd+Shift+D (Mac) | 生成常量字段 |
-| DTO/VO/BO | 选中类名 → Shift+Alt+D (Windows/Linux) 或 Cmd+Shift+D (Mac) | 生成数据传输对象类 |
-| JavaBean方法 | 在JavaBean类中 → Shift+Alt+D (Windows/Linux) 或 Cmd+Shift+D (Mac) | 生成getter/setter/toString（JSON格式） |
-| 枚举parse | 在枚举类中 → Shift+Alt+D (Windows/Linux) 或 Cmd+Shift+D (Mac) | 生成parse方法 |
+| 变量名转换 | 选中变量名 → 按快捷键 | 循环切换命名风格 |
+| 常量生成 | 选中字符串 → 按快捷键 | 生成常量字段 |
+| DTO/VO/BO | 选中类名 → 按快捷键 | 生成数据传输对象类 |
+| JavaBean方法 | 在JavaBean类中 → 按快捷键 | 生成getter/setter/toString（JSON格式） |
+| 枚举parse | 在枚举类中 → 按快捷键 | 生成parse方法 |
 
 ## 🎯 使用场景
 
@@ -171,17 +172,14 @@ LOGGER.info("User: {}", user.toString());
 
 ### DTO/VO/BO快速生成
 ```java
-// 选中类名 → Shift+Alt+D (Windows/Linux) 或 Cmd+Shift+D (Mac) → 选择类型
+// 选中类名 → 按快捷键 → 选择类型
 // 自动生成完整的DTO类，包含JSON格式toString
 ```
 
 ### 命名风格统一
 ```java
-// 数据库字段转Java字段
-user_name → userName (选中后按快捷键)
-
-// Java字段转数据库字段
-userName → user_name (选中后按快捷键)
+// 数据库字段转Java字段：user_name → userName (选中后按快捷键)
+// Java字段转数据库字段：userName → user_name (选中后按快捷键)
 ```
 
 ## 🔧 开发

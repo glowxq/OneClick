@@ -60,7 +60,7 @@ public class KeymapSettingsComponent {
                 JBUI.Borders.empty(10)
         ));
         
-        JBLabel titleLabel = new JBLabel("快捷键设置");
+        JBLabel titleLabel = new JBLabel(getShortcutSettingsTitle());
         titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, 13f));
         panel.add(titleLabel, BorderLayout.NORTH);
         
@@ -71,15 +71,12 @@ public class KeymapSettingsComponent {
         String osModifier = SystemInfo.isMac ? "Cmd" : "Ctrl";
         String defaultShortcut = osModifier + "+Shift+D";
         JBLabel descLabel = new JBLabel("<html><div style='width: 500px; line-height: 1.6; margin-bottom: 10px;'>" +
-            "自定义智能代码生成快捷键（默认：" + defaultShortcut + "）：<br><br>" +
-            "• 支持格式：Ctrl+Shift+D 或 Cmd+Shift+D<br>" +
-            "• 必须包含修饰键（Ctrl/Cmd/Alt/Shift）<br>" +
-            "• 输入后按回车或失去焦点时自动验证</div></html>");
+            getShortcutDescription(defaultShortcut) + "</div></html>");
         contentPanel.add(descLabel, BorderLayout.NORTH);
         
         // 输入框和验证标签
         JPanel inputPanel = new JPanel(new BorderLayout());
-        inputPanel.add(new JBLabel("快捷键："), BorderLayout.WEST);
+        inputPanel.add(new JBLabel(getShortcutLabel() + ":"), BorderLayout.WEST);
         inputPanel.add(shortcutField, BorderLayout.CENTER);
         inputPanel.add(validationLabel, BorderLayout.EAST);
         inputPanel.setBorder(JBUI.Borders.empty(5, 0));
@@ -90,7 +87,7 @@ public class KeymapSettingsComponent {
         
         return panel;
     }
-    
+
     private void setupShortcutField() {
         // 添加焦点监听器，失去焦点时验证
         shortcutField.addFocusListener(new FocusListener() {
@@ -139,18 +136,21 @@ public class KeymapSettingsComponent {
         String shortcut = shortcutField.getText().trim();
         
         if (shortcut.isEmpty()) {
-            validationLabel.setText("<html><span style='color: red;'>❌ 快捷键不能为空</span></html>");
+            String errorMsg = SystemInfo.isMac ? "Shortcut cannot be empty" : "快捷键不能为空";
+            validationLabel.setText("<html><span style='color: red;'>❌ " + errorMsg + "</span></html>");
             return;
         }
         
         // 验证快捷键格式
         if (!isValidShortcutFormat(shortcut)) {
-            validationLabel.setText("<html><span style='color: red;'>❌ 格式错误，示例：Ctrl+Shift+D</span></html>");
+            String errorMsg = SystemInfo.isMac ? "Invalid format, example: Ctrl+Shift+D" : "格式错误，示例：Ctrl+Shift+D";
+            validationLabel.setText("<html><span style='color: red;'>❌ " + errorMsg + "</span></html>");
             return;
         }
         
         // 验证快捷键是否冲突（这里简化处理，实际应该检查IDEA的快捷键映射）
-        validationLabel.setText("<html><span style='color: green;'>✅ 格式正确</span></html>");
+        String successMsg = SystemInfo.isMac ? "Format valid" : "格式正确";
+        validationLabel.setText("<html><span style='color: green;'>✅ " + successMsg + "</span></html>");
     }
     
     private boolean isValidShortcutFormat(String shortcut) {
@@ -183,7 +183,8 @@ public class KeymapSettingsComponent {
                 JBUI.Borders.empty(10)
         ));
         
-        JBLabel titleLabel = new JBLabel("操作系统信息");
+        String osInfoTitle = SystemInfo.isMac ? "Operating System Info" : "操作系统信息";
+        JBLabel titleLabel = new JBLabel(osInfoTitle);
         titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD));
         panel.add(titleLabel, BorderLayout.NORTH);
         
@@ -196,15 +197,27 @@ public class KeymapSettingsComponent {
         String osName = KeymapSettings.getOSName();
         String modifier = SystemInfo.isMac ? "Cmd" : "Ctrl";
         String altKey = SystemInfo.isMac ? "Option" : "Alt";
+        boolean isEnglish = SystemInfo.isMac; // 简化：Mac显示英文，其他显示中文
 
-        String osInfo = "<b>当前操作系统</b>: " + osName + "<br>";
-        osInfo += "<b>修饰键</b>: " + modifier + " (主要修饰键)<br>";
-        osInfo += "<b>Alt键</b>: " + altKey + " (辅助修饰键)<br><br>";
-
-        if (osName.equals("macOS")) {
-            osInfo += "<i>💡 macOS提示: Cmd相当于Windows的Ctrl，Option相当于Windows的Alt</i>";
+        String osInfo;
+        if (isEnglish) {
+            osInfo = "<b>Current OS</b>: " + osName + "<br>";
+            osInfo += "<b>Modifier Key</b>: " + modifier + " (primary)<br>";
+            osInfo += "<b>Alt Key</b>: " + altKey + " (secondary)<br><br>";
+            if (osName.equals("macOS")) {
+                osInfo += "<i>💡 macOS: Cmd = Windows Ctrl, Option = Windows Alt</i>";
+            } else {
+                osInfo += "<i>💡 Windows/Linux: Use Ctrl as primary modifier, Alt as secondary</i>";
+            }
         } else {
-            osInfo += "<i>💡 Windows/Linux提示: 使用Ctrl作为主修饰键，Alt作为辅助修饰键</i>";
+            osInfo = "<b>当前操作系统</b>: " + osName + "<br>";
+            osInfo += "<b>修饰键</b>: " + modifier + " (主要修饰键)<br>";
+            osInfo += "<b>Alt键</b>: " + altKey + " (辅助修饰键)<br><br>";
+            if (osName.equals("macOS")) {
+                osInfo += "<i>💡 macOS提示: Cmd相当于Windows的Ctrl，Option相当于Windows的Alt</i>";
+            } else {
+                osInfo += "<i>💡 Windows/Linux提示: 使用Ctrl作为主修饰键，Alt作为辅助修饰键</i>";
+            }
         }
 
         osInfoLabel.setText("<html><div style='width: 400px;'>" + osInfo + "</div></html>");
@@ -213,7 +226,7 @@ public class KeymapSettingsComponent {
     public JPanel getPanel() {
         return myMainPanel;
     }
-    
+
     public String getShortcut() {
         return shortcutField.getText().trim();
     }
@@ -226,5 +239,27 @@ public class KeymapSettingsComponent {
     public boolean isShortcutValid() {
         String shortcut = getShortcut();
         return !shortcut.isEmpty() && isValidShortcutFormat(shortcut);
+    }
+    
+    private String getShortcutSettingsTitle() {
+        return SystemInfo.isMac ? "Shortcut Settings" : "快捷键设置";
+    }
+    
+    private String getShortcutDescription(String defaultShortcut) {
+        if (SystemInfo.isMac) {
+            return "Customize shortcut (default: " + defaultShortcut + "):<br><br>" +
+                   "• Format: Ctrl+Shift+D or Cmd+Shift+D<br>" +
+                   "• Must include modifier keys (Ctrl/Cmd/Alt/Shift)<br>" +
+                   "• Auto-validates on Enter or focus loss";
+        } else {
+            return "自定义快捷键（默认：" + defaultShortcut + "）：<br><br>" +
+                   "• 格式：Ctrl+Shift+D 或 Cmd+Shift+D<br>" +
+                   "• 必须包含修饰键（Ctrl/Cmd/Alt/Shift）<br>" +
+                   "• 输入后按回车或失去焦点时自动验证";
+        }
+    }
+    
+    private String getShortcutLabel() {
+        return SystemInfo.isMac ? "Shortcut" : "快捷键";
     }
 }

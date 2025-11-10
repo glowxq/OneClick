@@ -112,7 +112,7 @@ public class OneClickSettingsComponent {
                 .addVerticalGap(10)
                 .addComponent(createTitledPanel(I18nUtils.getJavaBeanSettingsTitle(), createJavaBeanPanel()))
                 .addVerticalGap(10)
-                .addComponent(createTitledPanel("枚举类设置", createEnumPanel()))
+                .addComponent(createTitledPanel(I18nUtils.message("settings.enum.title"), createEnumPanel()))
                 .addVerticalGap(10)
                 .addComponent(createTitledPanel(I18nUtils.message("settings.dto.generation.title"), createDtoGenerationPanel()))
                 .addComponentFillVertically(new JPanel(), 0)
@@ -175,8 +175,8 @@ public class OneClickSettingsComponent {
      */
     private JPanel createEnumPanel() {
         return FormBuilder.createFormBuilder()
-                .addLabeledComponent(new JBLabel("Parse方法名:"), enumParseMethodName)
-                .addLabeledComponent(new JBLabel("Code字段名:"), enumCodeFieldName)
+                .addLabeledComponent(new JBLabel(I18nUtils.message("settings.enum.parse.method.name") + ":"), enumParseMethodName)
+                .addLabeledComponent(new JBLabel(I18nUtils.message("settings.enum.code.field.name") + ":"), enumCodeFieldName)
                 .getPanel();
     }
 
