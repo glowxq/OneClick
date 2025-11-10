@@ -67,6 +67,10 @@ public class OneClickSettingsComponent {
     private final JBTextField beanUtilsClass = new JBTextField();
     private final JBCheckBox generateSerialAnnotation = new JBCheckBox();
 
+    // 枚举类parse方法设置
+    private final JBTextField enumParseMethodName = new JBTextField();
+    private final JBTextField enumCodeFieldName = new JBTextField();
+
     public OneClickSettingsComponent() {
         // 初始化文本
         updateTexts();
@@ -81,10 +85,9 @@ public class OneClickSettingsComponent {
         autoDetectClassType.setSelected(true);
         toStringStyle.setSelectedItem("json");
 
-        // 包规则设置默认值
-        enablePackageDetection.setSelected(true);
-        javaBeanPackagePatterns.setText("entity,model,bean,pojo,dto,vo,domain,data");
-        businessClassPackagePatterns.setText("service,controller,manager,handler,component,config,util");
+        // 枚举类parse方法设置默认值
+        enumParseMethodName.setText("parse");
+        enumCodeFieldName.setText("code");
 
         // 字段排序设置默认值（仅对业务类生效）
         enableFieldSorting.setSelected(true); // 默认启用
@@ -524,5 +527,22 @@ public class OneClickSettingsComponent {
 
     public void setGenerateSerialAnnotation(boolean selected) {
         generateSerialAnnotation.setSelected(selected);
+    }
+
+    // 枚举类parse方法设置的getter和setter方法
+    public String getEnumParseMethodName() {
+        return enumParseMethodName.getText();
+    }
+
+    public void setEnumParseMethodName(String methodName) {
+        enumParseMethodName.setText(methodName);
+    }
+
+    public String getEnumCodeFieldName() {
+        return enumCodeFieldName.getText();
+    }
+
+    public void setEnumCodeFieldName(String fieldName) {
+        enumCodeFieldName.setText(fieldName);
     }
 }

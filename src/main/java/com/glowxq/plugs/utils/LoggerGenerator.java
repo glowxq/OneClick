@@ -132,11 +132,20 @@ public class LoggerGenerator {
 
     /**
      * 插入日志字段到类中（插入到第一行字段位置）
+     * 注意：此方法已废弃，因为已移除业务类功能
      */
+    @Deprecated
     public static PsiElement insertLoggerField(PsiClass psiClass, String fieldName, LoggerType loggerType) {
         // 检查是否已经有日志字段
-        if (ClassTypeDetector.hasLoggerField(psiClass)) {
-            return null; // 已经有日志字段，不重复添加
+        PsiField[] fields = psiClass.getFields();
+        for (PsiField field : fields) {
+            String fieldType = field.getType().getCanonicalText();
+            String fieldNameCheck = field.getName();
+            if ((fieldType.contains("Logger") || fieldType.contains("Log")) &&
+                (fieldNameCheck != null && (fieldNameCheck.toUpperCase().contains("LOG") || 
+                 fieldNameCheck.toUpperCase().contains("LOGGER")))) {
+                return null; // 已经有日志字段，不重复添加
+            }
         }
 
         // 生成日志字段

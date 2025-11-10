@@ -534,42 +534,17 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
      * @return 生成结果消息
      */
     public String performSmartGeneration(Project project, PsiClass psiClass) {
-        OneClickSettings settings = OneClickSettings.getInstance();
-
         // 检测类类型
-        ClassTypeDetector.ClassType classType = ClassTypeDetector.ClassType.UNKNOWN;
-        if (settings.isAutoDetectClassType()) {
-            classType = ClassTypeDetector.detectClassType(psiClass);
-        }
-
-        // 首先执行字段重新排列（对所有类型都执行，内部会判断是否为业务类）
-        JavaBeanUtils.rearrangeFieldsPhysically(psiClass);
-
-        StringBuilder resultMessage = new StringBuilder();
+        ClassTypeDetector.ClassType classType = ClassTypeDetector.detectClassType(psiClass);
 
         // 根据类型生成相应的代码
-        if (classType == ClassTypeDetector.ClassType.JAVA_BEAN || !settings.isAutoDetectClassType()) {
+        if (classType == ClassTypeDetector.ClassType.ENUM) {
+            // 生成枚举类parse方法
+            return generateEnumParseMethod(project, psiClass);
+        } else {
             // 生成JavaBean方法
-            String javaBeanResult = generateJavaBeanMethods(project, psiClass);
-            resultMessage.append(javaBeanResult);
+            return generateJavaBeanMethods(project, psiClass);
         }
-
-        if (classType == ClassTypeDetector.ClassType.BUSINESS_CLASS || !settings.isAutoDetectClassType()) {
-            // 生成业务类代码（如日志字段）
-            String businessResult = generateBusinessClassCode(project, psiClass);
-            if (businessResult != null && !businessResult.isEmpty()) {
-                if (resultMessage.length() > 0) {
-                    resultMessage.append("\n");
-                }
-                resultMessage.append(businessResult);
-            }
-        }
-
-        if (resultMessage.length() == 0) {
-            return "未生成任何代码";
-        }
-
-        return resultMessage.toString();
     }
 
     /**
@@ -994,79 +969,110 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
     }
 
     /**
-     * 生成业务类代码
+     * 生成枚举类parse方法
      * @return 生成结果消息
      */
-    private String generateBusinessClassCode(Project project, PsiClass psiClass) {
+    private String generateEnumParseMethod(Project project, PsiClass psiClass) {
         OneClickSettings settings = OneClickSettings.getInstance();
-        StringBuilder message = new StringBuilder();
+        PsiElementFactory factory = JavaPsiFacade.getElementFactory(project);
 
-        // 生成日志字段
-        if (settings.isGenerateLogger()) {
-            LoggerGenerator.LoggerType loggerType = LoggerGenerator.getLoggerType(settings.getLoggerType());
-            PsiElement loggerField = LoggerGenerator.insertLoggerField(psiClass, settings.getLoggerFieldName(), loggerType);
+        // 获取配置的方法名和字段名
+        String methodName = settings.getEnumParseMethodName();
+        String codeFieldName = settings.getEnumCodeFieldName();
 
-            if (loggerField != null) {
-                message.append(String.format("- 添加了%s日志字段：%s\n",
-                    settings.getLoggerType().toUpperCase(), settings.getLoggerFieldName()));
-            } else {
-                message.append("- 日志字段已存在，未重复添加\n");
+        // 检查是否已经存在parse方法
+        PsiMethod[] methods = psiClass.getMethods();
+        for (PsiMethod method : methods) {
+            if (methodName.equals(method.getName()) && method.getParameterList().getParametersCount() == 1) {
+                return "枚举类parse方法已存在";
             }
         }
 
-        // 生成serialVersionUID（如果类实现了Serializable）
-        if (settings.isGenerateSerialVersionUID() && isSerializable(psiClass)) {
-            if (!hasSerialVersionUID(psiClass)) {
-                PsiField serialVersionUID = generateSerialVersionUID(project, psiClass);
-                if (serialVersionUID != null) {
-                    message.append("- 添加了serialVersionUID字段\n");
+        // 查找code字段（枚举类的实例字段）
+        PsiField codeField = null;
+        PsiField[] fields = psiClass.getFields();
+        for (PsiField field : fields) {
+            // 排除枚举常量和静态字段
+            if (!field.hasModifierProperty(PsiModifier.STATIC) && 
+                !field.hasModifierProperty(PsiModifier.FINAL) &&
+                codeFieldName.equals(field.getName())) {
+                codeField = field;
+                break;
+            }
+        }
+
+        if (codeField == null) {
+            return "未找到code字段，无法生成parse方法";
+        }
+
+        // 获取code字段的类型
+        PsiType codeFieldType = codeField.getType();
+        String codeFieldTypeText = codeFieldType.getCanonicalText();
+
+        // 获取枚举常量 - 枚举常量是public static final字段,且是枚举类型
+        List<PsiField> enumConstants = new ArrayList<>();
+        for (PsiField field : fields) {
+            if (field.hasModifierProperty(PsiModifier.STATIC) && 
+                field.hasModifierProperty(PsiModifier.FINAL) && 
+                field.hasModifierProperty(PsiModifier.PUBLIC)) {
+                // 检查字段类型是否为枚举类型本身
+                PsiType fieldType = field.getType();
+                if (fieldType != null && fieldType.equalsToText(psiClass.getQualifiedName())) {
+                    enumConstants.add(field);
                 }
             }
         }
+        
+        if (enumConstants.isEmpty()) {
+            return "未找到枚举常量，无法生成parse方法";
+        }
 
-        return message.toString();
-    }
+        // 生成parse方法代码
+        StringBuilder methodCode = new StringBuilder();
+        methodCode.append("public static ").append(psiClass.getName()).append(" ").append(methodName).append("(")
+                  .append(codeFieldTypeText).append(" ").append(codeFieldName).append(") {\n");
+        methodCode.append("    if (").append(codeFieldName).append(" == null) {\n");
+        methodCode.append("        return null;\n");
+        methodCode.append("    }\n");
+        methodCode.append("    for (").append(psiClass.getName()).append(" value : values()) {\n");
+        
+        // 根据code字段类型选择比较方式
+        if (codeFieldTypeText.equals("java.lang.String") || codeFieldTypeText.equals("String")) {
+            methodCode.append("        if (value.").append(codeFieldName).append(" != null && value.")
+                      .append(codeFieldName).append(".equals(").append(codeFieldName).append(")) {\n");
+        } else {
+            methodCode.append("        if (value.").append(codeFieldName).append(" != null && value.")
+                      .append(codeFieldName).append(".equals(").append(codeFieldName).append(")) {\n");
+        }
+        
+        methodCode.append("            return value;\n");
+        methodCode.append("        }\n");
+        methodCode.append("    }\n");
+        methodCode.append("    throw new IllegalArgumentException(\"Unknown ").append(codeFieldName)
+                  .append(": \" + ").append(codeFieldName).append(");\n");
+        methodCode.append("}");
 
-    /**
-     * 检查类是否实现了Serializable接口
-     */
-    private boolean isSerializable(PsiClass psiClass) {
-        PsiClassType[] interfaces = psiClass.getImplementsListTypes();
-        for (PsiClassType interfaceType : interfaces) {
-            if ("java.io.Serializable".equals(interfaceType.getCanonicalText())) {
-                return true;
+        // 创建方法
+        PsiMethod parseMethod = factory.createMethodFromText(methodCode.toString(), psiClass);
+
+        // 找到插入位置（在最后一个枚举常量之后）
+        PsiElement insertionPoint = null;
+        if (!enumConstants.isEmpty()) {
+            insertionPoint = enumConstants.get(enumConstants.size() - 1);
+        } else {
+            PsiElement lBrace = psiClass.getLBrace();
+            if (lBrace != null) {
+                insertionPoint = lBrace;
             }
         }
-        return false;
-    }
 
-    /**
-     * 检查类是否已经有serialVersionUID字段
-     */
-    private boolean hasSerialVersionUID(PsiClass psiClass) {
-        PsiField[] fields = psiClass.getFields();
-        for (PsiField field : fields) {
-            if ("serialVersionUID".equals(field.getName())) {
-                return true;
-            }
+        if (insertionPoint != null) {
+            psiClass.addAfter(parseMethod, insertionPoint);
+        } else {
+            psiClass.add(parseMethod);
         }
-        return false;
-    }
 
-    /**
-     * 生成serialVersionUID字段
-     */
-    private PsiField generateSerialVersionUID(Project project, PsiClass psiClass) {
-        PsiElementFactory factory = JavaPsiFacade.getElementFactory(project);
-        String serialVersionUIDCode = "private static final long serialVersionUID = 1L;";
-        PsiField serialVersionUID = factory.createFieldFromText(serialVersionUIDCode, psiClass);
-
-        // 插入到类的开始位置
-        PsiElement lBrace = psiClass.getLBrace();
-        if (lBrace != null) {
-            return (PsiField) psiClass.addAfter(serialVersionUID, lBrace);
-        }
-        return null;
+        return "成功生成枚举类parse方法: " + methodName + "(" + codeFieldTypeText + " " + codeFieldName + ")";
     }
 
     /**

@@ -42,21 +42,8 @@ public final class OneClickSettings implements PersistentStateComponent<OneClick
         public boolean generateSeparatorComment = true;
         public boolean generateGetterSetter = true;
         public boolean generateToString = true;
-        public boolean generateEquals = false;
-        public boolean generateHashCode = false;
-        
-        // 业务类相关设置
-        public boolean generateLogger = true;
-        public String loggerFieldName = "LOGGER";
-        public String loggerType = "slf4j"; // slf4j, log4j, jul
-        
-        // 通用设置
-        public boolean autoDetectClassType = true;
-        public boolean useFieldComments = true;
-        public boolean generateSerialVersionUID = false;
         
         // 代码风格设置
-        public boolean useBuilderPattern = false;
         public boolean generateFluentSetters = false;
         public String toStringStyle = "json"; // json, simple, apache
 
@@ -65,22 +52,14 @@ public final class OneClickSettings implements PersistentStateComponent<OneClick
         public boolean generateInnerClassSeparator = true;
         public int maxInnerClassDepth = 3;
 
-        // JavaBean包规则设置
-        public String javaBeanPackagePatterns = "entity,model,bean,pojo,dto,vo,domain,data,bo,record";
-        public String businessClassPackagePatterns = "service,controller,mapper,dao,handle,manager,handler,component,config,util,utils,debug,demo";
-        public boolean enablePackageDetection = true;
-
         // DTO/VO/BO生成设置
         public boolean useBeanUtilsForConversion = true; // 使用BeanUtils进行属性复制
         public String beanUtilsClass = "org.springframework.beans.BeanUtils"; // BeanUtils类的全限定名
         public boolean generateSerialAnnotation = false; // 生成@Serial注解（JDK 14+），默认false兼容JDK 8
 
-        // 字段排序设置（仅对业务类生效）
-        public boolean enableFieldSorting = false; // 默认禁用，避免出现问题
-        public String fieldSortType = "NAME"; // NAME, LENGTH, TYPE, MODIFIER
-        public boolean sortAscending = true;
-        public boolean enableModifierSorting = true; // 权限修饰符排序（优先级最高）
-        public String modifierSortOrder = "public,protected,package,private"; // 权限修饰符排序顺序
+        // 枚举类parse方法设置
+        public String enumParseMethodName = "parse"; // 枚举parse方法名，默认为parse
+        public String enumCodeFieldName = "code"; // 枚举code字段名，默认为code
 
         // 语言设置
         public boolean useEnglish = false; // 默认使用中文
@@ -97,42 +76,6 @@ public final class OneClickSettings implements PersistentStateComponent<OneClick
 
     public boolean isGenerateToString() {
         return myState.generateToString;
-    }
-
-    public boolean isGenerateEquals() {
-        return myState.generateEquals;
-    }
-
-    public boolean isGenerateHashCode() {
-        return myState.generateHashCode;
-    }
-
-    public boolean isGenerateLogger() {
-        return myState.generateLogger;
-    }
-
-    public String getLoggerFieldName() {
-        return myState.loggerFieldName;
-    }
-
-    public String getLoggerType() {
-        return myState.loggerType;
-    }
-
-    public boolean isAutoDetectClassType() {
-        return myState.autoDetectClassType;
-    }
-
-    public boolean isUseFieldComments() {
-        return myState.useFieldComments;
-    }
-
-    public boolean isGenerateSerialVersionUID() {
-        return myState.generateSerialVersionUID;
-    }
-
-    public boolean isUseBuilderPattern() {
-        return myState.useBuilderPattern;
     }
 
     public boolean isGenerateFluentSetters() {
@@ -154,42 +97,6 @@ public final class OneClickSettings implements PersistentStateComponent<OneClick
 
     public void setGenerateToString(boolean generateToString) {
         myState.generateToString = generateToString;
-    }
-
-    public void setGenerateEquals(boolean generateEquals) {
-        myState.generateEquals = generateEquals;
-    }
-
-    public void setGenerateHashCode(boolean generateHashCode) {
-        myState.generateHashCode = generateHashCode;
-    }
-
-    public void setGenerateLogger(boolean generateLogger) {
-        myState.generateLogger = generateLogger;
-    }
-
-    public void setLoggerFieldName(String loggerFieldName) {
-        myState.loggerFieldName = loggerFieldName;
-    }
-
-    public void setLoggerType(String loggerType) {
-        myState.loggerType = loggerType;
-    }
-
-    public void setAutoDetectClassType(boolean autoDetectClassType) {
-        myState.autoDetectClassType = autoDetectClassType;
-    }
-
-    public void setUseFieldComments(boolean useFieldComments) {
-        myState.useFieldComments = useFieldComments;
-    }
-
-    public void setGenerateSerialVersionUID(boolean generateSerialVersionUID) {
-        myState.generateSerialVersionUID = generateSerialVersionUID;
-    }
-
-    public void setUseBuilderPattern(boolean useBuilderPattern) {
-        myState.useBuilderPattern = useBuilderPattern;
     }
 
     public void setGenerateFluentSetters(boolean generateFluentSetters) {
@@ -233,72 +140,6 @@ public final class OneClickSettings implements PersistentStateComponent<OneClick
         myState.maxInnerClassDepth = maxInnerClassDepth;
     }
 
-    // JavaBean包规则设置的getter和setter方法
-    public String getJavaBeanPackagePatterns() {
-        return myState.javaBeanPackagePatterns;
-    }
-
-    public void setJavaBeanPackagePatterns(String javaBeanPackagePatterns) {
-        myState.javaBeanPackagePatterns = javaBeanPackagePatterns;
-    }
-
-    public String getBusinessClassPackagePatterns() {
-        return myState.businessClassPackagePatterns;
-    }
-
-    public void setBusinessClassPackagePatterns(String businessClassPackagePatterns) {
-        myState.businessClassPackagePatterns = businessClassPackagePatterns;
-    }
-
-    public boolean isEnablePackageDetection() {
-        return myState.enablePackageDetection;
-    }
-
-    public void setEnablePackageDetection(boolean enablePackageDetection) {
-        myState.enablePackageDetection = enablePackageDetection;
-    }
-
-    // 字段排序设置的getter和setter方法
-    public boolean isEnableFieldSorting() {
-        return myState.enableFieldSorting;
-    }
-
-    public void setEnableFieldSorting(boolean enableFieldSorting) {
-        myState.enableFieldSorting = enableFieldSorting;
-    }
-
-    public String getFieldSortType() {
-        return myState.fieldSortType;
-    }
-
-    public void setFieldSortType(String fieldSortType) {
-        myState.fieldSortType = fieldSortType;
-    }
-
-    public boolean isSortAscending() {
-        return myState.sortAscending;
-    }
-
-    public void setSortAscending(boolean sortAscending) {
-        myState.sortAscending = sortAscending;
-    }
-
-    public boolean isEnableModifierSorting() {
-        return myState.enableModifierSorting;
-    }
-
-    public void setEnableModifierSorting(boolean enableModifierSorting) {
-        myState.enableModifierSorting = enableModifierSorting;
-    }
-
-    public String getModifierSortOrder() {
-        return myState.modifierSortOrder;
-    }
-
-    public void setModifierSortOrder(String modifierSortOrder) {
-        myState.modifierSortOrder = modifierSortOrder;
-    }
-
     // DTO/VO/BO生成设置的getter和setter方法
     public boolean isUseBeanUtilsForConversion() {
         return myState.useBeanUtilsForConversion;
@@ -322,5 +163,22 @@ public final class OneClickSettings implements PersistentStateComponent<OneClick
 
     public void setGenerateSerialAnnotation(boolean generateSerialAnnotation) {
         myState.generateSerialAnnotation = generateSerialAnnotation;
+    }
+
+    // 枚举类parse方法设置的getter和setter方法
+    public String getEnumParseMethodName() {
+        return myState.enumParseMethodName;
+    }
+
+    public void setEnumParseMethodName(String enumParseMethodName) {
+        myState.enumParseMethodName = enumParseMethodName;
+    }
+
+    public String getEnumCodeFieldName() {
+        return myState.enumCodeFieldName;
+    }
+
+    public void setEnumCodeFieldName(String enumCodeFieldName) {
+        myState.enumCodeFieldName = enumCodeFieldName;
     }
 }

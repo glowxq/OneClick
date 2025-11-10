@@ -35,35 +35,19 @@ public class OneClickSettingsConfigurable implements Configurable {
         return mySettingsComponent.isGenerateSeparatorComment() != settings.isGenerateSeparatorComment() ||
                mySettingsComponent.isGenerateGetterSetter() != settings.isGenerateGetterSetter() ||
                mySettingsComponent.isGenerateToString() != settings.isGenerateToString() ||
-               mySettingsComponent.isGenerateEquals() != settings.isGenerateEquals() ||
-               mySettingsComponent.isGenerateHashCode() != settings.isGenerateHashCode() ||
-               mySettingsComponent.isGenerateLogger() != settings.isGenerateLogger() ||
-               !mySettingsComponent.getLoggerFieldName().equals(settings.getLoggerFieldName()) ||
-               !mySettingsComponent.getLoggerType().equals(settings.getLoggerType()) ||
-               mySettingsComponent.isAutoDetectClassType() != settings.isAutoDetectClassType() ||
-               mySettingsComponent.isUseFieldComments() != settings.isUseFieldComments() ||
-               mySettingsComponent.isGenerateSerialVersionUID() != settings.isGenerateSerialVersionUID() ||
-               mySettingsComponent.isUseBuilderPattern() != settings.isUseBuilderPattern() ||
                mySettingsComponent.isGenerateFluentSetters() != settings.isGenerateFluentSetters() ||
                !mySettingsComponent.getToStringStyle().equals(settings.getToStringStyle()) ||
                mySettingsComponent.isUseEnglish() != settings.isUseEnglish() ||
                mySettingsComponent.isProcessInnerClasses() != settings.isProcessInnerClasses() ||
                mySettingsComponent.isGenerateInnerClassSeparator() != settings.isGenerateInnerClassSeparator() ||
                mySettingsComponent.getMaxInnerClassDepth() != settings.getMaxInnerClassDepth() ||
-               // 包规则设置
-               mySettingsComponent.isEnablePackageDetection() != settings.isEnablePackageDetection() ||
-               !mySettingsComponent.getJavaBeanPackagePatterns().equals(settings.getJavaBeanPackagePatterns()) ||
-               !mySettingsComponent.getBusinessClassPackagePatterns().equals(settings.getBusinessClassPackagePatterns()) ||
-               // 字段排序设置
-               mySettingsComponent.isEnableFieldSorting() != settings.isEnableFieldSorting() ||
-               !mySettingsComponent.getFieldSortType().equals(settings.getFieldSortType()) ||
-               mySettingsComponent.isSortAscending() != settings.isSortAscending() ||
-               mySettingsComponent.isEnableModifierSorting() != settings.isEnableModifierSorting() ||
-               !mySettingsComponent.getModifierSortOrder().equals(settings.getModifierSortOrder()) ||
                // DTO/VO/BO生成设置
                mySettingsComponent.isUseBeanUtilsForConversion() != settings.isUseBeanUtilsForConversion() ||
                !mySettingsComponent.getBeanUtilsClass().equals(settings.getBeanUtilsClass()) ||
-               mySettingsComponent.isGenerateSerialAnnotation() != settings.isGenerateSerialAnnotation();
+               mySettingsComponent.isGenerateSerialAnnotation() != settings.isGenerateSerialAnnotation() ||
+               // 枚举类parse方法设置
+               !mySettingsComponent.getEnumParseMethodName().equals(settings.getEnumParseMethodName()) ||
+               !mySettingsComponent.getEnumCodeFieldName().equals(settings.getEnumCodeFieldName());
     }
 
     @Override
@@ -72,15 +56,6 @@ public class OneClickSettingsConfigurable implements Configurable {
         settings.setGenerateSeparatorComment(mySettingsComponent.isGenerateSeparatorComment());
         settings.setGenerateGetterSetter(mySettingsComponent.isGenerateGetterSetter());
         settings.setGenerateToString(mySettingsComponent.isGenerateToString());
-        settings.setGenerateEquals(mySettingsComponent.isGenerateEquals());
-        settings.setGenerateHashCode(mySettingsComponent.isGenerateHashCode());
-        settings.setGenerateLogger(mySettingsComponent.isGenerateLogger());
-        settings.setLoggerFieldName(mySettingsComponent.getLoggerFieldName());
-        settings.setLoggerType(mySettingsComponent.getLoggerType());
-        settings.setAutoDetectClassType(mySettingsComponent.isAutoDetectClassType());
-        settings.setUseFieldComments(mySettingsComponent.isUseFieldComments());
-        settings.setGenerateSerialVersionUID(mySettingsComponent.isGenerateSerialVersionUID());
-        settings.setUseBuilderPattern(mySettingsComponent.isUseBuilderPattern());
         settings.setGenerateFluentSetters(mySettingsComponent.isGenerateFluentSetters());
         settings.setToStringStyle(mySettingsComponent.getToStringStyle());
         settings.setUseEnglish(mySettingsComponent.isUseEnglish());
@@ -88,22 +63,14 @@ public class OneClickSettingsConfigurable implements Configurable {
         settings.setGenerateInnerClassSeparator(mySettingsComponent.isGenerateInnerClassSeparator());
         settings.setMaxInnerClassDepth(mySettingsComponent.getMaxInnerClassDepth());
 
-        // 包规则设置
-        settings.setEnablePackageDetection(mySettingsComponent.isEnablePackageDetection());
-        settings.setJavaBeanPackagePatterns(mySettingsComponent.getJavaBeanPackagePatterns());
-        settings.setBusinessClassPackagePatterns(mySettingsComponent.getBusinessClassPackagePatterns());
-
-        // 字段排序设置
-        settings.setEnableFieldSorting(mySettingsComponent.isEnableFieldSorting());
-        settings.setFieldSortType(mySettingsComponent.getFieldSortType());
-        settings.setSortAscending(mySettingsComponent.isSortAscending());
-        settings.setEnableModifierSorting(mySettingsComponent.isEnableModifierSorting());
-        settings.setModifierSortOrder(mySettingsComponent.getModifierSortOrder());
-
         // DTO/VO/BO生成设置
         settings.setUseBeanUtilsForConversion(mySettingsComponent.isUseBeanUtilsForConversion());
         settings.setBeanUtilsClass(mySettingsComponent.getBeanUtilsClass());
         settings.setGenerateSerialAnnotation(mySettingsComponent.isGenerateSerialAnnotation());
+
+        // 枚举类parse方法设置
+        settings.setEnumParseMethodName(mySettingsComponent.getEnumParseMethodName());
+        settings.setEnumCodeFieldName(mySettingsComponent.getEnumCodeFieldName());
     }
 
     @Override
@@ -112,15 +79,6 @@ public class OneClickSettingsConfigurable implements Configurable {
         mySettingsComponent.setGenerateSeparatorComment(settings.isGenerateSeparatorComment());
         mySettingsComponent.setGenerateGetterSetter(settings.isGenerateGetterSetter());
         mySettingsComponent.setGenerateToString(settings.isGenerateToString());
-        mySettingsComponent.setGenerateEquals(settings.isGenerateEquals());
-        mySettingsComponent.setGenerateHashCode(settings.isGenerateHashCode());
-        mySettingsComponent.setGenerateLogger(settings.isGenerateLogger());
-        mySettingsComponent.setLoggerFieldName(settings.getLoggerFieldName());
-        mySettingsComponent.setLoggerType(settings.getLoggerType());
-        mySettingsComponent.setAutoDetectClassType(settings.isAutoDetectClassType());
-        mySettingsComponent.setUseFieldComments(settings.isUseFieldComments());
-        mySettingsComponent.setGenerateSerialVersionUID(settings.isGenerateSerialVersionUID());
-        mySettingsComponent.setUseBuilderPattern(settings.isUseBuilderPattern());
         mySettingsComponent.setGenerateFluentSetters(settings.isGenerateFluentSetters());
         mySettingsComponent.setToStringStyle(settings.getToStringStyle());
         mySettingsComponent.setUseEnglish(settings.isUseEnglish());
@@ -128,22 +86,14 @@ public class OneClickSettingsConfigurable implements Configurable {
         mySettingsComponent.setGenerateInnerClassSeparator(settings.isGenerateInnerClassSeparator());
         mySettingsComponent.setMaxInnerClassDepth(settings.getMaxInnerClassDepth());
 
-        // 包规则设置
-        mySettingsComponent.setEnablePackageDetection(settings.isEnablePackageDetection());
-        mySettingsComponent.setJavaBeanPackagePatterns(settings.getJavaBeanPackagePatterns());
-        mySettingsComponent.setBusinessClassPackagePatterns(settings.getBusinessClassPackagePatterns());
-
-        // 字段排序设置
-        mySettingsComponent.setEnableFieldSorting(settings.isEnableFieldSorting());
-        mySettingsComponent.setFieldSortType(settings.getFieldSortType());
-        mySettingsComponent.setSortAscending(settings.isSortAscending());
-        mySettingsComponent.setEnableModifierSorting(settings.isEnableModifierSorting());
-        mySettingsComponent.setModifierSortOrder(settings.getModifierSortOrder());
-
         // DTO/VO/BO生成设置
         mySettingsComponent.setUseBeanUtilsForConversion(settings.isUseBeanUtilsForConversion());
         mySettingsComponent.setBeanUtilsClass(settings.getBeanUtilsClass());
         mySettingsComponent.setGenerateSerialAnnotation(settings.isGenerateSerialAnnotation());
+
+        // 枚举类parse方法设置
+        mySettingsComponent.setEnumParseMethodName(settings.getEnumParseMethodName());
+        mySettingsComponent.setEnumCodeFieldName(settings.getEnumCodeFieldName());
     }
 
     @Override
