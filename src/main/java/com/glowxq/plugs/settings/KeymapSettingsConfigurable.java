@@ -32,18 +32,47 @@ public class KeymapSettingsConfigurable implements Configurable {
 
     @Override
     public boolean isModified() {
-        // 快捷键是固定的，不需要修改
-        return false;
+        if (mySettingsComponent == null) {
+            return false;
+        }
+        
+        KeymapSettings settings = KeymapSettings.getInstance();
+        String currentShortcut = mySettingsComponent.getShortcut();
+        String savedShortcut = settings.getShortcutForCurrentOS("smartOneClick");
+        
+        if (savedShortcut == null) {
+            String osModifier = com.intellij.openapi.util.SystemInfo.isMac ? "Cmd" : "Ctrl";
+            savedShortcut = osModifier + "+Shift+D";
+        }
+        
+        return !currentShortcut.equals(savedShortcut);
     }
 
     @Override
     public void apply() throws ConfigurationException {
-        // 快捷键是固定的，不需要保存
+        if (mySettingsComponent == null) {
+            return;
+        }
+        
+        // 验证快捷键格式
+        if (!mySettingsComponent.isShortcutValid()) {
+            throw new ConfigurationException("快捷键格式不正确，请检查输入");
+        }
+        
+        // 保存快捷键设置
+        KeymapSettings settings = KeymapSettings.getInstance();
+        String shortcut = mySettingsComponent.getShortcut();
+        settings.setShortcutForCurrentOS("smartOneClick", shortcut);
+        
+        // 应用快捷键到实际的Action（这里需要实现KeymapApplier）
+        // KeymapApplier.applyKeymapSettings(settings);
     }
 
     @Override
     public void reset() {
-        // 快捷键是固定的，不需要重置
+        if (mySettingsComponent != null) {
+            mySettingsComponent.loadDefaultShortcut();
+        }
     }
 
     @Override

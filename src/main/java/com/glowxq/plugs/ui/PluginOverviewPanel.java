@@ -30,8 +30,8 @@ public class PluginOverviewPanel {
         panel.setBorder(JBUI.Borders.empty(10));
 
         // 创建标题
-        JBLabel titleLabel = new JBLabel("<html><h1>OneClick - Smart Code Generator 🚀</h1></html>");
-        titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, 16f));
+        JBLabel titleLabel = new JBLabel("<html><b>OneClick - Smart Code Generator</b></html>");
+        titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, 14f));
         panel.add(titleLabel, BorderLayout.NORTH);
 
         // 创建内容面板
@@ -64,15 +64,19 @@ public class PluginOverviewPanel {
     }
 
     private JBLabel createSectionLabel(String text) {
-        JBLabel label = new JBLabel("<html><h2>" + text + "</h2></html>");
-        label.setFont(label.getFont().deriveFont(Font.BOLD, 14f));
+        JBLabel label = new JBLabel("<html><b>" + text + "</b></html>");
+        label.setFont(label.getFont().deriveFont(Font.BOLD, 13f));
         return label;
     }
 
     private JPanel createFeatureDescription() {
+        String osModifier = SystemInfo.isMac ? "Cmd" : "Ctrl";
         String description = "<html><div style='width: 600px; line-height: 1.6;'>" +
-            "使用 <b>Shift+Alt+D</b> (Mac: <b>Cmd+Shift+D</b>) 快捷键，智能识别类类型并自动生成代码：<br><br>" +
-            "• <b>JavaBean类</b>：自动生成 getter/setter/toString 方法<br>" +
+            "使用 <b>" + osModifier + "+Shift+D</b> 快捷键，智能识别场景并自动执行相应操作：<br><br>" +
+            "• <b>选中变量名</b>：循环切换命名风格（小驼峰→大驼峰→下划线小写→下划线大写）<br>" +
+            "• <b>选中字符串</b>：自动生成常量字段<br>" +
+            "• <b>选中类名</b>：生成 DTO/VO/BO 类<br>" +
+            "• <b>JavaBean类</b>：自动生成 getter/setter/toString 方法（JSON格式）<br>" +
             "• <b>枚举类</b>：自动生成 parse 方法，根据 code 字段解析枚举值<br><br>" +
             "所有功能都通过同一个快捷键完成，简单高效。</div></html>";
 
@@ -99,20 +103,30 @@ public class PluginOverviewPanel {
     }
 
     private JPanel createUsageScenarios() {
+        String osModifier = SystemInfo.isMac ? "Cmd" : "Ctrl";
         String[] scenarios = {
-            "<b>场景1：生成JavaBean方法</b><br>" +
-            "在包含私有字段的Java类中按 Shift+Alt+D，自动生成 getter/setter/toString 方法",
+            "<b>场景1：变量名命名风格转换</b><br>" +
+            "选中变量名（如 userName）按 " + osModifier + "+Shift+D，循环切换：userName → UserName → user_name → USER_NAME",
             
-            "<b>场景2：生成枚举类parse方法</b><br>" +
-            "在包含 code 字段的枚举类中按 Shift+Alt+D，自动生成 parse 方法用于根据 code 值解析枚举"
+            "<b>场景2：生成常量字段</b><br>" +
+            "选中字符串字面量（如 \"USER_NOT_FOUND\"）按 " + osModifier + "+Shift+D，自动生成常量字段",
+            
+            "<b>场景3：生成DTO/VO/BO类</b><br>" +
+            "选中类名（如 User）按 " + osModifier + "+Shift+D，选择类型后自动生成对应的数据传输对象类",
+            
+            "<b>场景4：生成JavaBean方法</b><br>" +
+            "在包含私有字段的Java类中按 " + osModifier + "+Shift+D，自动生成 getter/setter/toString 方法（toString为JSON格式）",
+            
+            "<b>场景5：生成枚举类parse方法</b><br>" +
+            "在包含 code 字段的枚举类中按 " + osModifier + "+Shift+D，自动生成 parse 方法用于根据 code 值解析枚举"
         };
 
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
         for (String scenario : scenarios) {
-            JBLabel label = new JBLabel("<html><div style='width: 600px; line-height: 1.8; margin-bottom: 10px;'>" + scenario + "</div></html>");
-            label.setBorder(JBUI.Borders.empty(5, 10));
+            JBLabel label = new JBLabel("<html><div style='width: 600px; line-height: 1.8; margin-bottom: 8px;'>" + scenario + "</div></html>");
+            label.setBorder(JBUI.Borders.empty(3, 10));
             panel.add(label);
         }
 
