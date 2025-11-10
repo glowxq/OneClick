@@ -989,35 +989,49 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
         }
 
         // 查找code字段（枚举类的实例字段）
+        // 注意：枚举类的字段通常是final的，但不应该是static的
         PsiField codeField = null;
         PsiField[] fields = psiClass.getFields();
+        String enumClassName = psiClass.getQualifiedName();
+        
         for (PsiField field : fields) {
-            // 排除枚举常量和静态字段
+            String fieldName = field.getName();
+            
+            // 跳过枚举常量（枚举常量是static final的，且类型是枚举类本身）
+            if (field.hasModifierProperty(PsiModifier.STATIC) && 
+                field.hasModifierProperty(PsiModifier.FINAL)) {
+                PsiType fieldType = field.getType();
+                if (fieldType != null && enumClassName != null && 
+                    fieldType.equalsToText(enumClassName)) {
+                    continue; // 这是枚举常量，跳过
+                }
+            }
+            
+            // 查找code字段：非静态字段，名称匹配
             if (!field.hasModifierProperty(PsiModifier.STATIC) && 
-                !field.hasModifierProperty(PsiModifier.FINAL) &&
-                codeFieldName.equals(field.getName())) {
+                codeFieldName.equals(fieldName)) {
                 codeField = field;
                 break;
             }
         }
 
         if (codeField == null) {
-            return "未找到code字段，无法生成parse方法";
+            return "未找到code字段（字段名: " + codeFieldName + "），无法生成parse方法";
         }
 
         // 获取code字段的类型
         PsiType codeFieldType = codeField.getType();
         String codeFieldTypeText = codeFieldType.getCanonicalText();
 
-        // 获取枚举常量 - 枚举常量是public static final字段,且是枚举类型
+        // 获取枚举常量 - 枚举常量是public static final字段,且类型是枚举类本身
         List<PsiField> enumConstants = new ArrayList<>();
         for (PsiField field : fields) {
             if (field.hasModifierProperty(PsiModifier.STATIC) && 
-                field.hasModifierProperty(PsiModifier.FINAL) && 
-                field.hasModifierProperty(PsiModifier.PUBLIC)) {
+                field.hasModifierProperty(PsiModifier.FINAL)) {
                 // 检查字段类型是否为枚举类型本身
                 PsiType fieldType = field.getType();
-                if (fieldType != null && fieldType.equalsToText(psiClass.getQualifiedName())) {
+                if (fieldType != null && enumClassName != null && 
+                    fieldType.equalsToText(enumClassName)) {
                     enumConstants.add(field);
                 }
             }
@@ -1029,18 +1043,42 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
 
         // 生成parse方法代码
         StringBuilder methodCode = new StringBuilder();
+        
+        // 添加JavaDoc注释
+        methodCode.append("/**\n");
+        methodCode.append(" * 根据").append(codeFieldName).append("解析对应的枚举值\n");
+        methodCode.append(" * \n");
+        methodCode.append(" * @param ").append(codeFieldName).append(" 枚举的").append(codeFieldName).append("值\n");
+        methodCode.append(" * @return 对应的枚举值，如果未找到则返回null\n");
+        methodCode.append(" */\n");
+        
         methodCode.append("public static ").append(psiClass.getName()).append(" ").append(methodName).append("(")
                   .append(codeFieldTypeText).append(" ").append(codeFieldName).append(") {\n");
-        methodCode.append("    if (").append(codeFieldName).append(" == null) {\n");
-        methodCode.append("        return null;\n");
-        methodCode.append("    }\n");
-        methodCode.append("    for (").append(psiClass.getName()).append(" value : values()) {\n");
         
         // 根据code字段类型选择比较方式
-        if (codeFieldTypeText.equals("java.lang.String") || codeFieldTypeText.equals("String")) {
-            methodCode.append("        if (value.").append(codeFieldName).append(" != null && value.")
-                      .append(codeFieldName).append(".equals(").append(codeFieldName).append(")) {\n");
+        // 对于基本类型（int, long等），使用 == 比较；对于对象类型，使用 equals
+        boolean isPrimitive = codeFieldTypeText.equals("int") || 
+                              codeFieldTypeText.equals("long") || 
+                              codeFieldTypeText.equals("short") || 
+                              codeFieldTypeText.equals("byte") || 
+                              codeFieldTypeText.equals("char") || 
+                              codeFieldTypeText.equals("boolean");
+        
+        // 只有对象类型才需要null检查
+        if (!isPrimitive) {
+            methodCode.append("    if (").append(codeFieldName).append(" == null) {\n");
+            methodCode.append("        return null;\n");
+            methodCode.append("    }\n");
+        }
+        
+        methodCode.append("    for (").append(psiClass.getName()).append(" value : values()) {\n");
+        
+        if (isPrimitive) {
+            // 基本类型使用 == 比较
+            methodCode.append("        if (value.").append(codeFieldName).append(" == ").append(codeFieldName).append(") {\n");
         } else {
+            // 对象类型（String, Integer, Long等）使用 equals 比较
+            // 注意：value.code 可能为null，需要先检查
             methodCode.append("        if (value.").append(codeFieldName).append(" != null && value.")
                       .append(codeFieldName).append(".equals(").append(codeFieldName).append(")) {\n");
         }
@@ -1048,8 +1086,8 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
         methodCode.append("            return value;\n");
         methodCode.append("        }\n");
         methodCode.append("    }\n");
-        methodCode.append("    throw new IllegalArgumentException(\"Unknown ").append(codeFieldName)
-                  .append(": \" + ").append(codeFieldName).append(");\n");
+        // 不抛出异常，返回null
+        methodCode.append("    return null;\n");
         methodCode.append("}");
 
         // 创建方法
@@ -1060,8 +1098,8 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
         if (!enumConstants.isEmpty()) {
             insertionPoint = enumConstants.get(enumConstants.size() - 1);
         } else {
-            PsiElement lBrace = psiClass.getLBrace();
-            if (lBrace != null) {
+        PsiElement lBrace = psiClass.getLBrace();
+        if (lBrace != null) {
                 insertionPoint = lBrace;
             }
         }

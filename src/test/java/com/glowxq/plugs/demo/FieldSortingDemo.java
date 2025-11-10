@@ -52,4 +52,48 @@ public class FieldSortingDemo {
             throw new IllegalArgumentException("Input cannot be null");
         }
     }
+
+    // ================================ JavaBean Methods ================================
+
+    public String getZLastField() {
+        return zLastField;
+    }
+
+    public void setZLastField(String zLastField) {
+        this.zLastField = zLastField;
+    }
+
+    public Object getBShortField() {
+        return bShortField;
+    }
+
+    public void setBShortField(Object bShortField) {
+        this.bShortField = bShortField;
+    }
+
+    public Integer getCMediumField() {
+        return cMediumField;
+    }
+
+    public void setCMediumField(Integer cMediumField) {
+        this.cMediumField = cMediumField;
+    }
+
+    public String getALongFieldName() {
+        return aLongFieldName;
+    }
+
+    public void setALongFieldName(String aLongFieldName) {
+        this.aLongFieldName = aLongFieldName;
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "\"zLastField\":" + zLastField + "," +
+                "\"bShortField\":" + bShortField + "," +
+                "\"cMediumField\":" + cMediumField + "," +
+                "\"aLongFieldName\":" + aLongFieldName +
+                "}";
+    }
 }
