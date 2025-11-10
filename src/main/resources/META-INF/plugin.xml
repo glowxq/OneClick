@@ -6,27 +6,27 @@
 
 
     <description><![CDATA[
-智能代码生成插件，一键生成JavaBean方法和枚举类parse方法。
+Smart code generator plugin for IntelliJ IDEA. One shortcut key generates JavaBean methods and enum parse methods.
 
-核心亮点：
-• JSON格式toString方法 - 符合阿里规范，无需JSON工具类，避免性能问题和异常风险
-• 自动生成JSON格式toString，日志打印直接得到JSON格式，方便调试
+Key Features:
+• JSON format toString method - Compliant with Alibaba code standards, no JSON utility classes needed, avoiding performance issues and exception risks
+• Auto-generate JSON format toString, log printing directly gets JSON format for easy debugging
 
-核心功能：
-• 智能一键生成 - 快捷键：Shift+Alt+D (Windows/Linux) / Cmd+Shift+D (Mac)
-• JavaBean方法生成 - 自动生成 getter/setter/toString（JSON格式）
-• 枚举类parse方法 - 自动生成根据code字段解析枚举的方法
-• 变量名命名风格转换 - 循环切换4种命名风格
-• DTO/VO/BO类生成 - 选中类名自动生成数据传输对象类
+Core Functions:
+• Smart one-click generation - Shortcut: Shift+Alt+D (Windows/Linux) / Cmd+Shift+D (Mac)
+• JavaBean method generation - Auto-generate getter/setter/toString (JSON format)
+• Enum parse method - Auto-generate parse method based on code field
+• Variable naming style conversion - Cycle through 4 naming styles
+• DTO/VO/BO class generation - Select class name to auto-generate data transfer object classes
 
-使用场景：
-• 在Java类中按快捷键生成JavaBean方法（包含JSON格式toString）
-• 在枚举类中按快捷键生成parse方法
-• 选中变量名按快捷键循环切换命名风格
-• 选中类名按快捷键生成DTO/VO/BO类
+Usage Scenarios:
+• Press shortcut in Java class to generate JavaBean methods (including JSON format toString)
+• Press shortcut in enum class to generate parse method
+• Select variable name and press shortcut to cycle through naming styles
+• Select class name and press shortcut to generate DTO/VO/BO classes
 
-快速开始：
-在Java类或枚举类中按 Shift+Alt+D (Windows/Linux) / Cmd+Shift+D (Mac)
+Quick Start:
+Press Shift+Alt+D (Windows/Linux) / Cmd+Shift+D (Mac) in Java class or enum class
     ]]></description>
 
     <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
