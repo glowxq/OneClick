@@ -939,7 +939,7 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
             sb.append("\n");
         }
 
-        // 4. 生成JSON格式的toString方法
+        // 4. 生成JSON格式的toString方法（格式与实体类一致）
         sb.append("    @Override\n");
         sb.append("    public String toString() {\n");
         sb.append("        return \"{\" +\n");
@@ -947,19 +947,25 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
         for (int i = 0; i < fields.size(); i++) {
             PsiField field = fields.get(i);
             String fieldName = field.getName();
-            sb.append("                \"\\\"").append(fieldName).append("\\\":\" + ");
-
-            // 判断字段类型，字符串类型需要加引号
+            
+            // 判断字段类型，字符串类型需要加引号（格式与实体类一致）
             String fieldType = field.getType().getCanonicalText();
-            if (fieldType.equals("java.lang.String") || fieldType.equals("String")) {
-                sb.append("\"\\\"\" + ").append(fieldName).append(" + \"\\\"\"");
+            boolean isString = fieldType.equals("java.lang.String") || fieldType.equals("String");
+            
+            // 格式：先输出字段名和冒号
+            sb.append("                \"\\\"").append(fieldName).append("\\\":");
+            
+            if (isString) {
+                // 字符串类型：添加引号
+                sb.append("\\\"\" + ").append(fieldName).append(" + \"\\\"\"");
             } else {
-                sb.append(fieldName);
+                // 其他类型：直接拼接
+                sb.append("\" + ").append(fieldName);
             }
 
+            // 添加逗号（格式与实体类一致：逗号后没有空格）
             if (i < fields.size() - 1) {
-                sb.append(" +\n");
-                sb.append("                \", \" +\n");
+                sb.append(" + \",\" +\n");
             } else {
                 sb.append(" +\n");
             }

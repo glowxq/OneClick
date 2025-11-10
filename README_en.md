@@ -1,6 +1,6 @@
 # OneClick - Smart Code Generator 🚀
 
-[中文](README.md) | English
+[中文](README.md) | English | [Plugin Marketplace](https://plugins.jetbrains.com/plugin/28606-oneclick)
 
 One shortcut key `Shift+Alt+D` (Windows/Linux) / `Cmd+Shift+D` (Mac) intelligently identifies scenarios and automatically generates code.
 

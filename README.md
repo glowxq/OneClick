@@ -1,6 +1,6 @@
 # OneClick - 智能代码生成器 🚀
 
-[English](README_en.md) | 中文
+[English](README_en.md) | 中文 | [插件市场](https://plugins.jetbrains.com/plugin/28606-oneclick)
 
 一个快捷键 `Shift+Alt+D` (Windows/Linux) / `Cmd+Shift+D` (Mac)，智能识别场景，自动生成代码。
 
