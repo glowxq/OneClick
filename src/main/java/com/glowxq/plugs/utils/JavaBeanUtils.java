@@ -251,7 +251,7 @@ public class JavaBeanUtils {
         return String.format(
             "public void %s(%s %s) {\n" +
             "    this.%s = %s;\n" +
-            "}",
+            "}\n",
             setterName, paramType, fieldName, fieldName, fieldName
         );
     }
@@ -269,7 +269,7 @@ public class JavaBeanUtils {
             "public %s %s(%s %s) {\n" +
             "    this.%s = %s;\n" +
             "    return this;\n" +
-            "}",
+            "}\n",
             className, methodName, fieldType, fieldName, fieldName, fieldName
         );
     }

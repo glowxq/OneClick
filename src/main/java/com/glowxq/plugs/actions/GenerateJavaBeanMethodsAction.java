@@ -13,6 +13,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
+import com.intellij.psi.javadoc.PsiDocComment;
 import com.intellij.psi.util.PsiTreeUtil;
 
 import java.util.ArrayList;
@@ -776,11 +777,70 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
         sb.append("    private static final long serialVersionUID = 1L;\n\n");
 
         // 生成字段（使用之前已经获取的fields变量）
-        for (PsiField field : fields) {
+        for (int i = 0; i < fields.size(); i++) {
+            PsiField field = fields.get(i);
             String fieldType = getSimpleTypeName(field.getType().getCanonicalText());
             String fieldName = field.getName();
 
+            // 获取字段注释
+            PsiDocComment docComment = field.getDocComment();
+            if (docComment != null) {
+                // 获取JavaDoc注释的文本
+                String commentText = docComment.getText();
+                // 将注释转换为字段注释格式（每行前加4个空格缩进）
+                String[] commentLines = commentText.split("\n");
+                for (String line : commentLines) {
+                    String trimmed = line.trim();
+                    if (trimmed.isEmpty()) {
+                        sb.append("\n");
+                    } else if (trimmed.equals("/**") || trimmed.equals("*/")) {
+                        sb.append("    ").append(trimmed).append("\n");
+                    } else if (trimmed.startsWith("*")) {
+                        // 处理JavaDoc注释行，去掉开头的*，保留内容
+                        String content = trimmed.substring(1).trim();
+                        if (content.isEmpty()) {
+                            sb.append("    *\n");
+                        } else {
+                            sb.append("    * ").append(content).append("\n");
+                        }
+                    } else {
+                        sb.append("    ").append(trimmed).append("\n");
+                    }
+                }
+            } else {
+                // 如果没有JavaDoc注释，检查是否有行注释（检查前一个兄弟元素）
+                PsiElement prevSibling = field.getPrevSibling();
+                while (prevSibling != null) {
+                    if (prevSibling instanceof PsiComment) {
+                        PsiComment comment = (PsiComment) prevSibling;
+                        if (!(comment instanceof PsiDocComment)) {
+                            String commentText = comment.getText();
+                            String[] commentLines = commentText.split("\n");
+                            for (String line : commentLines) {
+                                String trimmed = line.trim();
+                                if (trimmed.isEmpty()) {
+                                    sb.append("\n");
+                                } else {
+                                    // 保持行注释格式
+                                    sb.append("    ").append(trimmed).append("\n");
+                                }
+                            }
+                        }
+                        break;
+                    } else if (prevSibling instanceof PsiWhiteSpace) {
+                        prevSibling = prevSibling.getPrevSibling();
+                    } else {
+                        break;
+                    }
+                }
+            }
+
             sb.append("    private ").append(fieldType).append(" ").append(fieldName).append(";\n");
+            
+            // 字段之间添加空行（除了最后一个字段）
+            if (i < fields.size() - 1) {
+                sb.append("\n");
+            }
         }
 
         if (!fields.isEmpty()) {
@@ -822,6 +882,9 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
         // 2. 生成fromEntity静态方法
         sb.append("    /**\n");
         sb.append("     * 从实体类转换\n");
+        sb.append("     * \n");
+        sb.append("     * @param entity 源实体类对象\n");
+        sb.append("     * @return 转换后的").append(newClassName).append("对象，如果entity为null则返回null\n");
         sb.append("     */\n");
         sb.append("    public static ").append(newClassName).append(" fromEntity(").append(sourceClassName).append(" entity) {\n");
         sb.append("        if (entity == null) {\n");
@@ -848,7 +911,8 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
         sb.append("    }\n\n");
 
         // 3. 生成getter和setter方法
-        for (PsiField field : fields) {
+        for (int i = 0; i < fields.size(); i++) {
+            PsiField field = fields.get(i);
             String fieldType = getSimpleTypeName(field.getType().getCanonicalText());
             String fieldName = field.getName();
             String capitalizedName = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
@@ -863,7 +927,16 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
             // Setter
             sb.append("    public void set").append(capitalizedName).append("(").append(fieldType).append(" ").append(fieldName).append(") {\n");
             sb.append("        this.").append(fieldName).append(" = ").append(fieldName).append(";\n");
-            sb.append("    }\n\n");
+            sb.append("    }\n");
+            
+            // getter和setter方法之间添加空行（除了最后一个字段）
+            if (i < fields.size() - 1) {
+                sb.append("\n");
+            }
+        }
+        
+        if (!fields.isEmpty()) {
+            sb.append("\n");
         }
 
         // 4. 生成JSON格式的toString方法
@@ -993,6 +1066,8 @@ public class GenerateJavaBeanMethodsAction extends AnAction {
                 lastInserted = JavaBeanUtils.insertAfter(psiClass, setterMethod, lastInserted);
                 newSetterCount++;
                 System.out.println("Generated setter for field: " + fieldName);
+                
+                // 注意：getter和setter方法之间的空行会在代码格式化时自动添加
             }
         }
 
