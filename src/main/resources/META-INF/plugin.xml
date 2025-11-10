@@ -6,37 +6,19 @@
 
 
     <description><![CDATA[
-A powerful IntelliJ IDEA plugin for Java developers with intelligent code generation features.
-
-功能强大的 IntelliJ IDEA 插件，为 Java 开发者提供智能代码生成功能。
+智能代码生成插件，一键生成JavaBean方法和枚举类parse方法。
 
 核心功能：
-• 智能一键生成 - 智能识别并执行操作 (Ctrl+Shift+D / Cmd+Shift+D)
-• JavaBean方法生成 - 自动生成 getter/setter/toString/equals/hashCode
-• DTO/VO/BO生成器 - 自动创建数据传输对象及转换方法
-• JSON格式toString - 生成现代化的JSON格式toString方法
-• 批量处理 - 一次处理多个文件或包
-• 代码模板 - 15种设计模式和架构模板
-• 开发工具集 - UUID生成、时间戳、常量生成等
-• 数据库工具 - Entity注解、SQL语句、Repository生成
+• 智能一键生成 - 使用 Shift+Alt+D (Mac: Cmd+Shift+D) 快捷键
+• JavaBean方法生成 - 自动生成 getter/setter/toString
+• 枚举类parse方法 - 自动生成根据code字段解析枚举的方法
+
+使用场景：
+• 在Java类中按 Shift+Alt+D 生成JavaBean方法
+• 在枚举类中按 Shift+Alt+D 生成parse方法
 
 快速开始：
-在Java类中右键 -> OneClick菜单，或使用快捷键 Ctrl+Shift+D (Mac: Cmd+Shift+D)
-
----
-
-Core Features:
-• Smart One-Click Generate - Intelligently detect and execute operations (Ctrl+Shift+D / Cmd+Shift+D)
-• JavaBean Methods - Auto-generate getter/setter/toString/equals/hashCode
-• DTO/VO/BO Generator - Auto-create data transfer objects with conversions
-• JSON toString - Generate modern JSON-formatted toString methods
-• Batch Processing - Process multiple files or packages at once
-• Code Templates - 15 design patterns and architecture templates
-• Developer Tools - UUID generation, timestamp, constant generation, etc.
-• Database Tools - Entity annotations, SQL statements, Repository generation
-
-Quick Start:
-Right-click in Java class -> OneClick menu, or use shortcut Ctrl+Shift+D (Mac: Cmd+Shift+D)
+在Java类或枚举类中按 Shift+Alt+D (Mac: Cmd+Shift+D)
     ]]></description>
 
     <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
@@ -78,183 +60,20 @@ Right-click in Java class -> OneClick menu, or use shortcut Ctrl+Shift+D (Mac: C
     </extensions>
 
     <actions>
-        <!-- 创建OneClick工具组 -->
-        <group id="JavaBeanToolsGroup" text="OneClick" description="OneClick - 智能代码生成工具" popup="true">
-            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
-        </group>
-
-        <!-- 项目视图OneClick菜单组 -->
-        <group id="ProjectViewOneClickGroup" text="OneClick" description="OneClick - 智能代码生成工具" popup="true">
-            <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="NewGroup"/>
-        </group>
-
-        <!-- 测试Action -->
-        <action id="com.glowxq.plugs.TestAction"
-                class="com.glowxq.plugs.actions.TestAction"
-                text="Test Plugin"
-                description="Test if plugin is working">
-            <add-to-group group-id="JavaBeanToolsGroup" anchor="first"/>
-        </action>
-
-        <!-- 智能一键生成Action -->
+        <!-- 智能一键生成Action - 唯一保留的功能 -->
         <action id="com.glowxq.plugs.SmartOneClickAction"
                 class="com.glowxq.plugs.actions.GenerateJavaBeanMethodsAction"
                 text="🚀 Smart One-Click Generate"
-                description="Smart shortcut: intelligently execute operations based on selected content or class type">
+                description="智能一键生成：JavaBean方法或枚举类parse方法">
             <!-- 添加到Generate菜单 -->
             <add-to-group group-id="GenerateGroup" anchor="first"/>
-            <!-- 添加到OneClick工具组 - 最重要，放在第一位 -->
-            <add-to-group group-id="JavaBeanToolsGroup" anchor="first"/>
-            <!-- 添加到项目视图OneClick菜单组 - 最重要的功能放在第一位 -->
-            <add-to-group group-id="ProjectViewOneClickGroup" anchor="first"/>
+            <!-- 添加到右键菜单 -->
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
             <!-- Windows/Linux快捷键 -->
             <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift D"/>
             <!-- macOS快捷键 (meta = Cmd键, shift = Shift键) -->
             <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift D"/>
             <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta shift D"/>
-        </action>
-
-        <!-- 折叠方法的Action -->
-        <action id="com.glowxq.plugs.FoldJavaBeanMethodsAction"
-                class="com.glowxq.plugs.actions.FoldJavaBeanMethodsAction"
-                text="Fold JavaBean Methods"
-                description="Fold all getter/setter/toString methods">
-            <!-- 添加到Code菜单 -->
-            <add-to-group group-id="CodeMenu" anchor="last"/>
-            <!-- 添加到JavaBean工具组 -->
-            <add-to-group group-id="JavaBeanToolsGroup" anchor="last"/>
-            <!-- Windows/Linux快捷键 -->
-            <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift F"/>
-            <!-- macOS快捷键 (meta = Cmd键, shift = Shift键) -->
-            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift F"/>
-            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta shift F"/>
-        </action>
-
-        <!-- 代码模板生成Action -->
-        <action id="com.glowxq.plugs.GenerateCodeTemplateAction"
-                class="com.glowxq.plugs.actions.GenerateCodeTemplateAction"
-                text="📝 代码模板"
-                description="生成常用代码模板：设计模式、架构模板等">
-            <add-to-group group-id="GenerateGroup" anchor="after" relative-to-action="com.glowxq.plugs.SmartOneClickAction"/>
-            <!-- 放在数据库工具之后 -->
-            <add-to-group group-id="JavaBeanToolsGroup" anchor="after" relative-to-action="com.glowxq.plugs.DatabaseToolsAction"/>
-            <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift T"/>
-            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift T"/>
-            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta shift T"/>
-        </action>
-
-        <!-- 重构助手Action -->
-        <action id="com.glowxq.plugs.RefactorAssistantAction"
-                class="com.glowxq.plugs.actions.RefactorAssistantAction"
-                text="Refactor Assistant"
-                description="Provide common refactoring operations">
-            <add-to-group group-id="RefactoringMenu" anchor="last"/>
-            <add-to-group group-id="JavaBeanToolsGroup" anchor="after" relative-to-action="com.glowxq.plugs.GenerateCodeTemplateAction"/>
-            <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift R"/>
-            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift R"/>
-            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta shift R"/>
-        </action>
-
-        <!-- 智能注释生成Action -->
-        <action id="com.glowxq.plugs.SmartCommentAction"
-                class="com.glowxq.plugs.actions.SmartCommentAction"
-                text="Smart Comment"
-                description="Generate comments based on code context">
-            <add-to-group group-id="CodeMenu" anchor="after" relative-to-action="com.glowxq.plugs.FoldJavaBeanMethodsAction"/>
-            <add-to-group group-id="JavaBeanToolsGroup" anchor="after" relative-to-action="com.glowxq.plugs.RefactorAssistantAction"/>
-            <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift C"/>
-            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift C"/>
-            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta shift C"/>
-        </action>
-
-        <!-- 批量生成Action -->
-        <action id="com.glowxq.plugs.BatchGenerateAction"
-                class="com.glowxq.plugs.actions.BatchGenerateAction"
-                text="📦 批量生成"
-                description="批量生成JavaBean方法，支持选中的文件或包">
-            <!-- 添加到项目视图OneClick菜单组 - 在智能一键生成之后 -->
-            <add-to-group group-id="ProjectViewOneClickGroup" anchor="after" relative-to-action="com.glowxq.plugs.SmartOneClickAction"/>
-            <!-- 重要功能，放在第二位 -->
-            <add-to-group group-id="JavaBeanToolsGroup" anchor="after" relative-to-action="com.glowxq.plugs.SmartOneClickAction"/>
-            <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift B"/>
-            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift B"/>
-            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta shift B"/>
-        </action>
-
-        <!-- 代码清理助手 -->
-        <action id="com.glowxq.plugs.CodeCleanupAction"
-                class="com.glowxq.plugs.actions.CodeCleanupAction"
-                text="Code Cleanup"
-                description="Clean up code with various operations">
-            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
-            <add-to-group group-id="CodeMenu" anchor="last"/>
-            <add-to-group group-id="JavaBeanToolsGroup" anchor="last"/>
-            <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift L"/>
-            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift L"/>
-            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta shift L"/>
-        </action>
-
-        <!-- 代码分析器 -->
-        <action id="com.glowxq.plugs.CodeAnalysisAction"
-                class="com.glowxq.plugs.actions.CodeAnalysisAction"
-                text="Code Analysis"
-                description="Analyze code statistics and metrics">
-            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
-            <add-to-group group-id="CodeMenu" anchor="last"/>
-            <add-to-group group-id="JavaBeanToolsGroup" anchor="last"/>
-            <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift A"/>
-            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift A"/>
-            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta shift A"/>
-        </action>
-
-        <!-- 快速文档生成 -->
-        <action id="com.glowxq.plugs.QuickDocAction"
-                class="com.glowxq.plugs.actions.QuickDocAction"
-                text="Quick Documentation"
-                description="Generate JavaDoc documentation quickly">
-            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
-            <add-to-group group-id="CodeMenu" anchor="last"/>
-            <add-to-group group-id="JavaBeanToolsGroup" anchor="last"/>
-            <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift Q"/>
-            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift Q"/>
-            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta shift Q"/>
-        </action>
-
-        <!-- 显示插件概览 -->
-        <action id="com.glowxq.plugs.ShowOverviewAction"
-                class="com.glowxq.plugs.actions.ShowOverviewAction"
-                text="OneClick Help"
-                description="Show OneClick plugin overview and help">
-            <add-to-group group-id="JavaBeanToolsGroup" anchor="last"/>
-            <add-to-group group-id="HelpMenu" anchor="after" relative-to-action="HelpTopics"/>
-        </action>
-
-        <!-- 开发工具集合 -->
-        <action id="com.glowxq.plugs.DevToolsAction"
-                class="com.glowxq.plugs.actions.DevToolsAction"
-                text="🛠️ 开发工具"
-                description="实用的开发工具集合：UUID生成、时间戳、常量生成等">
-            <!-- 重要工具，放在第三位 -->
-            <add-to-group group-id="JavaBeanToolsGroup" anchor="after" relative-to-action="com.glowxq.plugs.BatchGenerateAction"/>
-            <!-- 添加到项目视图OneClick菜单 -->
-            <add-to-group group-id="ProjectViewOneClickGroup" anchor="after" relative-to-action="com.glowxq.plugs.BatchGenerateAction"/>
-            <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift U"/>
-            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift U"/>
-            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta shift U"/>
-        </action>
-
-        <!-- 数据库工具集合 -->
-        <action id="com.glowxq.plugs.DatabaseToolsAction"
-                class="com.glowxq.plugs.actions.DatabaseToolsAction"
-                text="🗄️ 数据库工具"
-                description="数据库相关代码生成：Entity注解、SQL语句、Repository等">
-            <!-- 重要工具，放在第四位 -->
-            <add-to-group group-id="JavaBeanToolsGroup" anchor="after" relative-to-action="com.glowxq.plugs.DevToolsAction"/>
-            <!-- 添加到项目视图OneClick菜单 -->
-            <add-to-group group-id="ProjectViewOneClickGroup" anchor="after" relative-to-action="com.glowxq.plugs.DevToolsAction"/>
-            <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift Y"/>
-            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift Y"/>
-            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta shift Y"/>
         </action>
     </actions>
 </idea-plugin>
