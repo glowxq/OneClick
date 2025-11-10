@@ -27,40 +27,15 @@ public class OneClickSettingsComponent {
     private final JBCheckBox generateSeparatorComment = new JBCheckBox();
     private final JBCheckBox generateGetterSetter = new JBCheckBox();
     private final JBCheckBox generateToString = new JBCheckBox();
-    private final JBCheckBox generateEquals = new JBCheckBox();
-    private final JBCheckBox generateHashCode = new JBCheckBox();
     
-    // 业务类相关设置
-    private final JBCheckBox generateLogger = new JBCheckBox();
-    private final JBTextField loggerFieldName = new JBTextField();
-    private final JComboBox<String> loggerType = new JComboBox<>(new String[]{"slf4j", "log4j", "jul"});
-
-    // 通用设置
-    private final JBCheckBox autoDetectClassType = new JBCheckBox();
-    private final JBCheckBox useFieldComments = new JBCheckBox();
-    private final JBCheckBox generateSerialVersionUID = new JBCheckBox();
-
-    // 代码风格设置
-    private final JBCheckBox useBuilderPattern = new JBCheckBox();
+    // 代码风格设置（合并到JavaBean设置）
     private final JBCheckBox generateFluentSetters = new JBCheckBox();
     private final JComboBox<String> toStringStyle = new JComboBox<>(new String[]{"json", "simple", "apache"});
 
-    // 内部类设置
+    // 内部类设置（合并到JavaBean设置）
     private final JBCheckBox processInnerClasses = new JBCheckBox();
     private final JBCheckBox generateInnerClassSeparator = new JBCheckBox();
     private final JSpinner maxInnerClassDepth = new JSpinner(new SpinnerNumberModel(3, 1, 10, 1));
-
-    // JavaBean包规则设置
-    private final JBCheckBox enablePackageDetection = new JBCheckBox();
-    private final JBTextField javaBeanPackagePatterns = new JBTextField();
-    private final JBTextField businessClassPackagePatterns = new JBTextField();
-
-    // 字段排序设置
-    private final JBCheckBox enableFieldSorting = new JBCheckBox();
-    private final JComboBox<String> fieldSortType = new JComboBox<>(new String[]{"NAME", "LENGTH", "TYPE"});
-    private final JBCheckBox sortAscending = new JBCheckBox();
-    private final JBCheckBox enableModifierSorting = new JBCheckBox();
-    private final JBTextField modifierSortOrder = new JBTextField();
 
     // DTO/VO/BO生成设置
     private final JBCheckBox useBeanUtilsForConversion = new JBCheckBox();
@@ -79,20 +54,12 @@ public class OneClickSettingsComponent {
         generateSeparatorComment.setSelected(true);
         generateGetterSetter.setSelected(true);
         generateToString.setSelected(true);
-        generateLogger.setSelected(true);
-        loggerFieldName.setText("LOGGER");
-        loggerType.setSelectedItem("slf4j");
-        autoDetectClassType.setSelected(true);
         toStringStyle.setSelectedItem("json");
+        processInnerClasses.setSelected(true);
 
         // 枚举类parse方法设置默认值
         enumParseMethodName.setText("parse");
         enumCodeFieldName.setText("code");
-
-        // 字段排序设置默认值（仅对业务类生效）
-        enableFieldSorting.setSelected(true); // 默认启用
-        fieldSortType.setSelectedItem("NAME");
-        sortAscending.setSelected(true);
 
         // 添加语言切换监听器
         languageComboBox.addActionListener(new ActionListener() {
@@ -122,33 +89,13 @@ public class OneClickSettingsComponent {
         generateSeparatorComment.setText(I18nUtils.message("settings.javabean.separator.comment"));
         generateGetterSetter.setText(I18nUtils.message("settings.javabean.getter.setter"));
         generateToString.setText(I18nUtils.message("settings.javabean.tostring"));
-        generateEquals.setText(I18nUtils.message("settings.javabean.equals"));
-        generateHashCode.setText(I18nUtils.message("settings.javabean.hashcode"));
 
-        // 业务类设置
-        generateLogger.setText(I18nUtils.message("settings.business.logger"));
-
-        // 通用设置
-        autoDetectClassType.setText(I18nUtils.message("settings.general.auto.detect"));
-        useFieldComments.setText(I18nUtils.message("settings.general.field.comments"));
-        generateSerialVersionUID.setText(I18nUtils.message("settings.general.serial.version"));
-
-        // 代码风格设置
-        useBuilderPattern.setText(I18nUtils.message("settings.style.builder.pattern"));
+        // 代码风格设置（合并到JavaBean设置）
         generateFluentSetters.setText(I18nUtils.message("settings.style.fluent.setters"));
 
-        // 内部类设置
+        // 内部类设置（合并到JavaBean设置）
         processInnerClasses.setText(I18nUtils.message("settings.inner.class.process"));
         generateInnerClassSeparator.setText(I18nUtils.message("settings.inner.class.separator"));
-
-        // 包规则设置
-        enablePackageDetection.setText(I18nUtils.message("settings.package.detection.enable"));
-
-        // 字段排序设置（仅对业务类生效）
-        enableFieldSorting.setText(I18nUtils.message("settings.field.sorting.enable.business"));
-        sortAscending.setText(I18nUtils.message("settings.field.sorting.ascending"));
-        enableModifierSorting.setText(I18nUtils.message("settings.field.sorting.modifier.enable"));
-        modifierSortOrder.setToolTipText(I18nUtils.message("settings.field.sorting.modifier.order.tooltip"));
 
         // DTO/VO/BO生成设置
         useBeanUtilsForConversion.setText(I18nUtils.message("settings.dto.use.beanutils"));
@@ -165,15 +112,7 @@ public class OneClickSettingsComponent {
                 .addVerticalGap(10)
                 .addComponent(createTitledPanel(I18nUtils.getJavaBeanSettingsTitle(), createJavaBeanPanel()))
                 .addVerticalGap(10)
-                .addComponent(createTitledPanel(I18nUtils.getBusinessSettingsTitle(), createBusinessClassPanel()))
-                .addVerticalGap(10)
-                .addComponent(createTitledPanel(I18nUtils.getGeneralSettingsTitle(), createGeneralPanel()))
-                .addVerticalGap(10)
-                .addComponent(createTitledPanel(I18nUtils.getStyleSettingsTitle(), createCodeStylePanel()))
-                .addVerticalGap(10)
-                .addComponent(createTitledPanel(I18nUtils.message("settings.inner.class.title"), createInnerClassPanel()))
-                .addVerticalGap(10)
-                .addComponent(createTitledPanel(I18nUtils.message("settings.package.rules.title"), createPackageRulesPanel()))
+                .addComponent(createTitledPanel("枚举类设置", createEnumPanel()))
                 .addVerticalGap(10)
                 .addComponent(createTitledPanel(I18nUtils.message("settings.dto.generation.title"), createDtoGenerationPanel()))
                 .addComponentFillVertically(new JPanel(), 0)
@@ -221,43 +160,10 @@ public class OneClickSettingsComponent {
                 .addComponent(generateSeparatorComment)
                 .addComponent(generateGetterSetter)
                 .addComponent(generateToString)
-                .addComponent(generateEquals)
-                .addComponent(generateHashCode)
-                .getPanel();
-    }
-
-    private JPanel createBusinessClassPanel() {
-        return FormBuilder.createFormBuilder()
-                .addComponent(generateLogger)
-                .addLabeledComponent(new JBLabel("Logger field name:"), loggerFieldName)
-                .addLabeledComponent(new JBLabel("Logger type:"), loggerType)
                 .addSeparator()
-                .addComponent(enableFieldSorting)
-                .addLabeledComponent(new JBLabel(I18nUtils.message("settings.field.sorting.type")), fieldSortType)
-                .addComponent(sortAscending)
-                .addComponent(enableModifierSorting)
-                .addLabeledComponent(new JBLabel(I18nUtils.message("settings.field.sorting.modifier.order")), modifierSortOrder)
-                .getPanel();
-    }
-
-    private JPanel createGeneralPanel() {
-        return FormBuilder.createFormBuilder()
-                .addComponent(autoDetectClassType)
-                .addComponent(useFieldComments)
-                .addComponent(generateSerialVersionUID)
-                .getPanel();
-    }
-
-    private JPanel createCodeStylePanel() {
-        return FormBuilder.createFormBuilder()
-                .addComponent(useBuilderPattern)
                 .addComponent(generateFluentSetters)
                 .addLabeledComponent(new JBLabel("ToString style:"), toStringStyle)
-                .getPanel();
-    }
-
-    private JPanel createInnerClassPanel() {
-        return FormBuilder.createFormBuilder()
+                .addSeparator()
                 .addComponent(processInnerClasses)
                 .addComponent(generateInnerClassSeparator)
                 .addLabeledComponent(new JBLabel(I18nUtils.message("settings.inner.class.depth")), maxInnerClassDepth)
@@ -265,13 +171,12 @@ public class OneClickSettingsComponent {
     }
 
     /**
-     * 创建包规则设置面板
+     * 创建枚举类设置面板
      */
-    private JPanel createPackageRulesPanel() {
+    private JPanel createEnumPanel() {
         return FormBuilder.createFormBuilder()
-                .addComponent(enablePackageDetection)
-                .addLabeledComponent(new JBLabel(I18nUtils.message("settings.package.javabean.patterns")), javaBeanPackagePatterns)
-                .addLabeledComponent(new JBLabel(I18nUtils.message("settings.package.business.patterns")), businessClassPackagePatterns)
+                .addLabeledComponent(new JBLabel("Parse方法名:"), enumParseMethodName)
+                .addLabeledComponent(new JBLabel("Code字段名:"), enumCodeFieldName)
                 .getPanel();
     }
 
@@ -304,42 +209,6 @@ public class OneClickSettingsComponent {
         return generateToString.isSelected();
     }
 
-    public boolean isGenerateEquals() {
-        return generateEquals.isSelected();
-    }
-
-    public boolean isGenerateHashCode() {
-        return generateHashCode.isSelected();
-    }
-
-    public boolean isGenerateLogger() {
-        return generateLogger.isSelected();
-    }
-
-    public String getLoggerFieldName() {
-        return loggerFieldName.getText();
-    }
-
-    public String getLoggerType() {
-        return (String) loggerType.getSelectedItem();
-    }
-
-    public boolean isAutoDetectClassType() {
-        return autoDetectClassType.isSelected();
-    }
-
-    public boolean isUseFieldComments() {
-        return useFieldComments.isSelected();
-    }
-
-    public boolean isGenerateSerialVersionUID() {
-        return generateSerialVersionUID.isSelected();
-    }
-
-    public boolean isUseBuilderPattern() {
-        return useBuilderPattern.isSelected();
-    }
-
     public boolean isGenerateFluentSetters() {
         return generateFluentSetters.isSelected();
     }
@@ -359,42 +228,6 @@ public class OneClickSettingsComponent {
 
     public void setGenerateToString(boolean selected) {
         generateToString.setSelected(selected);
-    }
-
-    public void setGenerateEquals(boolean selected) {
-        generateEquals.setSelected(selected);
-    }
-
-    public void setGenerateHashCode(boolean selected) {
-        generateHashCode.setSelected(selected);
-    }
-
-    public void setGenerateLogger(boolean selected) {
-        generateLogger.setSelected(selected);
-    }
-
-    public void setLoggerFieldName(String text) {
-        loggerFieldName.setText(text);
-    }
-
-    public void setLoggerType(String type) {
-        loggerType.setSelectedItem(type);
-    }
-
-    public void setAutoDetectClassType(boolean selected) {
-        autoDetectClassType.setSelected(selected);
-    }
-
-    public void setUseFieldComments(boolean selected) {
-        useFieldComments.setSelected(selected);
-    }
-
-    public void setGenerateSerialVersionUID(boolean selected) {
-        generateSerialVersionUID.setSelected(selected);
-    }
-
-    public void setUseBuilderPattern(boolean selected) {
-        useBuilderPattern.setSelected(selected);
     }
 
     public void setGenerateFluentSetters(boolean selected) {
@@ -436,72 +269,6 @@ public class OneClickSettingsComponent {
 
     public void setMaxInnerClassDepth(int depth) {
         maxInnerClassDepth.setValue(depth);
-    }
-
-    // 包规则设置的getter和setter方法
-    public boolean isEnablePackageDetection() {
-        return enablePackageDetection.isSelected();
-    }
-
-    public void setEnablePackageDetection(boolean selected) {
-        enablePackageDetection.setSelected(selected);
-    }
-
-    public String getJavaBeanPackagePatterns() {
-        return javaBeanPackagePatterns.getText();
-    }
-
-    public void setJavaBeanPackagePatterns(String patterns) {
-        javaBeanPackagePatterns.setText(patterns);
-    }
-
-    public String getBusinessClassPackagePatterns() {
-        return businessClassPackagePatterns.getText();
-    }
-
-    public void setBusinessClassPackagePatterns(String patterns) {
-        businessClassPackagePatterns.setText(patterns);
-    }
-
-    // 字段排序设置的getter和setter方法
-    public boolean isEnableFieldSorting() {
-        return enableFieldSorting.isSelected();
-    }
-
-    public void setEnableFieldSorting(boolean selected) {
-        enableFieldSorting.setSelected(selected);
-    }
-
-    public String getFieldSortType() {
-        return (String) fieldSortType.getSelectedItem();
-    }
-
-    public void setFieldSortType(String sortType) {
-        fieldSortType.setSelectedItem(sortType);
-    }
-
-    public boolean isSortAscending() {
-        return sortAscending.isSelected();
-    }
-
-    public void setSortAscending(boolean selected) {
-        sortAscending.setSelected(selected);
-    }
-
-    public boolean isEnableModifierSorting() {
-        return enableModifierSorting.isSelected();
-    }
-
-    public void setEnableModifierSorting(boolean selected) {
-        enableModifierSorting.setSelected(selected);
-    }
-
-    public String getModifierSortOrder() {
-        return modifierSortOrder.getText();
-    }
-
-    public void setModifierSortOrder(String order) {
-        modifierSortOrder.setText(order);
     }
 
     // DTO/VO/BO生成设置的getter和setter方法
